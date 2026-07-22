@@ -62,6 +62,7 @@ Personal documentation for Rovo Agent prompts, tips, and daily operations.
   - [My Tickets by SLA](queries/jql/my-tickets.md#my-tickets-by-sla)
 
 ### References
+- [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
 - [Rovo Resources](docs/rovo-resources.md)
 
 ---

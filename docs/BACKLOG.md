@@ -12,13 +12,13 @@ Single source of truth for planned work. Prefer updating this file over duplicat
 
 Foundation work so the catalog has clean, consistent prompts.
 
-- [ ] Restore weekend triage wording from PR #12 (`Friday 18:00 until now`) in `prompts/triage/daily-triage.md`
-- [ ] Add `Time to resolution` columns where intended in daily triage (assign + weekend list steps)
-- [ ] Sync `README.md` with actual repo structure and current sections
-- [ ] Sync `AGENTS.md` directory tree with real `prompts/` layout (`triage/`, `tickets/`, `sla/`, `communication/`, `utilities/`)
-- [ ] Normalize SLA field naming in workbench to `Time to resolution` (not `SLA remaining` / `Time to SLA`)
-- [ ] Decide AWS Health overlap: one canonical prompt (`workbench/aws-health-notifications.md` vs `prompts/tickets/ticket-analysis.md`)
-- [ ] Decide Confluence prompts: keep in workbench, promote to `prompts/` / `guides/`, or both with clear roles
+- [x] Restore weekend triage wording from PR #12 (`Friday 18:00 until now`) in `prompts/triage/daily-triage.md`
+- [x] Add `Time to resolution` columns where intended in daily triage (assign + weekend list steps)
+- [x] Sync `README.md` with actual repo structure and current sections
+- [x] Sync `AGENTS.md` directory tree with real `prompts/` layout (`triage/`, `tickets/`, `sla/`, `communication/`, `utilities/`)
+- [x] Normalize SLA field naming in workbench to `Time to resolution` (not `SLA remaining` / `Time to SLA`)
+- [x] Decide AWS Health overlap: one canonical prompt (`workbench/aws-health-notifications.md` vs `prompts/tickets/ticket-analysis.md`)
+- [x] Decide Confluence prompts: keep in workbench, promote to `prompts/` / `guides/`, or both with clear roles
 
 ---
 

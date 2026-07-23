@@ -10,6 +10,8 @@ Prompts for analyzing tickets and determining if action is required or if they c
 
 Close informational AWS Health tickets assigned to me.
 
+**Role:** Stable catalog close-out for informational AWS Health tickets. For the experimental two-step finder (review table first, then resolve), see [AWS Health Notification Ticket Finder](../../workbench/aws-health-notifications.md).
+
 ```text
 /update-work-items
 For tickets assigned to me with "aws_health" in the description:

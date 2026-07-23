@@ -2,6 +2,8 @@
 
 Prompts for summarizing and explaining Confluence documentation in context.
 
+**Role:** Experimental Confluence explain/Q&A variants. For stable document summarization, see [Document Summaries](../guides/document-summaries.md).
+
 **Use when:** You have a Confluence page URL and need Rovo to explain the documentation.
 
 ## Table of Contents

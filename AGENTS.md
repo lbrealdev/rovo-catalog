@@ -50,15 +50,24 @@ AND remaining("Time to resolution") < 72
 
 ```
 prompts/
-├── jira/
-│   ├── daily-triage.md       # Triage, assign, prioritize tickets
-│   ├── ticket-analysis.md   # Analyze and close tickets
-│   ├── sla-management.md    # SLA-aware prompts (has JQL reference)
-│   └── reopened-tickets.md  # Handle reopened tickets
-├── prompts-special.md       # Multi-action prompts
-└── proofreading.md          # Message polishing
-guides/                      # Documentation
-queries/jql/                # Reusable JQL templates
+├── triage/
+│   └── daily-triage.md          # Daily triage operations
+├── tickets/
+│   ├── ticket-analysis.md       # Analyze & close tickets
+│   └── reopened-tickets.md      # Handle reopened tickets
+├── sla/
+│   ├── sla-management.md        # SLA-aware prompts
+│   └── sla-workflow.md          # SLA continuation workflow
+├── communication/
+│   ├── proofreading.md          # Message proofreading
+│   └── confirm-before-action.md # Get approval before actions
+└── utilities/
+    ├── prompts-special.md       # Lean multi-line prompts
+    └── quick-prompts.md         # Quick conversational prompts
+workbench/                       # Experimental prompts (in testing)
+guides/                          # Documentation
+docs/                            # Backlog and references
+queries/jql/                     # Reusable JQL templates
 ```
 
 ## Placeholder Format

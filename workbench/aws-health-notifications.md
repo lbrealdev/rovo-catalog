@@ -2,6 +2,8 @@
 
 Find AWS Health notification tickets assigned to me that require no action.
 
+**Role:** Experimental two-step finder (find → confirm → resolve). For the stable catalog close-out, use [Close AWS Health Notification Tickets](../prompts/tickets/ticket-analysis.md#1-close-aws-health-notification-tickets).
+
 **Use when:** Identifying informational AWS notifications that can be quickly resolved.
 
 **Workflow:** Two-step process - first review tickets (read-only), then apply changes after confirmation.
@@ -17,7 +19,7 @@ Use JQL:
 project = <PROJECT> AND assignee = currentUser() AND status != "Resolved" AND description ~ "aws_health" ORDER BY created DESC
 
 Display results in a table with these columns:
-| Key | Summary | Status | SLA | Time to SLA | Created |
+| Key | Summary | Status | Time to resolution | Created |
 ```
 
 ---

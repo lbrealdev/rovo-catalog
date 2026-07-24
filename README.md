@@ -9,7 +9,7 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 ## Table of Contents
 
 ### Guides
-- [Document Summaries](guides/document-summaries.md)
+- [Document Summaries](guides/document-summaries.md) — stable summarization (experimental Confluence explain/Q&A lives in workbench)
 
 ### Jira Prompts
 - [Daily Triage](prompts/triage/daily-triage.md)
@@ -28,8 +28,8 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 - [Confirm Before Action](prompts/communication/confirm-before-action.md)
 
 ### Experimental Prompts
-- [AWS Health Notifications](workbench/aws-health-notifications.md)
-- [Confluence Documentation](workbench/confluence-explain.md)
+- [AWS Health Notifications](workbench/aws-health-notifications.md) — two-step finder; stable close-out is in Ticket Analysis
+- [Confluence Documentation](workbench/confluence-explain.md) — explain/Q&A variants; stable summarization is in Guides
 - [Find Similar Resolved Tickets](workbench/find-similar-resolved.md)
 - [Recently Updated Tickets](workbench/recently-updated-tickets.md)
 

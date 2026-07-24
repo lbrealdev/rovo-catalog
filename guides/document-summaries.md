@@ -2,6 +2,8 @@
 
 Prompts for summarizing Confluence and AWS documentation.
 
+**Role:** Stable summarization prompts. For experimental Confluence explain/Q&A variants, see [Confluence Documentation Prompts](../workbench/confluence-explain.md).
+
 **Use when:** You need to extract essential steps or understand documentation quickly.
 
 ---

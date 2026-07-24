@@ -11,7 +11,7 @@ Find open tickets assigned to you that have been updated by clients or teammates
 ## Main Prompt
 
 ```
-Show all my open <PROJECT> tickets in a table (Key, Summary, Status, SLA remaining, Updated).
+Show all my open <PROJECT> tickets in a table (Key, Summary, Status, Time to resolution, Updated).
 
 Then identify tickets where someone (client or teammate) recently added a comment or changed the status (in the last few hours).
 For each updated ticket:

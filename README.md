@@ -12,10 +12,7 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 - [Document Summaries](guides/document-summaries.md) — stable summarization (experimental Confluence explain/Q&A lives in workbench)
 
 ### Jira Prompts
-- [Daily Triage](prompts/triage/daily-triage.md)
-  - [List Today's Unassigned Tickets](prompts/triage/daily-triage.md#1-list-todays-unassigned-tickets)
-  - [Assign to Me + Add Initial Customer Reply](prompts/triage/daily-triage.md#2-assign-to-me--add-initial-customer-reply)
-  - [Weekend Unassigned Tickets](prompts/triage/daily-triage.md#3-weekend-unassigned-tickets)
+- [Daily Triage](prompts/triage/daily-triage.md) — schema-ready catalog entries
 - [Ticket Analysis](prompts/tickets/ticket-analysis.md)
 - [Reopened Tickets](prompts/tickets/reopened-tickets.md)
 - [SLA Management](prompts/sla/sla-management.md)
@@ -38,6 +35,7 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 
 ### References
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
+- [Prompt Schema](docs/prompt-schema.md) — catalog frontmatter format
 - [Rovo Resources](docs/rovo-resources.md)
 - [AGENTS.md](AGENTS.md) — agent and contributor conventions
 
@@ -50,6 +48,7 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 ├── AGENTS.md                    # Conventions for prompts and JQL
 ├── docs/
 │   ├── BACKLOG.md               # Product roadmap (prompt catalog app)
+│   ├── prompt-schema.md         # Catalog frontmatter schema
 │   └── rovo-resources.md        # Official Rovo links
 ├── workbench/                   # Experimental prompts (in testing)
 │   ├── aws-health-notifications.md

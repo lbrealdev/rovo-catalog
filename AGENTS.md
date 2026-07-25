@@ -70,6 +70,42 @@ docs/                            # Backlog and references
 queries/jql/                     # Reusable JQL templates
 ```
 
+## Prompt Schema (Catalog Entries)
+
+Stable prompts in `prompts/` use YAML frontmatter so a future static catalog can load them. Full spec: [docs/prompt-schema.md](docs/prompt-schema.md).
+
+Each copy-paste template is one entry:
+
+```markdown
+---
+id: category-short-slug
+title: Display Title
+category: triage
+tags: [example]
+use_when: Short situation blurb
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+mode: read-only
+---
+
+```text
+Prompt body with <PROJECT> placeholders...
+```
+```
+
+Rules:
+
+- `id` = `category-short-slug`; `category` = folder name
+- `mode`: `read-only` or `update` (for `/update-work-items` / `/create-work-items`)
+- Body is the immediate fenced `text` or `jql` block after frontmatter
+- Tips, reference tables, and long examples stay plain markdown (no frontmatter)
+- Multi-step flows = separate entries (review template + apply template)
+- `workbench/` schema migration is deferred
+
+Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`, `YOUR-USER`.
+
 ## Placeholder Format
 
 Prompts use `<UPPERCASE-WITH-HYPHENS>`:

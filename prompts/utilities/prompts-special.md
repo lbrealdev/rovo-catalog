@@ -5,10 +5,20 @@ Lean multi-line prompts that combine multiple Rovo actions efficiently.
 **Use when:** You need to perform several actions on a ticket at once.
 
 ---
-
-## 1) Assign + Comment
-
-Assign a ticket to yourself and add a customer reply.
+id: utilities-assign-comment
+title: Assign + Comment
+category: utilities
+tags: [assign, comment, update]
+use_when: Assign a ticket to yourself and add a customer reply
+placeholders:
+  - name: TICKET-KEY
+    required: true
+    description: Ticket ID (e.g. SUP-123)
+  - name: YOUR-USER
+    required: true
+    description: Jira username
+mode: update
+---
 
 ```text
 /update-work-items
@@ -17,10 +27,17 @@ Add a customer-visible comment: "Ticket under review. We'll update you shortly."
 ```
 
 ---
-
-## 2) Status Change + Comment
-
-Move a ticket to a new status and update the customer.
+id: utilities-status-comment
+title: Status Change + Comment
+category: utilities
+tags: [status, comment, update]
+use_when: Move a ticket to In Progress and update the customer
+placeholders:
+  - name: TICKET-KEY
+    required: true
+    description: Ticket ID (e.g. SUP-123)
+mode: update
+---
 
 ```text
 /update-work-items
@@ -29,10 +46,20 @@ Add a customer-visible comment: "We're looking into this now."
 ```
 
 ---
-
-## 3) Search + Assign + Comment
-
-Find unassigned tickets, then assign and reply to all.
+id: utilities-search-assign-comment
+title: Search + Assign + Comment
+category: utilities
+tags: [unassigned, assign, comment, update]
+use_when: Find recent unassigned tickets, then assign and reply to all
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: YOUR-USER
+    required: true
+    description: Jira username
+mode: update
+---
 
 ```text
 /update-work-items
@@ -43,10 +70,17 @@ If more than 20 tickets match, stop and ask me to narrow the scope.
 ```
 
 ---
-
-## 4) Status + Resolution + Close
-
-Move a ticket to Done with a resolution and closure message.
+id: utilities-status-resolution-close
+title: Status + Resolution + Close
+category: utilities
+tags: [close, resolution, update]
+use_when: Move a ticket to Done with resolution and closure message
+placeholders:
+  - name: TICKET-KEY
+    required: true
+    description: Ticket ID (e.g. SUP-123)
+mode: update
+---
 
 ```text
 /update-work-items
@@ -56,10 +90,26 @@ Add a customer-visible comment: "This issue has been resolved. Closing ticket."
 ```
 
 ---
-
-## 5) Bulk Action
-
-Apply the same action to multiple tickets.
+id: utilities-bulk-action
+title: Bulk Action
+category: utilities
+tags: [bulk, assign, comment, update]
+use_when: Apply the same assign + reply action to multiple tickets
+placeholders:
+  - name: TICKET-1
+    required: true
+    description: First ticket ID
+  - name: TICKET-2
+    required: true
+    description: Second ticket ID
+  - name: TICKET-3
+    required: true
+    description: Third ticket ID
+  - name: YOUR-USER
+    required: true
+    description: Jira username
+mode: update
+---
 
 ```text
 /update-work-items
@@ -70,10 +120,17 @@ Show confirmation list before applying changes.
 ```
 
 ---
-
-## 6) JQL + Update
-
-Find matching tickets using JQL, then apply changes.
+id: utilities-jql-update
+title: JQL + Update
+category: utilities
+tags: [jql, prioritize, update]
+use_when: Find your recently updated open tickets, prioritize, then update after confirm
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+mode: update
+---
 
 ```text
 /update-work-items
@@ -88,8 +145,6 @@ For each ticket:
 3) After I confirm, update the status to "In Progress" and add a customer comment.
 ```
 
----
-
 ## Reference
 
 **Available Rovo commands:**
@@ -101,6 +156,7 @@ For each ticket:
 - Assign work item
 - Comment on work item
 - Transition work item
+
 **Documentation:**
 
-See [Rovo Resources](../docs/rovo-resources.md) for official Rovo documentation.
+See [Rovo Resources](../../docs/rovo-resources.md) for official Rovo documentation.

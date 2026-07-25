@@ -5,10 +5,14 @@ Prompts for proofreading and improving messages.
 **Use when:** You need to polish a message before sending it to customers or colleagues.
 
 ---
-
-## General Proofreading
-
-Clear, natural English with preserved meaning.
+id: communication-general-proofreading
+title: General Proofreading
+category: communication
+tags: [proofread, polish, tone]
+use_when: Clear, natural English with preserved meaning
+placeholders: []
+mode: read-only
+---
 
 ```text
 Please proofread and improve the following message:
@@ -24,10 +28,14 @@ Here is the text:
 ```
 
 ---
-
-## Client Messages (<PROJECT>/AWS Context)
-
-Rewrite messages to clients with accurate technical details.
+id: communication-client-message-rewrite
+title: Client Messages (Project/AWS Context)
+category: communication
+tags: [rewrite, client, aws, jira]
+use_when: Rewrite a client message with accurate technical details
+placeholders: []
+mode: read-only
+---
 
 ```text
 Please rewrite the following message I'm sending to a client about [AWS/Jira]:
@@ -43,10 +51,14 @@ Here is the text:
 ```
 
 ---
-
-## Message Templates
-
-### AWS Context
+id: communication-rewrite-aws-context
+title: Rewrite Message (AWS Context)
+category: communication
+tags: [rewrite, client, aws]
+use_when: Rewrite a client message specifically about AWS
+placeholders: []
+mode: read-only
+---
 
 ```text
 Please rewrite the following message I'm sending to a client about AWS:
@@ -61,7 +73,15 @@ Here is the text:
 """
 ```
 
-### Jira Context
+---
+id: communication-rewrite-jira-context
+title: Rewrite Message (Jira Context)
+category: communication
+tags: [rewrite, client, jira]
+use_when: Rewrite a client message specifically about Jira
+placeholders: []
+mode: read-only
+---
 
 ```text
 Please rewrite the following message I'm sending to a client about Jira:

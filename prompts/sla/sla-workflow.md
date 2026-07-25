@@ -5,37 +5,52 @@ Prompts for SLA-aware ticket workflows in Jira Service Management.
 **Use when:** Handling SLA expirations by cloning/continuing work in a new ticket.
 
 ---
+id: sla-clone-ticket
+title: Clone Ticket (Same Project)
+category: sla
+tags: [clone, create, sla]
+use_when: SLA at risk — clone the ticket to continue work in the same project
+placeholders:
+  - name: TICKET-KEY
+    required: true
+    description: Original ticket ID (e.g. SUP-123)
+mode: update
+---
 
-## Ticket Cloning Workflow
-
-Use this when a ticket's SLA is at risk and work needs to continue in a new ticket.
-
-### 1) Clone Ticket (Same Project)
-
-Clone the original ticket to the same project, keeping the description but adding a reference to the original.
-
-```
+```text
 /create-work-items
 - Clone <TICKET-KEY> to the same project
 - Assign to me
 - Preserve the existing description and append "Cloned from: [original ticket URL]" to it
 ```
 
-### 2) Update Original Ticket
+---
+id: sla-update-original-after-clone
+title: Update Original Ticket After Clone
+category: sla
+tags: [clone, resolve, update]
+use_when: After cloning — point original ticket to the new clone and resolve it
+placeholders: []
+mode: update
+---
 
-Add a comment to the original ticket pointing to the new clone, then resolve it.
-
-```
+```text
 /update-work-items
 - Add a comment to the original ticket with: "Work continues in [new ticket]" — USE Jira wiki-style link: [link text|https://url]
 - Resolve the original ticket
 ```
 
-### 3) Move New Ticket to In Progress
+---
+id: sla-move-clone-in-progress
+title: Move Cloned Ticket to In Progress
+category: sla
+tags: [clone, in-progress, update]
+use_when: After cloning — customer reply on the new ticket and move to In Progress
+placeholders: []
+mode: update
+---
 
-Add a customer reply comment and move the newly created (cloned) ticket to "In Progress".
-
-```
+```text
 /update-work-items
 Add "Continuation of the work that was being done [original ticket]" as a "Reply to customer" comment — USE Jira wiki-style link: [link text|https://url] — and move ticket from "Waiting for Support" to "In Progress"
 ```

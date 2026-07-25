@@ -26,22 +26,17 @@ Foundation work so the catalog has clean, consistent prompts.
 
 Define metadata so the app can load prompts reliably.
 
-- [ ] Define frontmatter (or sidecar) schema per prompt, e.g.:
-  - `id`, `title`, `category`, `tags`
-  - `use_when`
-  - `placeholders` (e.g. `PROJECT`, `TICKET-KEY`, `YOUR-USER`)
-  - `mode`: `read-only` | `update`
-  - prompt `body`
-- [ ] Apply schema to existing prompts (stable `prompts/` first, then `workbench/`)
-- [ ] Document schema + conventions in `AGENTS.md` (placeholders, ```text / ```jql blocks, guardrails)
+- [x] Define frontmatter schema per prompt (`id`, `title`, `category`, `tags`, `use_when`, `placeholders`, `mode`, body) — see [prompt-schema.md](prompt-schema.md)
+- [x] Apply schema to stable `prompts/` (workbench deferred until promotion)
+- [x] Document schema + conventions in `AGENTS.md` (placeholders, ```text / ```jql blocks, guardrails)
 
 ---
 
 ## Phase 2 — Minimal static app (MVP)
 
-Small catalog UI — not a blog, not a backend.
+Small catalog UI — HonorBox-style: zero-dependency Node build, plain HTML/CSS, tiny first-party JS. Not Vite. Not a blog or backend.
 
-- [ ] Scaffold Vite static site in-repo (e.g. `site/` or `app/`)
+- [ ] Scaffold static site in-repo (e.g. `site/`) with a zero-dep build script that reads `prompts/**/*.md` frontmatter
 - [ ] Catalog home: list prompts by category / situation
 - [ ] Search + tag filters
 - [ ] Prompt detail view with:
@@ -49,8 +44,10 @@ Small catalog UI — not a blog, not a backend.
   - placeholder inputs
   - rendered prompt preview
   - **Copy** button
+- [ ] Mini profile (`localStorage`): `PROJECT`, `YOUR-USER` — persists until site data/cache is cleared; prefills placeholders
 - [ ] Visually distinguish read-only vs `/update-work-items` prompts
-- [ ] Keep markdown as source of truth; build step loads content into the app
+- [ ] Keep markdown as source of truth; build step loads content into static pages
+- [ ] No external CDN scripts/fonts (first-party only); usable with JS off for reading (copy/profile need JS)
 
 ---
 
@@ -69,23 +66,25 @@ Small catalog UI — not a blog, not a backend.
 - [ ] Recently used / favorites (`localStorage`)
 - [ ] JQL snippets section with copy
 - [ ] Link related prompts (e.g. find similar → draft resolution)
-- [ ] Readability-focused styling only (avoid over-design)
+- [ ] Readability-focused styling only (avoid over-design) — sparse, high-quality impression
 
 ---
 
 ## Phase 5 — Optional later
 
 - [ ] Docs/changelog section (Marmite or simple pages) if a writing surface is needed beside the catalog
-- [ ] Promote stable workbench prompts into catalog categories
+- [ ] Promote stable workbench prompts into catalog categories (apply prompt schema on promotion)
 - [ ] Track Rovo product changes that require prompt updates
+- [ ] Jira API / API token for fetching tickets — only behind a private/proxy design (never bake secrets into public Pages JS)
 
 ---
 
 ## Non-goals (v1)
 
 - No backend / auth
-- No live Jira API integration
+- No live Jira API integration in v1 (possible later behind a private design)
 - No heavy design system
+- No Vite / SPA framework unless needs clearly outgrow the static builder
 - No duplicate backlog in GitHub Issues (unless a task needs its own PR/discussion)
 
 ---
@@ -94,4 +93,4 @@ Small catalog UI — not a blog, not a backend.
 
 - Content cleanup (Phase 0) unblocks a trustworthy catalog.
 - Schema (Phase 1) unblocks the app without rewriting prompts later.
-- Ship MVP (Phases 2–3) as soon as a few prompts are schema-ready; polish after daily use.
+- Ship MVP (Phases 2–3) with HonorBox-style static pages; polish after daily use.

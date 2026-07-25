@@ -4,8 +4,6 @@ Prompts for managing SLA-related scenarios in Jira Service Management.
 
 **Use when:** Handling SLA expirations, signaling work continuity, or searching ticket notes.
 
----
-
 ## SLA JQL Functions Reference
 
 Jira SLA fields support specific functions for JQL queries. Note: SLA fields cannot be compared to absolute dates.
@@ -26,10 +24,23 @@ Jira SLA fields support specific functions for JQL queries. Note: SLA fields can
 - `breached()` returns a boolean, not a duration
 
 ---
-
-## 1) Signal Work Continuation (Ticket X → Ticket Y)
-
-Use this when work on a ticket will continue in another ticket due to SLA expiry or other reasons.
+id: sla-signal-work-continuation
+title: Signal Work Continuation (Ticket X → Ticket Y)
+category: sla
+tags: [continuation, comment, draft]
+use_when: Work continues in another ticket due to SLA expiry — draft comment only
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: TICKET-X
+    required: true
+    description: Original ticket key
+  - name: TICKET-Y
+    required: true
+    description: Continuation ticket key
+mode: read-only
+---
 
 ```text
 You are helping me manage Jira Service Management tickets in the <PROJECT> project.
@@ -50,10 +61,23 @@ Do NOT post the comment until I confirm.
 ```
 
 ---
-
-## 2) SLA Expiring During Team Absence
-
-Use this when you need to identify and handle tickets with SLA expiring while the team is away.
+id: sla-expiring-during-absence
+title: SLA Expiring During Team Absence
+category: sla
+tags: [sla, absence, remaining]
+use_when: Find tickets whose Time to resolution expires while the team is away — drafts only
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: INSERT-AWAY-DATES
+    required: true
+    description: Away period dates (e.g. December 23, 2024 – January 2, 2025)
+  - name: HOURS-AWAY
+    required: true
+    description: Total hours in the away period
+mode: read-only
+---
 
 ```text
 You are helping me manage Jira Service Management tickets in the <PROJECT> project.
@@ -81,10 +105,20 @@ Do NOT update any tickets. This is read-only with draft comments unless I confir
 ```
 
 ---
-
-## 3) Find Tickets with Note Pattern
-
-Use this when you need to find tickets containing specific text in their comments or notes.
+id: sla-find-note-pattern
+title: Find Tickets with Note Pattern
+category: sla
+tags: [comment, search, pattern]
+use_when: Search ticket comments for a text pattern
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: PATTERN
+    required: true
+    description: Comment search pattern (e.g. escalated)
+mode: read-only
+---
 
 ```text
 You are helping me search Jira Service Management tickets in the <PROJECT> project.
@@ -108,10 +142,20 @@ Do NOT update any tickets. This is read-only.
 ```
 
 ---
-
-## JQL Templates
-
-### Tickets with SLA Expiring Soon
+id: sla-jql-expiring-soon
+title: JQL — Tickets with SLA Expiring Soon
+category: sla
+tags: [jql, sla, remaining]
+use_when: JQL for open tickets with Time to resolution under a hour threshold
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: HOURS
+    required: true
+    description: Remaining hours threshold
+mode: read-only
+---
 
 ```jql
 project = <PROJECT>
@@ -120,7 +164,21 @@ AND remaining("Time to resolution") < <HOURS>
 ORDER BY remaining("Time to resolution") ASC
 ```
 
-### Tickets with Text in Comments
+---
+id: sla-jql-comment-pattern
+title: JQL — Tickets with Text in Comments
+category: sla
+tags: [jql, comment, pattern]
+use_when: JQL for tickets matching a comment pattern
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: PATTERN
+    required: true
+    description: Comment search pattern
+mode: read-only
+---
 
 ```jql
 project = <PROJECT>

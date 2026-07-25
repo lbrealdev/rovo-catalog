@@ -3,17 +3,35 @@
 **Use when:** You need to show the customer what was done and get their approval before proceeding.
 
 ---
+id: communication-confirm-before-action
+title: Confirm Before Action (Template)
+category: communication
+tags: [confirm, reply, approval]
+use_when: Draft a customer reply that shows work done and asks for confirmation before proceeding
+placeholders:
+  - name: RECIPIENT
+    required: true
+    description: Name or "the reporter"
+  - name: TONE
+    required: true
+    description: e.g. professional but friendly
+  - name: WHAT-WAS-DONE
+    required: true
+    description: Specific description of completed work
+  - name: ATTACHMENT/DETAILS
+    required: true
+    description: PR link, config, or other details to review
+mode: read-only
+---
 
-## Template Structure
-
-**Prompt to Rovo:**
-```
-Reply to <RECIPIENT>, <TONE>. I completed <WHAT-WAS-DONE>. 
-Please review <ATTACHMENT/DETAILS> and confirm if this matches your requirements 
+```text
+Reply to <RECIPIENT>, <TONE>. I completed <WHAT-WAS-DONE>.
+Please review <ATTACHMENT/DETAILS> and confirm if this matches your requirements
 before we proceed.
 ```
 
-**Draft response:**
+## Draft response shape
+
 > Hi <NAME>,
 >
 > I've completed <WHAT-WAS-DONE>.
@@ -25,16 +43,16 @@ before we proceed.
 > Kind regards,
 > <YOUR-NAME>
 
----
-
 ## Examples
+
+Examples below illustrate the template. They are not separate catalog entries.
 
 ### Example 1: PR / Code Change
 
 **Prompt to Rovo:**
 ```
-Reply to Elon, professional but friendly. I created the PR with the requested changes 
-for the IAM policy update. Please review the code and confirm if this matches your 
+Reply to Elon, professional but friendly. I created the PR with the requested changes
+for the IAM policy update. Please review the code and confirm if this matches your
 requirements before we proceed.
 
 PR: <PR-URL>
@@ -52,91 +70,41 @@ PR: <PR-URL>
 > Kind regards,
 > <YOUR-NAME>
 
----
-
 ### Example 2: Configuration Change
 
 **Prompt to Rovo:**
 ```
-Reply to the reporter, professional. I updated the security group rules for <RESOURCE> 
-with the following configuration. Please confirm if this matches your requirements 
+Reply to the reporter, professional. I updated the security group rules for <RESOURCE>
+with the following configuration. Please confirm if this matches your requirements
 before we apply it.
 
 Config:
 <CONFIG-DETAILS>
 ```
 
-**Draft response:**
-> Hi <NAME>,
->
-> I've updated the security group rules for <RESOURCE> with the following configuration:
->
-> ```
-> <CONFIG-DETAILS>
-> ```
->
-> Before we apply this, please confirm if this matches your requirements.
->
-> Kind regards,
-> <YOUR-NAME>
-
----
-
 ### Example 3: Documentation Update
 
 **Prompt to Rovo:**
 ```
-Reply to Sarah, professional but friendly. I've updated the runbook for <PROCESS> 
-based on your feedback. Please review the changes and confirm if this is the approach 
+Reply to Sarah, professional but friendly. I've updated the runbook for <PROCESS>
+based on your feedback. Please review the changes and confirm if this is the approach
 you'd like us to follow going forward.
 
 Changes:
 <DIFF-SUMMARY>
 ```
 
-**Draft response:**
-> Hi Sarah,
->
-> I've updated the runbook for <PROCESS> to reflect your feedback.
->
-> Key changes:
-> - <CHANGE-1>
-> - <CHANGE-2>
->
-> Please review and let me know if this approach works for your team.
->
-> Kind regards,
-> <YOUR-NAME>
-
----
-
 ### Example 4: AWS Resource Modification
 
 **Prompt to Rovo:**
 ```
-Reply to the reporter, professional. I've modified the S3 bucket policy for 
-<BUCKET-NAME> to restrict access as requested. Please review the policy below 
+Reply to the reporter, professional. I've modified the S3 bucket policy for
+<BUCKET-NAME> to restrict access as requested. Please review the policy below
 and confirm if this is the configuration you want before I apply it.
 
 Policy:
 <POLICY-JSON>
 ```
-
-**Draft response:**
-> Hi <NAME>,
->
-> I've modified the S3 bucket policy for <BUCKET-NAME> to restrict access as requested.
->
-> ```json
-> <POLICY-JSON>
-> ```
->
-> Please review this configuration and let me know if you'd like me to proceed with applying it.
->
-> Kind regards,
-> <YOUR-NAME>
-
----
 
 ### Example 5: Discovered Prerequisite (Proactive)
 
@@ -149,18 +117,6 @@ We need to configure <PREREQUISITE> before proceeding with <TASK>.
 I'm starting this configuration now and will update you once ready.
 ```
 
-**Draft response:**
-> Hi <NAME>,
->
-> I've reviewed your request and consulted with <TEAMMATE>. We need to configure <PREREQUISITE> before we can proceed with <TASK>.
->
-> I'm starting this configuration now and will update you once we're ready to continue.
->
-> Kind regards,
-> <YOUR-NAME>
-
----
-
 ### Example 6: Discovered Prerequisite (Investigating)
 
 **Use when:** You reviewed the ticket with a teammate and discovered complexity — still assessing the solution.
@@ -171,18 +127,6 @@ Reply to the reporter, professional. I reviewed the ticket with <TEAMMATE> about
 We're investigating the configuration needed before proceeding.
 I'll update you once we have a clear path forward.
 ```
-
-**Draft response:**
-> Hi <NAME>,
->
-> I've reviewed your request with <TEAMMATE>. We're investigating the configuration needed before we can proceed.
->
-> I'll update you once we have a clear path forward.
->
-> Kind regards,
-> <YOUR-NAME>
-
----
 
 ## Rovo Tips for This Template
 

@@ -4,8 +4,6 @@ Quick reference for comparing reopened tickets against their previous closure an
 
 **Use when:** A ticket was closed but reopened by the customer or team.
 
----
-
 ## TL;DR
 
 1. Ask Rovo: *"What changed since closure?"* (compare same ticket)
@@ -13,12 +11,20 @@ Quick reference for comparing reopened tickets against their previous closure an
 3. Review draft response before applying any changes
 
 ---
-
-## Best Practice Workflow
-
-### Step 1: Compare to Previous Closure
-
-Use when a colleague closed it and it popped back open.
+id: tickets-reopened-compare-closure
+title: Compare to Previous Closure
+category: tickets
+tags: [reopened, compare, closure]
+use_when: A colleague closed it and it popped back open — compare closed vs now
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+  - name: TICKET-KEY
+    required: true
+    description: Ticket ID (e.g. SUP-123)
+mode: read-only
+---
 
 ```text
 I'm working a <PROJECT> ticket that was reopened: <TICKET-KEY>.
@@ -39,9 +45,18 @@ I'm working a <PROJECT> ticket that was reopened: <TICKET-KEY>.
    including: Status, Resolution, Latest customer message, Next action.
 ```
 
-### Step 2: Detect Recurring Pattern & Auto-Close
-
-Use when a ticket might be a recurring duplicate that teammates have already resolved.
+---
+id: tickets-reopened-detect-pattern
+title: Detect Recurring Pattern and Draft Close
+category: tickets
+tags: [reopened, pattern, duplicate]
+use_when: Check if a reopened ticket matches a recurring duplicate pattern teammates already resolved
+placeholders:
+  - name: TICKET-KEY
+    required: true
+    description: Ticket ID (e.g. SUP-123)
+mode: read-only
+---
 
 ```text
 Analyze <TICKET-KEY> and determine if it matches a recurring duplicate pattern.
@@ -64,7 +79,27 @@ Output format:
 - Quick checklist
 ```
 
-### Step 3: Batch Mode (Multiple Tickets)
+---
+id: tickets-reopened-batch
+title: Batch Mode (Multiple Reopened Tickets)
+category: tickets
+tags: [reopened, batch, pattern]
+use_when: Classify several reopened tickets — pattern match vs manual review (read-only)
+placeholders:
+  - name: N
+    required: true
+    description: Number of tickets in the batch
+  - name: TICKET-1
+    required: true
+    description: First ticket ID
+  - name: TICKET-2
+    required: true
+    description: Second ticket ID
+  - name: TICKET-3
+    required: true
+    description: Third ticket ID
+mode: read-only
+---
 
 ```text
 I have <N> reopened tickets: <TICKET-1>, <TICKET-2>, <TICKET-3>.
@@ -84,10 +119,17 @@ Return:
 ```
 
 ---
-
-## JQL Templates
-
-### Find Similar Closed Tickets
+id: tickets-jql-similar-closed
+title: JQL — Find Similar Closed Tickets
+category: tickets
+tags: [jql, similar, closed]
+use_when: Find recently resolved tickets matching keywords
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+mode: read-only
+---
 
 ```jql
 project = <PROJECT>
@@ -97,7 +139,18 @@ AND text ~ "\"<keyword1>\"" AND text ~ "\"<keyword2>\""
 ORDER BY resolved DESC
 ```
 
-### Tickets Closed Then Reopened
+---
+id: tickets-jql-closed-then-reopened
+title: JQL — Tickets Closed Then Reopened
+category: tickets
+tags: [jql, reopened, resolution]
+use_when: Find tickets whose resolution changed recently after being done
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+mode: read-only
+---
 
 ```jql
 project = <PROJECT>
@@ -106,20 +159,14 @@ AND updated >= -7d
 AND resolution CHANGED
 ```
 
----
-
 ## Taking Action
 
 Once you've reviewed the comparison and drafts, use `/update-work-items` workflow to comment/transition/resolve—but **keep this as a second step** to avoid applying the wrong closure pattern.
-
----
 
 ## Tips
 
 **Use Rovo "search/fetch" style questions** when you don't know the right JQL. Ask Rovo to search first, then refine to JQL.
 
----
-
 **Resources:**
 
-For official Rovo documentation and resources, see [Rovo Resources](../docs/rovo-resources.md).
+For official Rovo documentation and resources, see [Rovo Resources](../../docs/rovo-resources.md).

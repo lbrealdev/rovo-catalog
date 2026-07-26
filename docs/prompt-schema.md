@@ -3,7 +3,7 @@
 Metadata format for catalog entries in `prompts/`. Markdown remains the source of truth; YAML frontmatter labels each copy-paste template so a future static catalog can load it reliably.
 
 **Product path:** browse → fill placeholders → copy → paste into Rovo  
-**Site (Phase 2):** HonorBox-style zero-dependency static builder in [`site/`](../site/) (`npm run build` → `site/dist/`). Plain HTML/CSS + tiny first-party JS. Not Vite. Not Backstage. GitHub Pages deploy is Phase 3.
+**Site:** HonorBox-style zero-dependency builder in [`site/`](../site/) (`npm run build` → `site/dist/`). Toolkit sections: Prompts (`lang: text`), Queries (`lang: jql`), Commands (`site/content/commands.md` + `mode: update` recipes). Plain HTML/CSS + tiny first-party JS. Not Vite. Not Backstage. GitHub Pages deploy is Phase 3.
 
 ---
 

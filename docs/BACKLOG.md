@@ -60,11 +60,24 @@ Small catalog UI — HonorBox-style: zero-dependency Node build, plain HTML/CSS,
 
 ---
 
+## Phase 2.5 — Toolkit IA (post-MVP)
+
+Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
+
+- [x] Nav: Prompts · Commands · Queries (pages) + Profile · Theme (buttons)
+- [x] Light/dark theme (`localStorage`, no FOUC)
+- [x] JQL entries (`lang: jql`) on Queries, excluded from Prompts
+- [x] Commands page: slash-command explainers + `mode: update` recipes
+- [ ] Profile notes + export (Markdown/HTML) — TBD
+- [ ] Confluence / Guides section — later
+
+---
+
 ## Phase 4 — Daily-use polish
 
 - [ ] Situation shortcuts (e.g. Monday triage, SLA at risk, AWS Health close-out)
 - [ ] Recently used / favorites (`localStorage`)
-- [ ] JQL snippets section with copy
+- [x] JQL snippets section with copy (Queries page)
 - [ ] Link related prompts (e.g. find similar → draft resolution)
 - [ ] Readability-focused styling only (avoid over-design) — sparse, high-quality impression
 

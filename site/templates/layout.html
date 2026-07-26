@@ -6,16 +6,35 @@
   <title>{{TITLE}}</title>
   <meta name="description" content="{{DESCRIPTION}}" />
   <base href="{{BASE}}" />
+  <script>
+    (function () {
+      try {
+        var key = "rovo-catalog-theme";
+        var t = localStorage.getItem(key);
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="{{ASSET_CSS}}" />
 </head>
 <body class="{{BODY_CLASS}}">
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="index.html">Rovo Prompt Catalog</a>
-      <nav class="site-nav" aria-label="Site">
-        {{NAV_EXTRA}}
-        <button type="button" class="nav-btn" id="profile-toggle" aria-expanded="false" aria-controls="profile-panel">Profile</button>
+      <a class="brand" href="index.html">Rovo Agent Toolkit</a>
+      <nav class="site-nav site-nav-primary" aria-label="Sections">
+        <a class="nav-link {{NAV_PROMPTS}}" href="index.html">Prompts</a>
+        <a class="nav-link {{NAV_COMMANDS}}" href="commands.html">Commands</a>
+        <a class="nav-link {{NAV_QUERIES}}" href="queries.html">Queries</a>
       </nav>
+      <div class="site-nav site-nav-tools" aria-label="Tools">
+        <button type="button" class="nav-btn" id="profile-toggle" aria-expanded="false" aria-controls="profile-panel">Profile</button>
+        <button type="button" class="nav-btn" id="theme-toggle" aria-label="Toggle color theme">Theme</button>
+      </div>
     </div>
     <div class="profile-panel" id="profile-panel" hidden>
       <form id="profile-form" class="profile-form">
@@ -42,7 +61,8 @@
   <footer class="site-footer">
     <p>Markdown in <code>prompts/</code> is the source of truth. Built locally — no backend.</p>
   </footer>
+  <script src="{{ASSET_THEME_JS}}" defer></script>
   <script src="{{ASSET_PROFILE_JS}}" defer></script>
-  <script src="{{ASSET_PAGE_JS}}" defer></script>
+  {{PAGE_SCRIPTS}}
 </body>
 </html>

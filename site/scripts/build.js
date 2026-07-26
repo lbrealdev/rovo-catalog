@@ -9,6 +9,7 @@ const SITE = path.join(ROOT, 'site');
 const DIST = path.join(SITE, 'dist');
 const TEMPLATES = path.join(SITE, 'templates');
 const ASSETS = path.join(SITE, 'assets');
+const CONTENT = path.join(SITE, 'content');
 const PROMPTS_DIR = path.join(ROOT, 'prompts');
 
 const CATEGORY_LABELS = {
@@ -28,7 +29,6 @@ function normalizeBasePath(raw) {
 
 const BASE = normalizeBasePath(process.env.SITE_BASE_PATH || '/');
 
-/** Site-root-relative path; resolved via <base href="BASE"> */
 function rootPath(rel) {
   return rel.replace(/^\//, '');
 }
@@ -75,7 +75,10 @@ function modeBadge(mode) {
 function tagList(tags) {
   if (!tags.length) return '';
   return `<ul class="tag-list">${tags
-    .map((t) => `<li><button type="button" class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button></li>`)
+    .map(
+      (t) =>
+        `<li><button type="button" class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button></li>`
+    )
     .join('')}</ul>`;
 }
 
@@ -88,27 +91,56 @@ function groupByCategory(entries) {
   return groups;
 }
 
-function buildIndex(entries) {
-  const groups = groupByCategory(entries);
-  const sections = [];
-  for (const [category, items] of groups) {
-    const label = CATEGORY_LABELS[category] || category;
-    const rows = items
-      .map(
-        (e) => `
+function layoutNav(active) {
+  return {
+    NAV_PROMPTS: active === 'prompts' ? 'is-active' : '',
+    NAV_COMMANDS: active === 'commands' ? 'is-active' : '',
+    NAV_QUERIES: active === 'queries' ? 'is-active' : '',
+  };
+}
+
+function pageScriptTag(src) {
+  if (!src) return '';
+  return `<script src="${src}" defer></script>`;
+}
+
+function layoutShell(vars) {
+  const layout = readTemplate('layout.html');
+  const pageJs = vars.ASSET_PAGE_JS || '';
+  const { ASSET_PAGE_JS: _ignored, ...rest } = vars;
+  return render(layout, {
+    BASE: BASE,
+    ASSET_CSS: rootPath('assets/css/catalog.css'),
+    ASSET_THEME_JS: rootPath('assets/js/theme.js'),
+    ASSET_PROFILE_JS: rootPath('assets/js/profile.js'),
+    NAV_PROMPTS: '',
+    NAV_COMMANDS: '',
+    NAV_QUERIES: '',
+    ...rest,
+    PAGE_SCRIPTS: pageScriptTag(pageJs),
+  });
+}
+
+function entryRow(e) {
+  return `
       <li class="prompt-row" data-id="${escapeHtml(e.id)}" data-category="${escapeHtml(e.category)}" data-tags="${escapeHtml(e.tags.join(','))}" data-search="${escapeHtml(
-          `${e.title} ${e.use_when} ${e.tags.join(' ')} ${e.mode}`
-        ).toLowerCase()}">
+    `${e.title} ${e.use_when} ${e.tags.join(' ')} ${e.mode}`
+  ).toLowerCase()}">
         <a class="prompt-link" href="${rootPath(`prompts/${e.id}.html`)}">
           <span class="prompt-title">${escapeHtml(e.title)}</span>
           ${modeBadge(e.mode)}
         </a>
         <p class="prompt-when">${escapeHtml(e.use_when)}</p>
         ${tagList(e.tags)}
-      </li>`
-      )
-      .join('\n');
+      </li>`;
+}
 
+function buildSections(entries) {
+  const groups = groupByCategory(entries);
+  const sections = [];
+  for (const [category, items] of groups) {
+    const label = CATEGORY_LABELS[category] || category;
+    const rows = items.map(entryRow).join('\n');
     sections.push(`
       <section class="category" id="cat-${escapeHtml(category)}" data-category="${escapeHtml(category)}">
         <h2>${escapeHtml(label)}</h2>
@@ -117,49 +149,147 @@ function buildIndex(entries) {
         </ul>
       </section>`);
   }
+  return sections.join('\n');
+}
 
+function tagFiltersHtml(entries) {
   const allTags = [...new Set(entries.flatMap((e) => e.tags))].sort();
-  const tagFilters = allTags
-    .map((t) => `<button type="button" class="tag-filter" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`)
+  return allTags
+    .map(
+      (t) =>
+        `<button type="button" class="tag-filter" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`
+    )
     .join('\n');
+}
 
-  const layout = readTemplate('layout.html');
-  const indexBody = readTemplate('index.html');
-  const body = render(indexBody, {
-    SECTIONS: sections.join('\n'),
-    TAG_FILTERS: tagFilters,
+/** Minimal markdown → HTML for site/content/*.md */
+function simpleMarkdown(md) {
+  const lines = md.replace(/\r\n/g, '\n').trim().split('\n');
+  const out = [];
+  let i = 0;
+  let inList = false;
+
+  function closeList() {
+    if (inList) {
+      out.push('</ul>');
+      inList = false;
+    }
+  }
+
+  function inlineFormat(text) {
+    return escapeHtml(text)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+
+  while (i < lines.length) {
+    const line = lines[i];
+    if (!line.trim()) {
+      closeList();
+      i += 1;
+      continue;
+    }
+    if (line.startsWith('### ')) {
+      closeList();
+      out.push(`<h3>${inlineFormat(line.slice(4))}</h3>`);
+      i += 1;
+      continue;
+    }
+    if (line.startsWith('## ')) {
+      closeList();
+      out.push(`<h2>${inlineFormat(line.slice(3))}</h2>`);
+      i += 1;
+      continue;
+    }
+    if (line.startsWith('# ')) {
+      closeList();
+      out.push(`<h2 class="doc-title">${inlineFormat(line.slice(2))}</h2>`);
+      i += 1;
+      continue;
+    }
+    if (line.startsWith('- ')) {
+      if (!inList) {
+        out.push('<ul>');
+        inList = true;
+      }
+      out.push(`<li>${inlineFormat(line.slice(2))}</li>`);
+      i += 1;
+      continue;
+    }
+    closeList();
+    out.push(`<p>${inlineFormat(line)}</p>`);
+    i += 1;
+  }
+  closeList();
+  return out.join('\n');
+}
+
+function buildListPage({
+  entries,
+  templateName,
+  title,
+  description,
+  activeNav,
+  bodyClass,
+  outFile,
+}) {
+  const body = render(readTemplate(templateName), {
+    SECTIONS: buildSections(entries),
+    TAG_FILTERS: tagFiltersHtml(entries),
     COUNT: String(entries.length),
   });
 
-  const html = render(layout, {
-    TITLE: 'Rovo Prompt Catalog',
-    DESCRIPTION: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
+  const html = layoutShell({
+    TITLE: title,
+    DESCRIPTION: description,
     BODY: body,
-    BASE: BASE,
-    ASSET_CSS: rootPath('assets/css/catalog.css'),
-    ASSET_PROFILE_JS: rootPath('assets/js/profile.js'),
     ASSET_PAGE_JS: rootPath('assets/js/catalog.js'),
-    NAV_EXTRA: '',
-    BODY_CLASS: 'page-home',
+    BODY_CLASS: bodyClass,
+    ...layoutNav(activeNav),
   });
 
-  fs.writeFileSync(path.join(DIST, 'index.html'), html);
+  fs.writeFileSync(path.join(DIST, outFile), html);
+}
+
+function buildCommandsPage(updateEntries) {
+  const docPath = path.join(CONTENT, 'commands.md');
+  const docHtml = simpleMarkdown(fs.readFileSync(docPath, 'utf8'));
+  const recipeRows = updateEntries.map(entryRow).join('\n') ||
+    '<li class="muted">No update recipes found.</li>';
+
+  const body = render(readTemplate('commands.html'), {
+    COMMANDS_DOC: docHtml,
+    RECIPE_ROWS: recipeRows,
+  });
+
+  const html = layoutShell({
+    TITLE: 'Commands · Rovo Agent Toolkit',
+    DESCRIPTION: 'Rovo slash commands and copyable update recipes.',
+    BODY: body,
+    ASSET_PAGE_JS: '',
+    BODY_CLASS: 'page-commands',
+    ...layoutNav('commands'),
+  });
+
+  fs.writeFileSync(path.join(DIST, 'commands.html'), html);
 }
 
 function buildPromptPages(entries) {
-  const layout = readTemplate('layout.html');
   const promptTpl = readTemplate('prompt.html');
   const outDir = path.join(DIST, 'prompts');
   fs.mkdirSync(outDir, { recursive: true });
 
   for (const e of entries) {
+    const isQuery = e.lang === 'jql';
     const fields = (e.placeholders || [])
       .map((p) => {
         const name = p.name;
         const required = p.required ? 'required' : '';
         const desc = p.description || name;
         const profileOwned =
-          name === 'PROJECT' || name === 'YOUR-USER' ? ' data-profile-field="true"' : '';
+          name === 'PROJECT' || name === 'YOUR-USER'
+            ? ' data-profile-field="true"'
+            : '';
         return `
         <label class="field">
           <span class="field-label">${escapeHtml(name)}${p.required ? ' *' : ''}</span>
@@ -178,23 +308,21 @@ function buildPromptPages(entries) {
       TAGS: tagList(e.tags),
       FIELDS:
         fields ||
-        '<p class="muted">No placeholders — copy the prompt as-is.</p>',
+        '<p class="muted">No placeholders — copy as-is.</p>',
       BODY_RAW: escapeHtml(e.body),
       LANG: escapeHtml(e.lang),
-      HOME_HREF: rootPath('index.html'),
+      HOME_HREF: rootPath(isQuery ? 'queries.html' : 'index.html'),
+      HOME_LABEL: isQuery ? 'Queries' : 'Prompts',
       SOURCE: escapeHtml(e.source),
     });
 
-    const html = render(layout, {
-      TITLE: `${e.title} · Rovo Prompt Catalog`,
+    const html = layoutShell({
+      TITLE: `${e.title} · Rovo Agent Toolkit`,
       DESCRIPTION: e.use_when,
       BODY: body,
-      BASE: BASE,
-      ASSET_CSS: rootPath('assets/css/catalog.css'),
-      ASSET_PROFILE_JS: rootPath('assets/js/profile.js'),
       ASSET_PAGE_JS: rootPath('assets/js/prompt.js'),
-      NAV_EXTRA: `<a href="${rootPath('index.html')}">Catalog</a>`,
-      BODY_CLASS: `page-prompt mode-${e.mode}`,
+      BODY_CLASS: `page-prompt mode-${e.mode}${isQuery ? ' kind-query' : ''}`,
+      ...layoutNav(isQuery ? 'queries' : 'prompts'),
     });
 
     fs.writeFileSync(path.join(outDir, `${e.id}.html`), html);
@@ -211,8 +339,12 @@ function writeCatalogJson(entries) {
     mode: e.mode,
     placeholders: e.placeholders,
     lang: e.lang,
+    kind: e.lang === 'jql' ? 'query' : 'prompt',
   }));
-  fs.writeFileSync(path.join(DIST, 'catalog.json'), `${JSON.stringify(lite, null, 2)}\n`);
+  fs.writeFileSync(
+    path.join(DIST, 'catalog.json'),
+    `${JSON.stringify(lite, null, 2)}\n`
+  );
 }
 
 function main() {
@@ -221,16 +353,41 @@ function main() {
     throw new Error('No catalog entries found under prompts/');
   }
 
+  const prompts = entries.filter((e) => e.lang !== 'jql');
+  const queries = entries.filter((e) => e.lang === 'jql');
+  const updateRecipes = prompts.filter((e) => e.mode === 'update');
+
   rmrf(DIST);
   fs.mkdirSync(DIST, { recursive: true });
   copyDir(ASSETS, path.join(DIST, 'assets'));
 
-  buildIndex(entries);
+  buildListPage({
+    entries: prompts,
+    templateName: 'index.html',
+    title: 'Rovo Agent Toolkit',
+    description: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
+    activeNav: 'prompts',
+    bodyClass: 'page-home page-prompts',
+    outFile: 'index.html',
+  });
+
+  buildListPage({
+    entries: queries,
+    templateName: 'queries.html',
+    title: 'Queries · Rovo Agent Toolkit',
+    description: 'Jira JQL snippets for Rovo and Jira search.',
+    activeNav: 'queries',
+    bodyClass: 'page-queries',
+    outFile: 'queries.html',
+  });
+
+  buildCommandsPage(updateRecipes);
   buildPromptPages(entries);
   writeCatalogJson(entries);
 
   console.log(
-    `Built ${entries.length} prompts → ${path.relative(ROOT, DIST)} (base=${BASE})`
+    `Built toolkit → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
+      `${prompts.length} prompts, ${queries.length} queries, ${updateRecipes.length} command recipes`
   );
 }
 

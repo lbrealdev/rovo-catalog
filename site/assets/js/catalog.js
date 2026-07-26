@@ -240,10 +240,15 @@
     function goToPage(n) {
       const set = visibleSet();
       const pages = totalPages(set.length);
-      state.page = Math.max(1, Math.min(n, pages));
+      const next = Math.max(1, Math.min(n, pages));
+      if (next === state.page) return;
+      state.page = next;
       render();
-      const top = catalog.getBoundingClientRect().top + window.scrollY - 140;
-      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      const rect = catalog.getBoundingClientRect();
+      if (rect.top < 140) {
+        const top = rect.top + window.scrollY - 140;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+      }
       if (pager) {
         const active = pager.querySelector(".pager-num.is-active");
         if (active) active.focus();
@@ -279,7 +284,7 @@
     if (pager) {
       pager.addEventListener("click", function (ev) {
         const t = ev.target.closest("button[data-page]");
-        if (!t) return;
+        if (!t || t.disabled) return;
         const n = parseInt(t.getAttribute("data-page"), 10);
         if (!isNaN(n)) goToPage(n);
       });

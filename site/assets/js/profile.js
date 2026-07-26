@@ -68,10 +68,19 @@
 
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
+      const project = (
+        (document.getElementById("profile-PROJECT") || {}).value || ""
+      ).trim();
+      const user = (
+        (document.getElementById("profile-YOUR-USER") || {}).value || ""
+      ).trim();
+      if (!project || !user) {
+        setStatus("Project and username are required");
+        return;
+      }
       const profile = {
-        PROJECT: (document.getElementById("profile-PROJECT") || {}).value || "",
-        "YOUR-USER":
-          (document.getElementById("profile-YOUR-USER") || {}).value || "",
+        PROJECT: project,
+        "YOUR-USER": user,
       };
       writeProfile(profile);
       document.dispatchEvent(

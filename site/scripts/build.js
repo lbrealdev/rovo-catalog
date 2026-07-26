@@ -72,14 +72,13 @@ function modeBadge(mode) {
   return `<span class="${cls}">${label}</span>`;
 }
 
-function tagList(tags) {
+function tagList(tags, opts) {
   if (!tags.length) return '';
-  return `<ul class="tag-list">${tags
-    .map(
-      (t) =>
-        `<li><button type="button" class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button></li>`
-    )
-    .join('')}</ul>`;
+  const staticTag = !!(opts && opts.static);
+  const tagEl = staticTag
+    ? (t) => `<span class="tag tag-static" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`
+    : (t) => `<button type="button" class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`;
+  return `<ul class="tag-list">${tags.map((t) => `<li>${tagEl(t)}</li>`).join('')}</ul>`;
 }
 
 function groupByCategory(entries) {
@@ -121,26 +120,27 @@ function layoutShell(vars) {
   });
 }
 
-function entryRow(e) {
+function entryRow(e, opts) {
+  const staticTags = opts && opts.staticTags;
   return `
       <li class="prompt-row" data-id="${escapeHtml(e.id)}" data-category="${escapeHtml(e.category)}" data-tags="${escapeHtml(e.tags.join(','))}" data-search="${escapeHtml(
-    `${e.title} ${e.use_when} ${e.tags.join(' ')} ${e.mode}`
+    `${e.title} ${e.use_when} ${e.tags.join(' ')}`
   ).toLowerCase()}">
         <a class="prompt-link" href="${rootPath(`prompts/${e.id}.html`)}">
           <span class="prompt-title">${escapeHtml(e.title)}</span>
           ${modeBadge(e.mode)}
         </a>
         <p class="prompt-when">${escapeHtml(e.use_when)}</p>
-        ${tagList(e.tags)}
+        ${tagList(e.tags, { static: staticTags })}
       </li>`;
 }
 
-function buildSections(entries) {
+function buildSections(entries, opts) {
   const groups = groupByCategory(entries);
   const sections = [];
   for (const [category, items] of groups) {
     const label = CATEGORY_LABELS[category] || category;
-    const rows = items.map(entryRow).join('\n');
+    const rows = items.map((e) => entryRow(e, opts)).join('\n');
     sections.push(`
       <section class="category" id="cat-${escapeHtml(category)}" data-category="${escapeHtml(category)}">
         <h2>${escapeHtml(label)}</h2>
@@ -150,6 +150,21 @@ function buildSections(entries) {
       </section>`);
   }
   return sections.join('\n');
+}
+
+function categoryHubHtml(entries) {
+  const groups = groupByCategory(entries);
+  const order = ['triage', 'tickets', 'sla', 'communication', 'utilities'];
+  const allBtn = `<button type="button" class="cat-hub-btn is-active" data-category="" aria-pressed="true"><span class="cat-hub-label">All</span><span class="cat-hub-count">${entries.length}</span></button>`;
+  const buttons = order
+    .filter((c) => groups.has(c))
+    .map((c) => {
+      const count = groups.get(c).length;
+      const label = CATEGORY_LABELS[c] || c;
+      return `<button type="button" class="cat-hub-btn" data-category="${escapeHtml(c)}" aria-pressed="false"><span class="cat-hub-label">${escapeHtml(label)}</span><span class="cat-hub-count">${count}</span></button>`;
+    })
+    .join('\n');
+  return `<div class="category-hub" id="category-browse" hidden>\n${allBtn}\n${buttons}\n</div>`;
 }
 
 function tagFiltersHtml(entries) {
@@ -232,9 +247,11 @@ function buildListPage({
   activeNav,
   bodyClass,
   outFile,
+  withHub,
 }) {
   const body = render(readTemplate(templateName), {
-    SECTIONS: buildSections(entries),
+    SECTIONS: buildSections(entries, { staticTags: false }),
+    CATEGORY_HUB: withHub ? categoryHubHtml(entries) : '',
     TAG_FILTERS: tagFiltersHtml(entries),
     COUNT: String(entries.length),
   });
@@ -254,7 +271,7 @@ function buildListPage({
 function buildCommandsPage(updateEntries) {
   const docPath = path.join(CONTENT, 'commands.md');
   const docHtml = simpleMarkdown(fs.readFileSync(docPath, 'utf8'));
-  const recipeRows = updateEntries.map(entryRow).join('\n') ||
+  const recipeRows = updateEntries.map((e) => entryRow(e, { staticTags: true })).join('\n') ||
     '<li class="muted">No update recipes found.</li>';
 
   const body = render(readTemplate('commands.html'), {
@@ -305,7 +322,7 @@ function buildPromptPages(entries) {
       USE_WHEN: escapeHtml(e.use_when),
       MODE_BADGE: modeBadge(e.mode),
       CATEGORY: escapeHtml(CATEGORY_LABELS[e.category] || e.category),
-      TAGS: tagList(e.tags),
+      TAGS: tagList(e.tags, { static: true }),
       FIELDS:
         fields ||
         '<p class="muted">No placeholders — copy as-is.</p>',
@@ -369,6 +386,7 @@ function main() {
     activeNav: 'prompts',
     bodyClass: 'page-home page-prompts',
     outFile: 'index.html',
+    withHub: true,
   });
 
   buildListPage({

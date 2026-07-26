@@ -16,10 +16,14 @@
   <p class="filter-status" id="filter-status" aria-live="polite"></p>
 </section>
 
-<div class="catalog" id="catalog">
+{{CATEGORY_HUB}}
+
+<div class="catalog" id="catalog" data-mode="browse">
   {{SECTIONS}}
 </div>
 
+<nav class="pager" id="pager" aria-label="Prompt pages" hidden></nav>
+
 <noscript>
-  <p class="noscript-note">Search and tag filters need JavaScript. All prompts are listed below.</p>
+  <p class="noscript-note">Search, browse, and paging need JavaScript. All prompts are listed above.</p>
 </noscript>

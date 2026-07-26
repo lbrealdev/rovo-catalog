@@ -84,8 +84,8 @@ python3 -m http.server 8765 --directory site/dist
 ```
 
 1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
-2. Use **Theme** for light/dark
-3. Browse **Prompts**, **Commands** (slash recipes), or **Queries** (JQL)
+2. Use **Theme** (moon/sun icon) for light/dark — choice persists, with a circular wipe on supported browsers
+3. Browse **Prompts** by category hub, or page through 10 at a time (← / → keys when the pager is visible); **Commands** (slash recipes); **Queries** (JQL)
 4. Open an item, fill placeholders, **Copy** → paste into Rovo
 
 For a GitHub Pages base path preview: `npm run build:pages` (deploy is Phase 3).

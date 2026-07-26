@@ -18,11 +18,15 @@
   }
 
   function writeProfile(profile) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    } catch (e) {}
   }
 
   function clearProfile() {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
   }
 
   function fillForm(profile) {

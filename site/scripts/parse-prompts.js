@@ -140,13 +140,16 @@ function validateEntry(meta, body, lang, filePath) {
 }
 
 function parsePromptFile(filePath) {
-  const text = fs.readFileSync(filePath, 'utf8');
+  const text = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
   const entries = [];
   let match;
   ENTRY_RE.lastIndex = 0;
   while ((match = ENTRY_RE.exec(text)) !== null) {
     const yamlText = match[1];
-    if (!/^id\s*:/m.test(yamlText)) continue;
+    if (!/^id\s*:/m.test(yamlText)) {
+      console.warn(`[parse-prompts] skipping frontmatter without id in ${filePath}`);
+      continue;
+    }
     const meta = parseFrontmatter(yamlText);
     entries.push(validateEntry(meta, match[3], match[2], filePath));
   }

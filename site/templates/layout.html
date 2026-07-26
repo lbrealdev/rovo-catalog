@@ -6,26 +6,51 @@
   <title>{{TITLE}}</title>
   <meta name="description" content="{{DESCRIPTION}}" />
   <base href="{{BASE}}" />
+  <script>
+    (function () {
+      try {
+        var key = "rovo-catalog-theme";
+        var t = localStorage.getItem(key);
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+        document.documentElement.classList.add("js");
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="{{ASSET_CSS}}" />
 </head>
 <body class="{{BODY_CLASS}}">
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="index.html">Rovo Prompt Catalog</a>
-      <nav class="site-nav" aria-label="Site">
-        {{NAV_EXTRA}}
-        <button type="button" class="nav-btn" id="profile-toggle" aria-expanded="false" aria-controls="profile-panel">Profile</button>
+      <a class="brand" href="index.html">Rovo Agent Toolkit</a>
+      <nav class="site-nav site-nav-primary" aria-label="Sections">
+        <a class="nav-link {{NAV_PROMPTS}}" href="index.html">Prompts</a>
+        <a class="nav-link {{NAV_COMMANDS}}" href="commands.html">Commands</a>
+        <a class="nav-link {{NAV_QUERIES}}" href="queries.html">Queries</a>
       </nav>
+      <div class="site-nav site-nav-tools" aria-label="Tools">
+        <button type="button" class="nav-btn" id="profile-toggle" aria-expanded="false" aria-controls="profile-panel">Profile</button>
+        <button type="button" class="nav-btn theme-toggle" id="theme-toggle" aria-label="Switch to dark theme" aria-pressed="false" title="Toggle color theme">
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-13.5a.9.9 0 0 1 .9.9v.7a.9.9 0 1 1-1.8 0v-.7a.9.9 0 0 1 .9-.9zm0 15a.9.9 0 0 1 .9.9v.7a.9.9 0 1 1-1.8 0v-.7a.9.9 0 0 1 .9-.9zm9-7.5a.9.9 0 0 1-.9.9h-.7a.9.9 0 1 1 0-1.8h.7a.9.9 0 0 1 .9.9zm-15 0a.9.9 0 0 1-.9.9h-.7a.9.9 0 1 1 0-1.8h.7a.9.9 0 0 1 .9.9zm12.6-6.3a.9.9 0 0 1 0 1.27l-.5.5a.9.9 0 1 1-1.27-1.27l.5-.5a.9.9 0 0 1 1.27 0zm-10.6 10.6a.9.9 0 0 1 0 1.27l-.5.5A.9.9 0 1 1 6.2 18.1l.5-.5a.9.9 0 0 1 1.27 0zm10.6 1.27a.9.9 0 0 1-1.27 0l-.5-.5a.9.9 0 1 1 1.27-1.27l.5.5a.9.9 0 0 1 0 1.27zM7.7 7.7a.9.9 0 0 1-1.27 0l-.5-.5A.9.9 0 1 1 7.2 5.93l.5.5a.9.9 0 0 1 0 1.27z"/></svg>
+        </button>
+      </div>
     </div>
     <div class="profile-panel" id="profile-panel" hidden>
       <form id="profile-form" class="profile-form">
         <p class="profile-lead">Saved in this browser until you clear site data.</p>
         <label class="field">
-          <span class="field-label">PROJECT</span>
+          <span class="field-label">Project</span>
+          <span class="field-desc">Fills &lt;PROJECT&gt; in prompts</span>
           <input type="text" name="PROJECT" id="profile-PROJECT" autocomplete="organization" placeholder="e.g. SUP" />
         </label>
         <label class="field">
-          <span class="field-label">YOUR-USER</span>
+          <span class="field-label">Username</span>
+          <span class="field-desc">Fills &lt;YOUR-USER&gt; in prompts</span>
           <input type="text" name="YOUR-USER" id="profile-YOUR-USER" autocomplete="username" placeholder="Jira username" />
         </label>
         <div class="profile-actions">
@@ -42,7 +67,8 @@
   <footer class="site-footer">
     <p>Markdown in <code>prompts/</code> is the source of truth. Built locally — no backend.</p>
   </footer>
+  <script src="{{ASSET_THEME_JS}}" defer></script>
   <script src="{{ASSET_PROFILE_JS}}" defer></script>
-  <script src="{{ASSET_PAGE_JS}}" defer></script>
+  {{PAGE_SCRIPTS}}
 </body>
 </html>

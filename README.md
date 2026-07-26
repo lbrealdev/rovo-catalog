@@ -2,7 +2,7 @@
 
 Personal documentation for Rovo Agent prompts, tips, and daily operations.
 
-Includes a local static prompt catalog (HonorBox-style). GitHub Pages deploy is Phase 3 — see [docs/BACKLOG.md](docs/BACKLOG.md).
+Includes a local **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Commands, Queries, Profile, and light/dark theme. GitHub Pages deploy is Phase 3 — see [docs/BACKLOG.md](docs/BACKLOG.md).
 
 ---
 
@@ -33,8 +33,8 @@ Includes a local static prompt catalog (HonorBox-style). GitHub Pages deploy is 
 ### JQL Queries
 - [My Tickets JQL](queries/jql/my-tickets.md)
 
-### Catalog
-- Build with `npm run build`, then serve `site/dist/` (see [Getting Started](#getting-started))
+### Toolkit site
+- Build with `npm run build`, then serve `site/dist/` — Prompts · Commands · Queries (see [Getting Started](#getting-started))
 
 ### References
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
@@ -54,9 +54,10 @@ Includes a local static prompt catalog (HonorBox-style). GitHub Pages deploy is 
 │   ├── BACKLOG.md               # Product roadmap (prompt catalog app)
 │   ├── prompt-schema.md         # Catalog frontmatter schema
 │   └── rovo-resources.md        # Official Rovo links
-├── site/                        # Static catalog builder + assets
+├── site/                        # Rovo Agent Toolkit (static builder)
 │   ├── scripts/                 # parse-prompts.js, build.js
 │   ├── templates/
+│   ├── content/                 # Commands explainers (commands.md)
 │   ├── assets/                  # CSS, JS, self-hosted fonts
 │   └── dist/                    # Generated (gitignored)
 ├── workbench/                   # Experimental prompts (in testing)
@@ -74,7 +75,7 @@ Includes a local static prompt catalog (HonorBox-style). GitHub Pages deploy is 
 
 ## Getting Started
 
-### Prompt catalog (local)
+### Toolkit site (local)
 
 ```bash
 npm run build
@@ -83,8 +84,9 @@ python3 -m http.server 8765 --directory site/dist
 ```
 
 1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
-2. Browse / search prompts, open one, fill placeholders, **Copy**
-3. Paste into Rovo Chat and review before applying changes
+2. Use **Theme** (moon/sun icon) for light/dark — choice persists, with a circular wipe on supported browsers
+3. Browse **Prompts** by category hub, or page through 10 at a time (← / → keys when the pager is visible); **Commands** (slash recipes); **Queries** (JQL)
+4. Open an item, fill placeholders, **Copy** → paste into Rovo
 
 For a GitHub Pages base path preview: `npm run build:pages` (deploy is Phase 3).
 

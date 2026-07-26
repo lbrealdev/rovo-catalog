@@ -71,17 +71,25 @@ queries/jql/                     # Reusable JQL templates
 site/                            # Static catalog (HonorBox-style builder)
 ```
 
-## Static catalog (`site/`)
+## Static site — Rovo Agent Toolkit (`site/`)
 
 Zero-dependency Node build reads `prompts/**/*.md` frontmatter and emits HTML under `site/dist/` (gitignored).
 
 ```bash
 npm run build              # local base path /
 npm run build:pages        # GitHub Pages base /rovo-agent-notes/
-npx --yes serve site/dist  # or: python3 -m http.server --directory site/dist
+python3 -m http.server --directory site/dist
 ```
 
-Source layout: `site/scripts/` (parser + build), `site/templates/`, `site/assets/` (CSS/JS/fonts). No CDN assets. Mini profile uses `localStorage` keys `PROJECT` and `YOUR-USER`.
+**Sections**
+
+- **Prompts** (`index.html`) — `lang: text` entries
+- **Queries** (`queries.html`) — `lang: jql` entries
+- **Commands** (`commands.html`) — slash-command explainers from `site/content/commands.md` + links to `mode: update` recipes
+
+**Chrome:** Profile and Theme are header buttons (not pages). Theme uses `data-theme` + `localStorage` key `rovo-catalog-theme` (inline head boot avoids FOUC). Profile stores `PROJECT` and `YOUR-USER`.
+
+Source layout: `site/scripts/`, `site/templates/`, `site/content/`, `site/assets/` (CSS/JS/fonts). No CDN assets.
 
 ## Prompt Schema (Catalog Entries)
 

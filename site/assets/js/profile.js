@@ -18,11 +18,15 @@
   }
 
   function writeProfile(profile) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    } catch (e) {}
   }
 
   function clearProfile() {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
   }
 
   function fillForm(profile) {
@@ -44,31 +48,45 @@
     const clearBtn = document.getElementById("profile-clear");
     if (!toggle || !panel || !form) return;
 
+    function closePanel() {
+      panel.setAttribute("hidden", "");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+
+    function openPanel() {
+      setStatus("");
+      panel.removeAttribute("hidden");
+      toggle.setAttribute("aria-expanded", "true");
+    }
+
     fillForm(readProfile());
 
     toggle.addEventListener("click", function () {
-      const open = panel.hasAttribute("hidden");
-      if (open) {
-        panel.removeAttribute("hidden");
-        toggle.setAttribute("aria-expanded", "true");
-      } else {
-        panel.setAttribute("hidden", "");
-        toggle.setAttribute("aria-expanded", "false");
-      }
+      if (panel.hasAttribute("hidden")) openPanel();
+      else closePanel();
     });
 
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
+      const project = (
+        (document.getElementById("profile-PROJECT") || {}).value || ""
+      ).trim();
+      const user = (
+        (document.getElementById("profile-YOUR-USER") || {}).value || ""
+      ).trim();
+      if (!project || !user) {
+        setStatus("Project and username are required");
+        return;
+      }
       const profile = {
-        PROJECT: (document.getElementById("profile-PROJECT") || {}).value || "",
-        "YOUR-USER":
-          (document.getElementById("profile-YOUR-USER") || {}).value || "",
+        PROJECT: project,
+        "YOUR-USER": user,
       };
       writeProfile(profile);
-      setStatus("Saved");
       document.dispatchEvent(
         new CustomEvent("rovo-profile-updated", { detail: profile })
       );
+      closePanel();
     });
 
     if (clearBtn) {

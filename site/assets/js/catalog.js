@@ -244,11 +244,6 @@
       if (next === state.page) return;
       state.page = next;
       render();
-      const rect = catalog.getBoundingClientRect();
-      if (rect.top < 140) {
-        const top = rect.top + window.scrollY - 140;
-        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-      }
       if (pager) {
         const active = pager.querySelector(".pager-num.is-active");
         if (active) active.focus();

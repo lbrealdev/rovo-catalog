@@ -79,7 +79,7 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 - [ ] Recently used / favorites (`localStorage`)
 - [x] JQL snippets section with copy (Queries page)
 - [ ] Link related prompts (e.g. find similar → draft resolution)
-- [ ] Readability-focused styling only (avoid over-design) — sparse, high-quality impression
+- [x] Readability-focused styling only (avoid over-design) — sparse, high-quality impression (browse hub + pager + HonorBox theme — PR #18)
 
 ---
 

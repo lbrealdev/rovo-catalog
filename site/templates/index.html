@@ -1,0 +1,25 @@
+<section class="hero">
+  <h1>Rovo Prompt Catalog</h1>
+  <p class="hero-lead">Browse by situation, fill placeholders, copy, paste into Rovo.</p>
+  <p class="hero-meta"><span id="catalog-count">{{COUNT}}</span> prompts</p>
+</section>
+
+<section class="toolbar" aria-label="Filter prompts">
+  <label class="search-field">
+    <span class="visually-hidden">Search</span>
+    <input type="search" id="catalog-search" placeholder="Search title, situation, tags…" autocomplete="off" />
+  </label>
+  <div class="tag-filters" id="tag-filters">
+    <button type="button" class="tag-filter is-active" data-tag="">All</button>
+    {{TAG_FILTERS}}
+  </div>
+  <p class="filter-status" id="filter-status" aria-live="polite"></p>
+</section>
+
+<div class="catalog" id="catalog">
+  {{SECTIONS}}
+</div>
+
+<noscript>
+  <p class="noscript-note">Search and tag filters need JavaScript. All prompts are listed below.</p>
+</noscript>

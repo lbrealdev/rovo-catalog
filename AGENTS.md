@@ -68,11 +68,24 @@ workbench/                       # Experimental prompts (in testing)
 guides/                          # Documentation
 docs/                            # Backlog and references
 queries/jql/                     # Reusable JQL templates
+site/                            # Static catalog (HonorBox-style builder)
 ```
+
+## Static catalog (`site/`)
+
+Zero-dependency Node build reads `prompts/**/*.md` frontmatter and emits HTML under `site/dist/` (gitignored).
+
+```bash
+npm run build              # local base path /
+npm run build:pages        # GitHub Pages base /rovo-agent-notes/
+npx --yes serve site/dist  # or: python3 -m http.server --directory site/dist
+```
+
+Source layout: `site/scripts/` (parser + build), `site/templates/`, `site/assets/` (CSS/JS/fonts). No CDN assets. Mini profile uses `localStorage` keys `PROJECT` and `YOUR-USER`.
 
 ## Prompt Schema (Catalog Entries)
 
-Stable prompts in `prompts/` use YAML frontmatter so a future static catalog can load them. Full spec: [docs/prompt-schema.md](docs/prompt-schema.md).
+Stable prompts in `prompts/` use YAML frontmatter so the static catalog can load them. Full spec: [docs/prompt-schema.md](docs/prompt-schema.md).
 
 Each copy-paste template is one entry:
 

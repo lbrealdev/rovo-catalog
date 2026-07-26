@@ -2,7 +2,7 @@
 
 Personal documentation for Rovo Agent prompts, tips, and daily operations.
 
-Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md](docs/BACKLOG.md).
+Includes a local static prompt catalog (HonorBox-style). GitHub Pages deploy is Phase 3 — see [docs/BACKLOG.md](docs/BACKLOG.md).
 
 ---
 
@@ -33,6 +33,9 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 ### JQL Queries
 - [My Tickets JQL](queries/jql/my-tickets.md)
 
+### Catalog
+- Build with `npm run build`, then serve `site/dist/` (see [Getting Started](#getting-started))
+
 ### References
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
 - [Prompt Schema](docs/prompt-schema.md) — catalog frontmatter format
@@ -45,36 +48,24 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 
 ```
 .
+├── package.json                 # npm run build (zero dependencies)
 ├── AGENTS.md                    # Conventions for prompts and JQL
 ├── docs/
 │   ├── BACKLOG.md               # Product roadmap (prompt catalog app)
 │   ├── prompt-schema.md         # Catalog frontmatter schema
 │   └── rovo-resources.md        # Official Rovo links
+├── site/                        # Static catalog builder + assets
+│   ├── scripts/                 # parse-prompts.js, build.js
+│   ├── templates/
+│   ├── assets/                  # CSS, JS, self-hosted fonts
+│   └── dist/                    # Generated (gitignored)
 ├── workbench/                   # Experimental prompts (in testing)
-│   ├── aws-health-notifications.md
-│   ├── confluence-explain.md
-│   ├── find-similar-resolved.md
-│   └── recently-updated-tickets.md
 ├── guides/
-│   └── document-summaries.md    # Summarize Confluence/AWS docs
-├── prompts/
-│   ├── triage/
-│   │   └── daily-triage.md     # Daily triage operations
-│   ├── tickets/
-│   │   ├── ticket-analysis.md  # Analyze & close tickets
-│   │   └── reopened-tickets.md # Handle reopened tickets
-│   ├── sla/
-│   │   ├── sla-management.md   # SLA-aware prompts
-│   │   └── sla-workflow.md     # SLA continuation workflow
-│   ├── communication/
-│   │   ├── proofreading.md     # Message proofreading
-│   │   └── confirm-before-action.md # Get approval before actions
-│   └── utilities/
-│       ├── prompts-special.md  # Lean multi-line prompts
-│       └── quick-prompts.md    # Quick conversational prompts
+│   └── document-summaries.md
+├── prompts/                     # Schema-ready catalog source
 └── queries/
     └── jql/
-        └── my-tickets.md       # JQL queries for my tickets
+        └── my-tickets.md
 ```
 
 **Note:** `workbench/` contains prompts being actively developed and tested. Once stable, they may be promoted to `prompts/`.
@@ -83,7 +74,23 @@ Evolving toward a static prompt catalog on GitHub Pages — see [docs/BACKLOG.md
 
 ## Getting Started
 
-1. Copy prompts from the relevant category
+### Prompt catalog (local)
+
+```bash
+npm run build
+python3 -m http.server 8765 --directory site/dist
+# open http://127.0.0.1:8765/
+```
+
+1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
+2. Browse / search prompts, open one, fill placeholders, **Copy**
+3. Paste into Rovo Chat and review before applying changes
+
+For a GitHub Pages base path preview: `npm run build:pages` (deploy is Phase 3).
+
+### Markdown prompts (without the site)
+
+1. Copy prompts from the relevant category under `prompts/`
 2. Replace `<PROJECT>`, `<TICKET-KEY>`, `<YOUR-USER>` placeholders
 3. Paste into Rovo Chat
 4. Review output before applying any changes

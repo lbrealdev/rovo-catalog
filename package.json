@@ -1,0 +1,12 @@
+{
+  "name": "rovo-agent-notes",
+  "private": true,
+  "description": "Rovo prompt catalog — static site builder",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node site/scripts/build.js",
+    "build:pages": "SITE_BASE_PATH=/rovo-agent-notes/ node site/scripts/build.js"
+  }
+}

@@ -36,18 +36,18 @@ Define metadata so the app can load prompts reliably.
 
 Small catalog UI — HonorBox-style: zero-dependency Node build, plain HTML/CSS, tiny first-party JS. Not Vite. Not a blog or backend.
 
-- [ ] Scaffold static site in-repo (e.g. `site/`) with a zero-dep build script that reads `prompts/**/*.md` frontmatter
-- [ ] Catalog home: list prompts by category / situation
-- [ ] Search + tag filters
-- [ ] Prompt detail view with:
+- [x] Scaffold static site in-repo (`site/`) with a zero-dep build script that reads `prompts/**/*.md` frontmatter
+- [x] Catalog home: list prompts by category / situation
+- [x] Search + tag filters
+- [x] Prompt detail view with:
   - use-when blurb
   - placeholder inputs
   - rendered prompt preview
   - **Copy** button
-- [ ] Mini profile (`localStorage`): `PROJECT`, `YOUR-USER` — persists until site data/cache is cleared; prefills placeholders
-- [ ] Visually distinguish read-only vs `/update-work-items` prompts
-- [ ] Keep markdown as source of truth; build step loads content into static pages
-- [ ] No external CDN scripts/fonts (first-party only); usable with JS off for reading (copy/profile need JS)
+- [x] Mini profile (`localStorage`): `PROJECT`, `YOUR-USER` — persists until site data/cache is cleared; prefills placeholders
+- [x] Visually distinguish read-only vs `/update-work-items` prompts
+- [x] Keep markdown as source of truth; build step loads content into static pages
+- [x] No external CDN scripts/fonts (first-party only); usable with JS off for reading (copy/profile need JS)
 
 ---
 

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESCRIPTION}}" />
+  <base href="{{BASE}}" />
+  <link rel="stylesheet" href="{{ASSET_CSS}}" />
+</head>
+<body class="{{BODY_CLASS}}">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Rovo Prompt Catalog</a>
+      <nav class="site-nav" aria-label="Site">
+        {{NAV_EXTRA}}
+        <button type="button" class="nav-btn" id="profile-toggle" aria-expanded="false" aria-controls="profile-panel">Profile</button>
+      </nav>
+    </div>
+    <div class="profile-panel" id="profile-panel" hidden>
+      <form id="profile-form" class="profile-form">
+        <p class="profile-lead">Saved in this browser until you clear site data.</p>
+        <label class="field">
+          <span class="field-label">PROJECT</span>
+          <input type="text" name="PROJECT" id="profile-PROJECT" autocomplete="organization" placeholder="e.g. SUP" />
+        </label>
+        <label class="field">
+          <span class="field-label">YOUR-USER</span>
+          <input type="text" name="YOUR-USER" id="profile-YOUR-USER" autocomplete="username" placeholder="Jira username" />
+        </label>
+        <div class="profile-actions">
+          <button type="submit" class="btn">Save profile</button>
+          <button type="button" class="btn btn-quiet" id="profile-clear">Clear</button>
+          <span class="profile-status" id="profile-status" aria-live="polite"></span>
+        </div>
+      </form>
+    </div>
+  </header>
+  <main class="site-main">
+    {{BODY}}
+  </main>
+  <footer class="site-footer">
+    <p>Markdown in <code>prompts/</code> is the source of truth. Built locally — no backend.</p>
+  </footer>
+  <script src="{{ASSET_PROFILE_JS}}" defer></script>
+  <script src="{{ASSET_PAGE_JS}}" defer></script>
+</body>
+</html>

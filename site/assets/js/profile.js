@@ -48,17 +48,22 @@
     const clearBtn = document.getElementById("profile-clear");
     if (!toggle || !panel || !form) return;
 
+    function closePanel() {
+      panel.setAttribute("hidden", "");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+
+    function openPanel() {
+      setStatus("");
+      panel.removeAttribute("hidden");
+      toggle.setAttribute("aria-expanded", "true");
+    }
+
     fillForm(readProfile());
 
     toggle.addEventListener("click", function () {
-      const open = panel.hasAttribute("hidden");
-      if (open) {
-        panel.removeAttribute("hidden");
-        toggle.setAttribute("aria-expanded", "true");
-      } else {
-        panel.setAttribute("hidden", "");
-        toggle.setAttribute("aria-expanded", "false");
-      }
+      if (panel.hasAttribute("hidden")) openPanel();
+      else closePanel();
     });
 
     form.addEventListener("submit", function (ev) {
@@ -69,10 +74,10 @@
           (document.getElementById("profile-YOUR-USER") || {}).value || "",
       };
       writeProfile(profile);
-      setStatus("Saved");
       document.dispatchEvent(
         new CustomEvent("rovo-profile-updated", { detail: profile })
       );
+      closePanel();
     });
 
     if (clearBtn) {

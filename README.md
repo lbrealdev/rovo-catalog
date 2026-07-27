@@ -2,7 +2,9 @@
 
 Personal documentation for Rovo Agent prompts, tips, and daily operations.
 
-Includes a local **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Commands, Queries, Profile, and light/dark theme. GitHub Pages deploy is Phase 3 — see [docs/BACKLOG.md](docs/BACKLOG.md).
+Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Commands, Queries, Profile, and light/dark theme.
+
+**Live site:** [https://lbrealdev.github.io/rovo-agent-notes/](https://lbrealdev.github.io/rovo-agent-notes/) (deploys from `main` via GitHub Actions).
 
 ---
 
@@ -75,7 +77,9 @@ Includes a local **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, C
 
 ## Getting Started
 
-### Toolkit site (local)
+### Toolkit site
+
+Use the [live site](https://lbrealdev.github.io/rovo-agent-notes/), or build locally:
 
 ```bash
 npm run build
@@ -83,12 +87,12 @@ python3 -m http.server 8765 --directory site/dist
 # open http://127.0.0.1:8765/
 ```
 
+For a GitHub Pages base-path preview: `npm run build:pages` (serves under `/rovo-agent-notes/`).
+
 1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
 2. Use **Theme** (moon/sun icon) for light/dark — choice persists, with a circular wipe on supported browsers
 3. Browse **Prompts** by category hub, or page through 10 at a time (← / → keys when the pager is visible); **Commands** (slash recipes); **Queries** (JQL)
 4. Open an item, fill placeholders, **Copy** → paste into Rovo
-
-For a GitHub Pages base path preview: `npm run build:pages` (deploy is Phase 3).
 
 ### Markdown prompts (without the site)
 

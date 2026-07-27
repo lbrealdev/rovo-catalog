@@ -36,7 +36,7 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 - [My Tickets JQL](queries/jql/my-tickets.md)
 
 ### Toolkit site
-- Build with `npm run build`, then serve `site/dist/` — Prompts · Commands · Queries (see [Getting Started](#getting-started))
+- [Live catalog](https://lbrealdev.github.io/rovo-agent-notes/) — or build locally with `npm run build` (see [Getting Started](#getting-started))
 
 ### References
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app

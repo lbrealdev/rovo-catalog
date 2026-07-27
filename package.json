@@ -3,7 +3,7 @@
   "private": true,
   "description": "Rovo prompt catalog — static site builder",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "build": "node site/scripts/build.js",

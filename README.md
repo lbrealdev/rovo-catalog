@@ -1,10 +1,10 @@
-# rovo-agent-toolkit
+# rovo-catalog
 
 Personal documentation for Rovo Agent prompts, tips, and daily operations.
 
 Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Commands, Queries, Profile, and light/dark theme.
 
-**Live site:** [https://lbrealdev.github.io/rovo-agent-toolkit/](https://lbrealdev.github.io/rovo-agent-toolkit/) (deploys from `main` via GitHub Actions).
+**Live site:** [https://lbrealdev.github.io/rovo-catalog/](https://lbrealdev.github.io/rovo-catalog/) (deploys from `main` via GitHub Actions).
 
 ---
 
@@ -36,7 +36,7 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 - [My Tickets JQL](queries/jql/my-tickets.md)
 
 ### Toolkit site
-- [Live catalog](https://lbrealdev.github.io/rovo-agent-toolkit/) — or build locally with `npm run build` (see [Getting Started](#getting-started))
+- [Live catalog](https://lbrealdev.github.io/rovo-catalog/) — or build locally with `npm run build` (see [Getting Started](#getting-started))
 
 ### References
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
@@ -79,7 +79,7 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 
 ### Toolkit site
 
-Use the [live site](https://lbrealdev.github.io/rovo-agent-toolkit/), or build locally:
+Use the [live site](https://lbrealdev.github.io/rovo-catalog/), or build locally:
 
 ```bash
 npm run build
@@ -87,7 +87,7 @@ python3 -m http.server 8765 --directory site/dist
 # open http://127.0.0.1:8765/
 ```
 
-For a GitHub Pages base-path preview: `npm run build:pages` (serves under `/rovo-agent-toolkit/`).
+For a GitHub Pages base-path preview: `npm run build:pages` (serves under `/rovo-catalog/`).
 
 1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
 2. Use **Theme** (moon/sun icon) for light/dark — choice persists, with a circular wipe on supported browsers

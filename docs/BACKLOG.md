@@ -54,7 +54,7 @@ Small catalog UI — HonorBox-style: zero-dependency Node build, plain HTML/CSS,
 ## Phase 3 — GitHub Pages deploy
 
 - [x] Add GitHub Actions workflow to build + deploy Pages
-- [x] Configure base path for the repository name (`SITE_BASE_PATH=/rovo-agent-notes/` via `npm run build:pages`)
+- [x] Configure base path for the repository name (`SITE_BASE_PATH=/rovo-catalog/` via `npm run build:pages`)
 - [x] Add live site URL to `README.md`
 - [ ] Verify usability on desktop (and mobile if used daily) — after first green deploy + Pages source = GitHub Actions
 

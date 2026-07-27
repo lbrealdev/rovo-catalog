@@ -77,7 +77,7 @@ Zero-dependency Node build reads `prompts/**/*.md` frontmatter and emits HTML un
 
 ```bash
 npm run build              # local base path /
-npm run build:pages        # GitHub Pages base /rovo-agent-notes/
+npm run build:pages        # GitHub Pages base /rovo-catalog/
 python3 -m http.server --directory site/dist
 ```
 

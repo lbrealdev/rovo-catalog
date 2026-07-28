@@ -43,6 +43,7 @@
   --readonly: #2a3a2e;
   --readonly-bg: #e5ece7;
   --focus: #2f5d50;
+  --favorite: #c9a227;
   --glow-a: #ebe4d6;
   --glow-b: #e2ebe6;
   --radius: 2px;
@@ -64,6 +65,7 @@
   --readonly: #b7cfc0;
   --readonly-bg: #1f2a24;
   --focus: #8eb9a8;
+  --favorite: #d4b84a;
   --glow-a: #1f1e1b;
   --glow-b: #18201c;
 }
@@ -384,12 +386,140 @@ code {
 }
 
 .prompt-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   padding: 0.85rem 0;
   border-bottom: 1px solid var(--line);
 }
 
+.prompt-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
 .prompt-row.is-hidden {
   display: none;
+}
+
+.favorite-toggle {
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.15rem 0.35rem;
+  margin-top: 0.1rem;
+}
+
+.favorite-toggle:hover,
+.favorite-toggle.is-favorited {
+  color: var(--favorite);
+}
+
+.favorite-toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.prompt-header .favorite-toggle {
+  vertical-align: middle;
+  margin-left: 0.15rem;
+}
+
+.recent-strip,
+.favorites-strip {
+  margin: 1.75rem 0 0;
+}
+
+.strip-heading {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.55rem;
+}
+
+.strip-items {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.strip-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 9rem;
+  max-width: 14rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  text-decoration: none;
+  color: inherit;
+}
+
+.strip-item:hover {
+  border-color: var(--ink);
+  color: inherit;
+}
+
+.strip-item-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.strip-item-cat {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.situation-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.25rem 0 0;
+}
+
+.shortcut-btn {
+  font: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--muted);
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.shortcut-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.shortcut-btn.is-active {
+  color: var(--bg-elev);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.shortcut-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.toolbar-tags {
+  margin: 1rem 0 1.5rem;
 }
 
 .category.is-empty {

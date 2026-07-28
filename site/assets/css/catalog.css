@@ -43,6 +43,7 @@
   --readonly: #2a3a2e;
   --readonly-bg: #e5ece7;
   --focus: #2f5d50;
+  --favorite: #c9a227;
   --glow-a: #ebe4d6;
   --glow-b: #e2ebe6;
   --radius: 2px;
@@ -64,6 +65,7 @@
   --readonly: #b7cfc0;
   --readonly-bg: #1f2a24;
   --focus: #8eb9a8;
+  --favorite: #d4b84a;
   --glow-a: #1f1e1b;
   --glow-b: #18201c;
 }
@@ -413,12 +415,9 @@ code {
   margin-top: 0.1rem;
 }
 
-.favorite-toggle:hover {
-  color: #c9a227;
-}
-
+.favorite-toggle:hover,
 .favorite-toggle.is-favorited {
-  color: #c9a227;
+  color: var(--favorite);
 }
 
 .favorite-toggle:focus-visible {

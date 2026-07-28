@@ -75,8 +75,8 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 
 ## Phase 4 — Daily-use polish
 
-- [ ] Situation shortcuts (e.g. Monday triage, SLA at risk, AWS Health close-out)
-- [ ] Recently used / favorites (`localStorage`)
+- [x] Situation shortcuts (Monday triage, SLA at risk, Reopened, Proofreading)
+- [x] Recently used / favorites (`localStorage`) — Prompts catalog only
 - [x] JQL snippets section with copy (Queries page)
 - [ ] Link related prompts (e.g. find similar → draft resolution)
 - [x] Readability-focused styling only (avoid over-design) — sparse, high-quality impression (browse hub + pager + HonorBox theme — PR #18)

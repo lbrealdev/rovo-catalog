@@ -131,8 +131,12 @@
     const copyStatus = document.getElementById("copy-status");
     if (!rawEl || !preview) return;
 
-    initRecent();
-    initFavorites();
+    // Queries are out of scope for recent/favorites (Prompts catalog only).
+    const isQuery = document.body.classList.contains("kind-query");
+    if (!isQuery) {
+      initRecent();
+      initFavorites();
+    }
 
     const template = rawEl.textContent;
     const inputs = form

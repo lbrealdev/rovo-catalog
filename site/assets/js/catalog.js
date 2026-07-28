@@ -14,7 +14,7 @@
     { label: "Monday Triage", category: "triage", tag: "morning" },
     { label: "SLA at Risk", category: "", tag: "sla" },
     { label: "Reopened", category: "tickets", tag: "reopened" },
-    { label: "Proofreading", category: "communication", tag: "proofreading" },
+    { label: "Proofreading", category: "communication", tag: "proofread" },
   ];
 
   function readRecent() {
@@ -258,10 +258,19 @@
       if (state.mode === "category") {
         msg = matchCount + " in " + hubCategoryLabel(state.category);
       } else if (state.mode === "filter") {
-        msg =
-          matchCount === rows.length
-            ? ""
-            : "Showing " + matchCount + " of " + rows.length;
+        if (matchCount === rows.length) {
+          msg = "";
+        } else if (state.category) {
+          msg =
+            "Showing " +
+            matchCount +
+            " of " +
+            rows.length +
+            " in " +
+            hubCategoryLabel(state.category);
+        } else {
+          msg = "Showing " + matchCount + " of " + rows.length;
+        }
       }
       status.textContent = msg;
     }
@@ -292,6 +301,7 @@
 
     function shortcutMatches(sc) {
       if (state.mode !== "filter") return false;
+      if (state.query) return false;
       if (state.tag !== (sc.tag || "")) return false;
       return (state.category || "") === (sc.category || "");
     }
@@ -377,28 +387,33 @@
 
     function setSearch(value) {
       state.query = (value || "").trim().toLowerCase();
+      // Manual search is global — do not keep a prior category scope.
+      if (state.query) state.category = "";
       enterFilterOrReturn();
       render();
     }
 
     function setTag(tag) {
       state.tag = tag || "";
+      // Manual tag filters are global — only shortcuts keep category+tag.
+      if (state.tag) state.category = "";
       enterFilterOrReturn();
       render();
     }
 
     function applyShortcut(sc) {
       if (shortcutMatches(sc)) {
-        state.mode = "browse";
         state.category = "";
         state.tag = "";
-        state.page = 1;
+        enterFilterOrReturn();
         render();
         return;
       }
       state.mode = "filter";
       state.category = sc.category || "";
       state.tag = sc.tag || "";
+      state.query = "";
+      if (search) search.value = "";
       state.page = 1;
       render();
     }

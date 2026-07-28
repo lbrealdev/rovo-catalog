@@ -122,9 +122,10 @@ function layoutShell(vars) {
 
 function entryRow(e, opts) {
   const staticTags = opts && opts.staticTags;
-  const favBtn = staticTags
-    ? ''
-    : `<button type="button" class="favorite-toggle" data-favorite-id="${escapeHtml(e.id)}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>`;
+  const showFavorites = opts && opts.showFavorites;
+  const favBtn = showFavorites
+    ? `<button type="button" class="favorite-toggle" data-favorite-id="${escapeHtml(e.id)}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>`
+    : '';
   return `
       <li class="prompt-row" data-id="${escapeHtml(e.id)}" data-category="${escapeHtml(e.category)}" data-tags="${escapeHtml(e.tags.join(','))}" data-search="${escapeHtml(
     `${e.title} ${e.use_when} ${e.tags.join(' ')}`
@@ -254,9 +255,13 @@ function buildListPage({
   bodyClass,
   outFile,
   withHub,
+  showFavorites,
 }) {
   const body = render(readTemplate(templateName), {
-    SECTIONS: buildSections(entries, { staticTags: false }),
+    SECTIONS: buildSections(entries, {
+      staticTags: false,
+      showFavorites: !!showFavorites,
+    }),
     CATEGORY_HUB: withHub ? categoryHubHtml(entries) : '',
     TAG_FILTERS: tagFiltersHtml(entries),
     COUNT: String(entries.length),
@@ -322,6 +327,10 @@ function buildPromptPages(entries) {
       })
       .join('\n');
 
+    const favoriteToggle = isQuery
+      ? ''
+      : `<button type="button" class="favorite-toggle" data-favorite-id="${escapeHtml(e.id)}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>`;
+
     const body = render(promptTpl, {
       ID: escapeHtml(e.id),
       TITLE: escapeHtml(e.title),
@@ -329,6 +338,7 @@ function buildPromptPages(entries) {
       MODE_BADGE: modeBadge(e.mode),
       CATEGORY: escapeHtml(CATEGORY_LABELS[e.category] || e.category),
       CATEGORY_KEY: escapeHtml(e.category),
+      FAVORITE_TOGGLE: favoriteToggle,
       TAGS: tagList(e.tags, { static: true }),
       FIELDS:
         fields ||
@@ -394,6 +404,7 @@ function main() {
     bodyClass: 'page-home page-prompts',
     outFile: 'index.html',
     withHub: true,
+    showFavorites: true,
   });
 
   buildListPage({

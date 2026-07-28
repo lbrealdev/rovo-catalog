@@ -122,16 +122,22 @@ function layoutShell(vars) {
 
 function entryRow(e, opts) {
   const staticTags = opts && opts.staticTags;
+  const favBtn = staticTags
+    ? ''
+    : `<button type="button" class="favorite-toggle" data-favorite-id="${escapeHtml(e.id)}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>`;
   return `
       <li class="prompt-row" data-id="${escapeHtml(e.id)}" data-category="${escapeHtml(e.category)}" data-tags="${escapeHtml(e.tags.join(','))}" data-search="${escapeHtml(
     `${e.title} ${e.use_when} ${e.tags.join(' ')}`
   ).toLowerCase()}">
-        <a class="prompt-link" href="${rootPath(`prompts/${e.id}.html`)}">
-          <span class="prompt-title">${escapeHtml(e.title)}</span>
-          ${modeBadge(e.mode)}
-        </a>
-        <p class="prompt-when">${escapeHtml(e.use_when)}</p>
-        ${tagList(e.tags, { static: staticTags })}
+        <div class="prompt-row-main">
+          <a class="prompt-link" href="${rootPath(`prompts/${e.id}.html`)}">
+            <span class="prompt-title">${escapeHtml(e.title)}</span>
+            ${modeBadge(e.mode)}
+          </a>
+          <p class="prompt-when">${escapeHtml(e.use_when)}</p>
+          ${tagList(e.tags, { static: staticTags })}
+        </div>
+        ${favBtn}
       </li>`;
 }
 
@@ -322,6 +328,7 @@ function buildPromptPages(entries) {
       USE_WHEN: escapeHtml(e.use_when),
       MODE_BADGE: modeBadge(e.mode),
       CATEGORY: escapeHtml(CATEGORY_LABELS[e.category] || e.category),
+      CATEGORY_KEY: escapeHtml(e.category),
       TAGS: tagList(e.tags, { static: true }),
       FIELDS:
         fields ||

@@ -1,8 +1,9 @@
-<article class="prompt-detail" data-prompt-id="{{ID}}">
+<article class="prompt-detail" data-prompt-id="{{ID}}" data-prompt-title="{{TITLE}}" data-prompt-category="{{CATEGORY_KEY}}">
   <p class="crumb"><a href="{{HOME_HREF}}">← {{HOME_LABEL}}</a> · {{CATEGORY}}</p>
   <header class="prompt-header">
     <h1>{{TITLE}}</h1>
     {{MODE_BADGE}}
+    <button type="button" class="favorite-toggle" data-favorite-id="{{ID}}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>
     <p class="prompt-when">{{USE_WHEN}}</p>
     {{TAGS}}
   </header>

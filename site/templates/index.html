@@ -4,19 +4,34 @@
   <p class="hero-meta"><span id="catalog-count">{{COUNT}}</span> prompts</p>
 </section>
 
+<div id="recent-strip" class="recent-strip" data-recent-count="0" hidden>
+  <h2 class="strip-heading">Recently Used</h2>
+  <div class="strip-items" id="recent-strip-items"></div>
+</div>
+
+<section id="favorites-strip" class="favorites-strip" hidden>
+  <h2 class="strip-heading">★ Favorites</h2>
+  <div class="strip-items" id="favorites-strip-items"></div>
+</section>
+
+<div id="situation-shortcuts" class="situation-shortcuts" aria-label="Situation shortcuts"></div>
+
 <section class="toolbar" aria-label="Filter prompts">
   <label class="search-field">
     <span class="visually-hidden">Search</span>
     <input type="search" id="catalog-search" placeholder="Search title, situation, tags…" autocomplete="off" />
   </label>
+</section>
+
+{{CATEGORY_HUB}}
+
+<section class="toolbar toolbar-tags" aria-label="Tag filters">
   <div class="tag-filters" id="tag-filters">
     <button type="button" class="tag-filter is-active" data-tag="">All</button>
     {{TAG_FILTERS}}
   </div>
   <p class="filter-status" id="filter-status" aria-live="polite"></p>
 </section>
-
-{{CATEGORY_HUB}}
 
 <div class="catalog" id="catalog" data-mode="browse">
   {{SECTIONS}}

@@ -1,4 +1,96 @@
 (function () {
+  const RECENT_KEY = "rovo-catalog-recent";
+  const FAVORITES_KEY = "rovo-catalog-favorites";
+
+  const CATEGORY_LABELS = {
+    triage: "Triage",
+    tickets: "Tickets",
+    sla: "SLA",
+    communication: "Communication",
+    utilities: "Utilities",
+  };
+
+  const SHORTCUTS = [
+    { label: "Monday Triage", category: "triage", tag: "morning" },
+    { label: "SLA at Risk", category: "", tag: "sla" },
+    { label: "Reopened", category: "tickets", tag: "reopened" },
+    { label: "Proofreading", category: "communication", tag: "proofreading" },
+  ];
+
+  function readRecent() {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      if (!raw) return [];
+      const data = JSON.parse(raw);
+      if (!Array.isArray(data)) return [];
+      return data.filter(function (item) {
+        return item && typeof item.id === "string";
+      });
+    } catch {
+      return [];
+    }
+  }
+
+  function readFavorites() {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      if (!raw) return [];
+      const data = JSON.parse(raw);
+      if (!Array.isArray(data)) return [];
+      return data.filter(function (id) {
+        return typeof id === "string";
+      });
+    } catch {
+      return [];
+    }
+  }
+
+  function writeFavorites(ids) {
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+    } catch (e) {}
+  }
+
+  function isFavorite(id) {
+    return readFavorites().indexOf(id) !== -1;
+  }
+
+  function setFavoriteIcon(btn, on) {
+    btn.textContent = on ? "★" : "☆";
+    btn.classList.toggle("is-favorited", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.setAttribute("aria-label", on ? "Remove favorite" : "Add favorite");
+  }
+
+  function categoryLabel(key) {
+    return CATEGORY_LABELS[key] || key || "";
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function stripItemHtml(item) {
+    const label = categoryLabel(item.category);
+    return (
+      '<a class="strip-item" href="prompts/' +
+      encodeURIComponent(item.id) +
+      '.html">' +
+      '<span class="strip-item-title">' +
+      escapeHtml(item.title || item.id) +
+      "</span>" +
+      (label
+        ? '<span class="strip-item-cat">' + escapeHtml(label) + "</span>"
+        : "") +
+      "</a>"
+    );
+  }
+
   function init() {
     const catalog = document.getElementById("catalog");
     if (!catalog) return;
@@ -6,6 +98,11 @@
     const status = document.getElementById("filter-status");
     const hub = document.getElementById("category-browse");
     const pager = document.getElementById("pager");
+    const recentStrip = document.getElementById("recent-strip");
+    const recentItems = document.getElementById("recent-strip-items");
+    const favoritesStrip = document.getElementById("favorites-strip");
+    const favoritesItems = document.getElementById("favorites-strip-items");
+    const shortcutsEl = document.getElementById("situation-shortcuts");
 
     const pagerEnabled = catalog.getAttribute("data-pager") !== "off";
     const PER_PAGE = 10;
@@ -25,6 +122,9 @@
     const hubBtns = hub
       ? Array.prototype.slice.call(hub.querySelectorAll(".cat-hub-btn"))
       : [];
+    const favoriteBtns = Array.prototype.slice.call(
+      catalog.querySelectorAll(".favorite-toggle[data-favorite-id]")
+    );
 
     const state = {
       mode: "browse",
@@ -34,10 +134,32 @@
       page: 1,
     };
 
+    const rowById = {};
+    rows.forEach(function (row) {
+      const id = row.getAttribute("data-id") || "";
+      if (id) rowById[id] = row;
+    });
+
+    function availableTags() {
+      const set = {};
+      rows.forEach(function (row) {
+        (row.getAttribute("data-tags") || "")
+          .split(",")
+          .filter(Boolean)
+          .forEach(function (t) {
+            set[t] = true;
+          });
+      });
+      return set;
+    }
+
     function matchesFilter(row) {
       const q = state.query;
       const hay = row.getAttribute("data-search") || "";
       if (q && hay.indexOf(q) === -1) return false;
+      if (state.category) {
+        if (row.getAttribute("data-category") !== state.category) return false;
+      }
       if (state.tag) {
         const tags = (row.getAttribute("data-tags") || "")
           .split(",")
@@ -62,7 +184,7 @@
       return Math.max(1, Math.ceil(count / PER_PAGE));
     }
 
-    function categoryLabel(c) {
+    function hubCategoryLabel(c) {
       const btn = hubBtns.filter(function (b) {
         return (b.getAttribute("data-category") || "") === c;
       })[0];
@@ -70,7 +192,7 @@
         const lbl = btn.querySelector(".cat-hub-label");
         if (lbl) return lbl.textContent || c;
       }
-      return c;
+      return categoryLabel(c);
     }
 
     function pageList(cur, total) {
@@ -134,7 +256,7 @@
       if (!status) return;
       let msg = "";
       if (state.mode === "category") {
-        msg = matchCount + " in " + categoryLabel(state.category);
+        msg = matchCount + " in " + hubCategoryLabel(state.category);
       } else if (state.mode === "filter") {
         msg =
           matchCount === rows.length
@@ -158,6 +280,32 @@
           (state.mode === "category" && c === state.category);
         btn.classList.toggle("is-active", active);
         btn.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
+
+    function renderTagFilters() {
+      tagFilterBtns.forEach(function (btn) {
+        const t = btn.getAttribute("data-tag") || "";
+        btn.classList.toggle("is-active", t === state.tag);
+      });
+    }
+
+    function shortcutMatches(sc) {
+      if (state.mode !== "filter") return false;
+      if (state.tag !== (sc.tag || "")) return false;
+      return (state.category || "") === (sc.category || "");
+    }
+
+    function renderShortcuts() {
+      if (!shortcutsEl) return;
+      const btns = Array.prototype.slice.call(
+        shortcutsEl.querySelectorAll(".shortcut-btn")
+      );
+      btns.forEach(function (btn) {
+        const idx = parseInt(btn.getAttribute("data-shortcut"), 10);
+        const sc = SHORTCUTS[idx];
+        if (!sc) return;
+        btn.classList.toggle("is-active", shortcutMatches(sc));
       });
     }
 
@@ -186,6 +334,8 @@
       renderPager(pages);
       renderStatus(set.length);
       renderHub();
+      renderTagFilters();
+      renderShortcuts();
       renderEmpty(set.length);
     }
 
@@ -207,9 +357,13 @@
 
     function setMode(mode, opts) {
       state.mode = mode;
-      if (mode === "browse") state.category = "";
+      if (mode === "browse") {
+        state.category = "";
+        state.tag = "";
+      }
       if (mode === "category" && opts && opts.category) {
         state.category = opts.category;
+        state.tag = "";
       }
       state.page = 1;
       render();
@@ -229,11 +383,23 @@
 
     function setTag(tag) {
       state.tag = tag || "";
-      tagFilterBtns.forEach(function (btn) {
-        const t = btn.getAttribute("data-tag") || "";
-        btn.classList.toggle("is-active", t === state.tag);
-      });
       enterFilterOrReturn();
+      render();
+    }
+
+    function applyShortcut(sc) {
+      if (shortcutMatches(sc)) {
+        state.mode = "browse";
+        state.category = "";
+        state.tag = "";
+        state.page = 1;
+        render();
+        return;
+      }
+      state.mode = "filter";
+      state.category = sc.category || "";
+      state.tag = sc.tag || "";
+      state.page = 1;
       render();
     }
 
@@ -248,6 +414,90 @@
         const active = pager.querySelector(".pager-num.is-active");
         if (active) active.focus();
       }
+    }
+
+    function renderRecentStrip() {
+      if (!recentStrip || !recentItems) return;
+      const list = readRecent();
+      recentStrip.setAttribute("data-recent-count", String(list.length));
+      if (!list.length) {
+        recentStrip.setAttribute("hidden", "");
+        recentItems.innerHTML = "";
+        return;
+      }
+      recentStrip.removeAttribute("hidden");
+      recentItems.innerHTML = list.map(stripItemHtml).join("");
+    }
+
+    function renderFavoritesStrip() {
+      if (!favoritesStrip || !favoritesItems) return;
+      const ids = readFavorites();
+      const items = ids
+        .map(function (id) {
+          const row = rowById[id];
+          if (!row) return null;
+          const titleEl = row.querySelector(".prompt-title");
+          return {
+            id: id,
+            title: titleEl ? titleEl.textContent : id,
+            category: row.getAttribute("data-category") || "",
+          };
+        })
+        .filter(Boolean)
+        .sort(function (a, b) {
+          return (a.title || "").localeCompare(b.title || "");
+        });
+
+      if (!items.length) {
+        favoritesStrip.setAttribute("hidden", "");
+        favoritesItems.innerHTML = "";
+        return;
+      }
+      favoritesStrip.removeAttribute("hidden");
+      favoritesItems.innerHTML = items.map(stripItemHtml).join("");
+    }
+
+    function syncAllFavoriteButtons() {
+      favoriteBtns.forEach(function (btn) {
+        const id = btn.getAttribute("data-favorite-id") || "";
+        setFavoriteIcon(btn, isFavorite(id));
+      });
+    }
+
+    function toggleFavorite(id) {
+      if (!id) return;
+      let ids = readFavorites();
+      const idx = ids.indexOf(id);
+      if (idx === -1) ids.push(id);
+      else ids.splice(idx, 1);
+      writeFavorites(ids);
+      syncAllFavoriteButtons();
+      renderFavoritesStrip();
+    }
+
+    function initShortcuts() {
+      if (!shortcutsEl) return;
+      const tags = availableTags();
+      const html = SHORTCUTS.map(function (sc, i) {
+        if (sc.tag && !tags[sc.tag]) return "";
+        return (
+          '<button type="button" class="shortcut-btn" data-shortcut="' +
+          i +
+          '">' +
+          escapeHtml(sc.label) +
+          "</button>"
+        );
+      }).join("");
+      shortcutsEl.innerHTML = html;
+      Array.prototype.slice
+        .call(shortcutsEl.querySelectorAll(".shortcut-btn"))
+        .forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const idx = parseInt(btn.getAttribute("data-shortcut"), 10);
+            const sc = SHORTCUTS[idx];
+            if (sc) applyShortcut(sc);
+          });
+        });
     }
 
     if (search)
@@ -276,6 +526,14 @@
       });
     });
 
+    favoriteBtns.forEach(function (btn) {
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        toggleFavorite(btn.getAttribute("data-favorite-id") || "");
+      });
+    });
+
     if (pager) {
       pager.addEventListener("click", function (ev) {
         const t = ev.target.closest("button[data-page]");
@@ -299,6 +557,19 @@
       }
     });
 
+    window.addEventListener("storage", function (ev) {
+      if (ev.key === FAVORITES_KEY) {
+        syncAllFavoriteButtons();
+        renderFavoritesStrip();
+      } else if (ev.key === RECENT_KEY) {
+        renderRecentStrip();
+      }
+    });
+
+    initShortcuts();
+    syncAllFavoriteButtons();
+    renderRecentStrip();
+    renderFavoritesStrip();
     render();
   }
 

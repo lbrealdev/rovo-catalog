@@ -22,7 +22,7 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 
 ### Other Prompts
 - [Special Commands](prompts/utilities/prompts-special.md)
-- [Quick Prompts](prompts/utilities/quick-prompts.md)
+- [Quick Prompts](prompts/utilities/quick-prompts.md) — queue rituals (list / prioritize / summarize)
 - [Proofreading](prompts/communication/proofreading.md)
 - [Confirm Before Action](prompts/communication/confirm-before-action.md)
 

@@ -63,7 +63,7 @@ prompts/
 │   └── confirm-before-action.md # Get approval before actions
 └── utilities/
     ├── prompts-special.md       # Lean multi-line (+ search/bulk/JQL hubs)
-    └── quick-prompts.md         # Quick conversational prompts
+    └── quick-prompts.md         # Queue rituals (list / prioritize / summarize)
 workbench/                       # Experimental prompts (pointers / in testing)
 guides/                          # Documentation
 docs/                            # Backlog and references

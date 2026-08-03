@@ -433,7 +433,18 @@
 
     function renderRecentStrip() {
       if (!recentStrip || !recentItems) return;
-      const list = readRecent();
+      const list = readRecent()
+        .map(function (item) {
+          const row = rowById[item.id];
+          if (!row) return null;
+          const titleEl = row.querySelector(".prompt-title");
+          return {
+            id: item.id,
+            title: titleEl ? titleEl.textContent : item.title || item.id,
+            category: row.getAttribute("data-category") || item.category || "",
+          };
+        })
+        .filter(Boolean);
       recentStrip.setAttribute("data-recent-count", String(list.length));
       if (!list.length) {
         recentStrip.setAttribute("hidden", "");

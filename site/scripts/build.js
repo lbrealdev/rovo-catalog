@@ -152,7 +152,7 @@ function entryRow(e, opts) {
         <div class="prompt-row-main">
           <a class="prompt-link" href="${href}">
             <span class="prompt-title">${escapeHtml(e.title)}</span>
-            ${modeBadge(e.mode)}
+            ${e.hub_steps && e.hub_steps.length ? '' : modeBadge(e.mode)}
           </a>
           <p class="prompt-when">${escapeHtml(e.use_when)}</p>
           ${tagList(e.tags, { static: staticTags })}

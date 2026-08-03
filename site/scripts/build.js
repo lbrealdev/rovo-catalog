@@ -358,9 +358,29 @@ function placeholderFieldsHtml(placeholders) {
     .join('\n');
 }
 
+/** Union placeholders across hub steps by name (first occurrence wins). */
+function unionPlaceholders(steps) {
+  const seen = new Map();
+  for (const step of steps) {
+    for (const p of step.placeholders || []) {
+      if (!seen.has(p.name)) seen.set(p.name, p);
+    }
+  }
+  return [...seen.values()];
+}
+
+function renderSharedPlaceholders(placeholders) {
+  return `
+  <section class="placeholders hub-placeholders" aria-label="Placeholders">
+    <h2>Placeholders</h2>
+    <form id="placeholder-form" class="placeholder-form" data-hub-form="true">
+      ${placeholderFieldsHtml(placeholders)}
+    </form>
+  </section>`;
+}
+
 function renderStepSection(step) {
   const stepId = step.id;
-  const formId = `placeholder-form-${stepId}`;
   const previewId = `prompt-preview-${stepId}`;
   const rawId = `prompt-body-raw-${stepId}`;
   const copyBtnId = `copy-btn-${stepId}`;
@@ -369,15 +389,8 @@ function renderStepSection(step) {
   <section class="prompt-step mode-${escapeHtml(step.mode)}" id="step-${escapeHtml(stepId)}" data-step-id="${escapeHtml(stepId)}">
     <header class="step-header">
       <h2>${escapeHtml(step.title)}</h2>
-      ${modeBadge(step.mode)}
       <p class="prompt-when">${escapeHtml(step.use_when)}</p>
     </header>
-    <section class="placeholders" aria-label="Placeholders for ${escapeHtml(step.title)}">
-      <h3>Placeholders</h3>
-      <form id="${escapeHtml(formId)}" class="placeholder-form" data-step-form="true">
-        ${placeholderFieldsHtml(step.placeholders)}
-      </form>
-    </section>
     <section class="preview-block" aria-label="Prompt preview for ${escapeHtml(step.title)}">
       <div class="preview-toolbar">
         <h3>Preview</h3>
@@ -449,7 +462,10 @@ function buildPromptPages(entries) {
 
     if (isHub) {
       const steps = e.hub_steps.map((id) => byId.get(id)).filter(Boolean);
-      detailBody = `<div class="hub-steps">${steps.map(renderStepSection).join('\n')}</div>`;
+      const shared = unionPlaceholders(steps);
+      detailBody =
+        renderSharedPlaceholders(shared) +
+        `<div class="hub-steps" aria-label="Copy flow">${steps.map(renderStepSection).join('\n')}</div>`;
       const sources = [...new Set(steps.map((s) => s.source).concat(e.source))];
       sourceNote = sources.join(', ');
     } else {

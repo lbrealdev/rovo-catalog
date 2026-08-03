@@ -130,63 +130,109 @@
     );
   }
 
+  function substitute(template, map) {
+    let out = template;
+    Object.keys(map).forEach(function (name) {
+      const token = "<" + name + ">";
+      out = out.split(token).join(map[name] || token);
+    });
+    return out;
+  }
+
+  function bindFormInputs(inputs, onChange) {
+    inputs.forEach(function (input) {
+      const evt = input.tagName === "SELECT" ? "change" : "input";
+      input.addEventListener(evt, function () {
+        input.dataset.touched = "1";
+        onChange();
+      });
+      if (input.tagName === "SELECT") {
+        input.addEventListener("input", function () {
+          input.dataset.touched = "1";
+          onChange();
+        });
+      }
+    });
+  }
+
+  function applyProfileToInputs(inputs, profile) {
+    if (!window.RovoProfile) return;
+    const p = profile || window.RovoProfile.read();
+    inputs.forEach(function (input) {
+      const name = input.getAttribute("data-placeholder");
+      if (
+        input.hasAttribute("data-profile-field") &&
+        p[name] &&
+        !input.dataset.touched
+      ) {
+        input.value = p[name];
+      }
+    });
+  }
+
+  function valuesFrom(inputs) {
+    const map = {};
+    inputs.forEach(function (input) {
+      map[input.getAttribute("data-placeholder")] = input.value || "";
+    });
+    return map;
+  }
+
+  /** Single-prompt page: one form drives one preview. */
   function initStepForm(form) {
-    const rawEl = form
-      .closest(".prompt-step, .prompt-detail")
-      .querySelector(".prompt-body-raw");
+    const scope = form.closest(".prompt-step, .prompt-detail");
+    if (!scope) return null;
+    const rawEl = scope.querySelector(".prompt-body-raw");
     if (!rawEl) return null;
 
     const template = rawEl.textContent;
     const inputs = fieldControls(form);
 
-    function values() {
-      const map = {};
-      inputs.forEach(function (input) {
-        map[input.getAttribute("data-placeholder")] = input.value || "";
-      });
-      return map;
-    }
-
     function render() {
-      let out = template;
-      const map = values();
-      Object.keys(map).forEach(function (name) {
-        const token = "<" + name + ">";
-        out = out.split(token).join(map[name] || token);
-      });
-      rawEl.textContent = out;
+      rawEl.textContent = substitute(template, valuesFrom(inputs));
     }
 
     function applyProfile(profile) {
-      if (!window.RovoProfile) return;
-      const p = profile || window.RovoProfile.read();
-      inputs.forEach(function (input) {
-        const name = input.getAttribute("data-placeholder");
-        if (
-          input.hasAttribute("data-profile-field") &&
-          p[name] &&
-          !input.dataset.touched
-        ) {
-          input.value = p[name];
-        }
-      });
+      applyProfileToInputs(inputs, profile);
       render();
     }
 
-    inputs.forEach(function (input) {
-      const evt = input.tagName === "SELECT" ? "change" : "input";
-      input.addEventListener(evt, function () {
-        input.dataset.touched = "1";
-        render();
-      });
-      if (input.tagName === "SELECT") {
-        // Also listen to input for consistency across browsers
-        input.addEventListener("input", function () {
-          input.dataset.touched = "1";
-          render();
-        });
-      }
+    bindFormInputs(inputs, render);
+
+    return {
+      render: render,
+      applyProfile: applyProfile,
+      inputs: inputs,
+    };
+  }
+
+  /** Hub workflow: one shared form drives every step preview. */
+  function initHubForm(form) {
+    const article = form.closest(".prompt-detail");
+    if (!article) return null;
+    const rawEls = Array.prototype.slice.call(
+      article.querySelectorAll(".prompt-body-raw")
+    );
+    if (!rawEls.length) return null;
+
+    const templates = rawEls.map(function (el) {
+      return el.textContent;
     });
+    const inputs = fieldControls(form);
+
+    function render() {
+      const map = valuesFrom(inputs);
+      rawEls.forEach(function (el, i) {
+        el.textContent = substitute(templates[i], map);
+      });
+    }
+
+    function applyProfile(profile) {
+      applyProfileToInputs(inputs, profile);
+      render();
+    }
+
+    bindFormInputs(inputs, render);
 
     return {
       render: render,
@@ -238,10 +284,19 @@
       initFavorites();
     }
 
-    const forms = Array.prototype.slice.call(
-      document.querySelectorAll("form[data-step-form]")
-    );
-    const controllers = forms.map(initStepForm).filter(Boolean);
+    const controllers = [];
+    const hubForm = document.querySelector("form[data-hub-form]");
+    if (hubForm) {
+      const hub = initHubForm(hubForm);
+      if (hub) controllers.push(hub);
+    } else {
+      Array.prototype.slice
+        .call(document.querySelectorAll("form[data-step-form]"))
+        .forEach(function (form) {
+          const c = initStepForm(form);
+          if (c) controllers.push(c);
+        });
+    }
 
     document.addEventListener("rovo-profile-updated", function (ev) {
       controllers.forEach(function (c) {

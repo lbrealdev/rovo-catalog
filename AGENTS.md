@@ -85,7 +85,7 @@ python3 -m http.server --directory site/dist
 
 - **Prompts** (`index.html`) — `lang: text` entries
 - **Queries** (`queries.html`) — `lang: jql` entries
-- **Commands** (`commands.html`) — slash-command explainers from `site/content/commands.md` + links to `mode: update` recipes
+- **Commands** (`commands.html`) — slash-command explainers from `site/content/commands.md` only (no recipe list)
 
 **Chrome:** Profile and Theme are header buttons (not pages). Theme uses `data-theme` + `localStorage` key `rovo-catalog-theme` (inline head boot avoids FOUC). Profile stores `PROJECT` and `YOUR-USER`.
 
@@ -124,7 +124,7 @@ Rules:
 - Tips, reference tables, and long examples stay plain markdown (no frontmatter)
 - Multi-step flows = hub entry with `hub_steps` + step entries with `listed: false`
 - Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
-- Catalog list rows and prompt detail headers show no mode badges; Commands recipes for update steps deep-link to `prompts/<hub>.html#step-<id>`
+- Catalog list rows and prompt detail headers show no mode badges; hub update steps live on the hub page (`#step-<id>`), not on Commands
 - Placeholders may use `type: select` with `options: ["…"]` (default `type: text`)
 - `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
 
@@ -137,6 +137,7 @@ Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`,
 Prompts use `<UPPERCASE-WITH-HYPHENS>`:
 - `<PROJECT>` - Jira project key (e.g., SUP, IT)
 - `<TICKET-KEY>` - Ticket ID (e.g., SUP-123)
+- `<TICKET-KEYS>` - Comma-separated Jira keys for batch hubs (e.g., SUP-101, SUP-102)
 - `<YOUR-USER>` - Jira username
 - `<PATTERN>` - Search pattern
 - `<HOURS-AWAY>` - Hours in away period (often a select)

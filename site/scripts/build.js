@@ -308,22 +308,17 @@ function buildListPage({
   fs.writeFileSync(path.join(DIST, outFile), html);
 }
 
-function buildCommandsPage(updateEntries, stepToHub) {
+function buildCommandsPage() {
   const docPath = path.join(CONTENT, 'commands.md');
   const docHtml = simpleMarkdown(fs.readFileSync(docPath, 'utf8'));
-  const recipeRows =
-    updateEntries
-      .map((e) => entryRow(e, { staticTags: true, stepToHub }))
-      .join('\n') || '<li class="muted">No update recipes found.</li>';
 
   const body = render(readTemplate('commands.html'), {
     COMMANDS_DOC: docHtml,
-    RECIPE_ROWS: recipeRows,
   });
 
   const html = layoutShell({
     TITLE: 'Commands · Rovo Agent Toolkit',
-    DESCRIPTION: 'Rovo slash commands and copyable update recipes.',
+    DESCRIPTION: 'Rovo slash commands that change Jira work items.',
     BODY: body,
     ASSET_PAGE_JS: '',
     BODY_CLASS: 'page-commands',
@@ -540,11 +535,9 @@ function main() {
     throw new Error('No catalog entries found under prompts/');
   }
 
-  const { stepToHub } = buildHubMaps(entries);
   const prompts = entries.filter((e) => e.lang !== 'jql');
   const listedPrompts = prompts.filter((e) => e.listed !== false);
   const queries = entries.filter((e) => e.lang === 'jql');
-  const updateRecipes = prompts.filter((e) => e.mode === 'update');
 
   rmrf(DIST);
   fs.mkdirSync(DIST, { recursive: true });
@@ -574,13 +567,13 @@ function main() {
     listHeading: 'All queries',
   });
 
-  buildCommandsPage(updateRecipes, stepToHub);
+  buildCommandsPage();
   buildPromptPages(entries);
   writeCatalogJson(entries);
 
   console.log(
     `Built toolkit → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
-      `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries, ${updateRecipes.length} command recipes`
+      `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries`
   );
 }
 

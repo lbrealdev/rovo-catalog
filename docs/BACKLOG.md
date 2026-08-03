@@ -19,7 +19,8 @@ Foundation work so the catalog has clean, consistent prompts.
 - [x] Normalize SLA field naming in workbench to `Time to resolution` (not `SLA remaining` / `Time to SLA`)
 - [x] Decide AWS Health overlap: one canonical prompt (`workbench/aws-health-notifications.md` vs `prompts/tickets/ticket-analysis.md`)
 - [x] Decide Confluence prompts: keep in workbench, promote to `prompts/` / `guides/`, or both with clear roles
-- [x] Catalog content cleanup: remove duplicate/filler Prompts entries; demote one-shot update recipes to Commands-only (`listed: false`)
+- [x] Catalog content cleanup: remove duplicate/filler Prompts entries; Commands = slash docs only (no copyable recipe list)
+- [x] Batch hubs use one `TICKET-KEYS` list placeholder (not fixed TICKET-1/2/3)
 
 ---
 
@@ -68,7 +69,7 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 - [x] Nav: Prompts · Commands · Queries (pages) + Profile · Theme (buttons)
 - [x] Light/dark theme (`localStorage`, no FOUC)
 - [x] JQL entries (`lang: jql`) on Queries, excluded from Prompts
-- [x] Commands page: slash-command explainers + `mode: update` recipes
+- [x] Commands page: slash-command explainers only (`site/content/commands.md`; no recipe index)
 - [ ] Profile notes + export (Markdown/HTML) — TBD
 - [ ] Confluence / Guides section — later
 
@@ -106,6 +107,6 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 
 ## Working notes
 
-- Content cleanup (Phase 0) unblocks a trustworthy catalog: Prompts = hubs + situational recipes; Commands = `/update-work-items` one-shots + hub apply steps; Queries = `lang: jql`.
+- Content cleanup (Phase 0) unblocks a trustworthy catalog: Prompts = hubs + situational recipes; Commands = slash-command docs (`/update-work-items`, `/create-work-items`); Queries = `lang: jql`.
 - Schema (Phase 1) unblocks the app without rewriting prompts later.
 - Ship MVP (Phases 2–3) with HonorBox-style static pages; polish after daily use.

@@ -747,8 +747,7 @@ code {
   margin-top: 1.5rem;
 }
 
-.prose h2,
-.commands-recipes h2 {
+.prose h2 {
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 600;
@@ -767,12 +766,6 @@ code {
 
 .prose ul {
   padding-left: 1.2rem;
-}
-
-.commands-recipes {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line);
 }
 
 .category-hub {

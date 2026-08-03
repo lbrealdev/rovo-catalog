@@ -66,12 +66,6 @@ function copyDir(src, dest) {
   }
 }
 
-function modeBadge(mode) {
-  const label = mode === 'update' ? 'update' : 'read-only';
-  const cls = mode === 'update' ? 'badge badge-update' : 'badge badge-readonly';
-  return `<span class="${cls}">${label}</span>`;
-}
-
 function tagList(tags, opts) {
   if (!tags.length) return '';
   const staticTag = !!(opts && opts.static);
@@ -157,7 +151,6 @@ function entryRow(e, opts) {
           <a class="prompt-link" href="${href}">
             <span class="prompt-title">${escapeHtml(e.title)}</span>
             ${catSpan}
-            ${e.hub_steps && e.hub_steps.length ? '' : modeBadge(e.mode)}
           </a>
           <p class="prompt-when">${escapeHtml(e.use_when)}</p>
           ${tagList(e.tags, { static: staticTags })}
@@ -497,7 +490,6 @@ function buildPromptPages(entries) {
       ID: escapeHtml(e.id),
       TITLE: escapeHtml(e.title),
       USE_WHEN: escapeHtml(e.use_when),
-      MODE_BADGE: isHub ? '' : modeBadge(e.mode),
       CATEGORY: escapeHtml(CATEGORY_LABELS[e.category] || e.category),
       CATEGORY_KEY: escapeHtml(e.category),
       FAVORITE_TOGGLE: favoriteToggle,

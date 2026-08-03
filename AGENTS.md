@@ -124,7 +124,7 @@ Rules:
 - Tips, reference tables, and long examples stay plain markdown (no frontmatter)
 - Multi-step flows = hub entry with `hub_steps` + step entries with `listed: false`
 - Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
-- Hub list rows and hub step headers have no mode badges; Commands recipes for update steps deep-link to `prompts/<hub>.html#step-<id>`
+- Catalog list rows and prompt detail headers show no mode badges; Commands recipes for update steps deep-link to `prompts/<hub>.html#step-<id>`
 - Placeholders may use `type: select` with `options: ["…"]` (default `type: text`)
 - `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
 

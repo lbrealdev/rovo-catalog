@@ -580,26 +580,6 @@ code {
   padding: 0;
 }
 
-.badge {
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.15rem 0.45rem;
-  border-radius: var(--radius);
-  border: 1px solid transparent;
-}
-
-.badge-readonly {
-  color: var(--readonly);
-  background: var(--readonly-bg);
-}
-
-.badge-update {
-  color: var(--update);
-  background: var(--update-bg);
-}
-
 .btn {
   font: inherit;
   font-weight: 500;
@@ -639,10 +619,6 @@ code {
   margin: 0 0 0.5rem;
   display: inline;
   margin-right: 0.5rem;
-}
-
-.prompt-header .badge {
-  vertical-align: middle;
 }
 
 .placeholders,

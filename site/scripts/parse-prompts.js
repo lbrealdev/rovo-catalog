@@ -166,9 +166,9 @@ function normalizePlaceholder(p, filePath, entryId) {
     throw new Error(`${filePath}: placeholder missing name (${entryId})`);
   }
   const type = p.type || 'text';
-  if (type !== 'text' && type !== 'select') {
+  if (type !== 'text' && type !== 'select' && type !== 'tags') {
     throw new Error(
-      `${filePath}: placeholder ${p.name} type must be text|select (${entryId})`
+      `${filePath}: placeholder ${p.name} type must be text|select|tags (${entryId})`
     );
   }
   const out = {
@@ -184,6 +184,11 @@ function normalizePlaceholder(p, filePath, entryId) {
       );
     }
     out.options = p.options.map((o) => String(o));
+  }
+  if (type === 'tags' && p.options !== undefined) {
+    throw new Error(
+      `${filePath}: tags placeholder ${p.name} must not set options (${entryId})`
+    );
   }
   return out;
 }

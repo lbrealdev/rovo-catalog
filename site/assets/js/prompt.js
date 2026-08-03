@@ -139,8 +139,144 @@
     return out;
   }
 
+  function profileProject() {
+    if (!window.RovoProfile) return "";
+    const p = window.RovoProfile.read() || {};
+    return (p.PROJECT || "").trim();
+  }
+
+  function normalizeTicketKey(raw) {
+    let token = String(raw || "").trim();
+    if (!token) return "";
+    // Strip a trailing comma left by paste/typing.
+    if (token.charAt(token.length - 1) === ",") {
+      token = token.slice(0, -1).trim();
+    }
+    if (!token) return "";
+    if (/^\d+$/.test(token)) {
+      const project = profileProject();
+      if (project) return project + "-" + token;
+    }
+    return token;
+  }
+
+  function splitTagTokens(text) {
+    return String(text || "")
+      .split(/[,\n]+/)
+      .map(function (part) {
+        return part.trim();
+      })
+      .filter(Boolean);
+  }
+
+  function initTagsInput(root, onChange) {
+    const chipsEl = root.querySelector("[data-tags-chips]");
+    const entry = root.querySelector(".tags-entry");
+    const hidden = root.querySelector("input[data-placeholder]");
+    if (!chipsEl || !entry || !hidden) return;
+
+    const tags = [];
+
+    function syncHidden() {
+      hidden.value = tags.join(", ");
+      hidden.dataset.touched = "1";
+      if (typeof onChange === "function") onChange();
+    }
+
+    function renderChips() {
+      chipsEl.innerHTML = "";
+      tags.forEach(function (tag, idx) {
+        const chip = document.createElement("span");
+        chip.className = "tags-chip";
+        chip.setAttribute("data-tag-index", String(idx));
+
+        const label = document.createElement("span");
+        label.className = "tags-chip-label";
+        label.textContent = tag;
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "tags-chip-remove";
+        remove.setAttribute("aria-label", "Remove " + tag);
+        remove.textContent = "×";
+        remove.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          tags.splice(idx, 1);
+          renderChips();
+          syncHidden();
+          entry.focus();
+        });
+
+        chip.appendChild(label);
+        chip.appendChild(remove);
+        chipsEl.appendChild(chip);
+      });
+    }
+
+    function addTokens(parts) {
+      let added = false;
+      parts.forEach(function (part) {
+        const key = normalizeTicketKey(part);
+        if (!key) return;
+        const exists = tags.some(function (t) {
+          return t.toLowerCase() === key.toLowerCase();
+        });
+        if (exists) return;
+        tags.push(key);
+        added = true;
+      });
+      if (added) {
+        renderChips();
+        syncHidden();
+      }
+    }
+
+    function commitEntry() {
+      const parts = splitTagTokens(entry.value);
+      if (!parts.length) return;
+      entry.value = "";
+      addTokens(parts);
+    }
+
+    entry.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === ",") {
+        ev.preventDefault();
+        commitEntry();
+        return;
+      }
+      if (ev.key === "Backspace" && !entry.value && tags.length) {
+        tags.pop();
+        renderChips();
+        syncHidden();
+      }
+    });
+
+    entry.addEventListener("blur", function () {
+      commitEntry();
+    });
+
+    entry.addEventListener("paste", function (ev) {
+      const text =
+        (ev.clipboardData && ev.clipboardData.getData("text")) || "";
+      if (!text || splitTagTokens(text).length < 2) return;
+      ev.preventDefault();
+      addTokens(splitTagTokens(text));
+      entry.value = "";
+    });
+  }
+
+  function initTagsInputs(form, onChange) {
+    if (!form) return;
+    Array.prototype.slice
+      .call(form.querySelectorAll(".tags-input[data-tags-for]"))
+      .forEach(function (root) {
+        initTagsInput(root, onChange);
+      });
+  }
+
   function bindFormInputs(inputs, onChange) {
     inputs.forEach(function (input) {
+      if (input.type === "hidden") return;
       const evt = input.tagName === "SELECT" ? "change" : "input";
       input.addEventListener(evt, function () {
         input.dataset.touched = "1";
@@ -197,6 +333,7 @@
       render();
     }
 
+    initTagsInputs(form, render);
     bindFormInputs(inputs, render);
 
     return {
@@ -232,6 +369,7 @@
       render();
     }
 
+    initTagsInputs(form, render);
     bindFormInputs(inputs, render);
 
     return {

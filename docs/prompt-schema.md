@@ -60,8 +60,8 @@ Each placeholder is `{ name, required, description, type?, options? }`:
 | `name` | yes | Token name matching `<NAME>` in the body |
 | `required` | yes | Whether the field is required in the catalog form |
 | `description` | yes | Short help text under the label |
-| `type` | no | `text` (default) or `select` |
-| `options` | for `select` | Non-empty list of option strings (inline `["a", "b"]` or a YAML block list) |
+| `type` | no | `text` (default), `select`, or `tags` (chip list that serializes to a comma-separated string) |
+| `options` | for `select` | Non-empty list of option strings (inline `["a", "b"]` or a YAML block list). Do not set for `tags`. |
 
 Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `placeholders[].name`.
 
@@ -104,7 +104,7 @@ The future static site will store a mini profile in `localStorage` (persists unt
 | `PROJECT` | yes | Default project key |
 | `YOUR-USER` | yes | Jira username / display handle |
 | `TICKET-KEY` | no | Per use (single ticket) |
-| `TICKET-KEYS` | no | Per use (comma-separated batch list) |
+| `TICKET-KEYS` | no | Per use (`type: tags` chip list → comma-separated keys) |
 | Other ticket/date/pattern fields | no | Per use |
 
 ---

@@ -352,6 +352,12 @@ function placeholderFieldsHtml(placeholders) {
           )
           .join('');
         control = `<select name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}"${profileOwned} ${required}>${options}</select>`;
+      } else if (p.type === 'tags') {
+        control = `<div class="tags-input" data-tags-for="${escapeHtml(name)}">
+  <div class="tags-chips" data-tags-chips></div>
+  <input type="text" class="tags-entry" aria-label="${escapeHtml(name)}" autocomplete="off" />
+  <input type="hidden" name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}" value="" ${required} />
+</div>`;
       } else {
         control = `<input type="text" name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}"${profileOwned} ${required} autocomplete="off" />`;
       }

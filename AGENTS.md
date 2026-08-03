@@ -51,20 +51,20 @@ AND remaining("Time to resolution") < 72
 ```
 prompts/
 ├── triage/
-│   └── daily-triage.md          # Daily triage operations
+│   └── daily-triage.md          # Daily triage (+ Unassigned Tickets hub)
 ├── tickets/
-│   ├── ticket-analysis.md       # Analyze & close tickets
-│   └── reopened-tickets.md      # Handle reopened tickets
+│   ├── ticket-analysis.md       # Analyze & close (+ AWS Health hub)
+│   └── reopened-tickets.md      # Reopened single + batch hubs
 ├── sla/
-│   ├── sla-management.md        # SLA-aware prompts
-│   └── sla-workflow.md          # SLA continuation workflow
+│   ├── sla-management.md        # SLA signals / absence hubs
+│   └── sla-workflow.md          # SLA clone continuation hub
 ├── communication/
 │   ├── proofreading.md          # Message proofreading
 │   └── confirm-before-action.md # Get approval before actions
 └── utilities/
-    ├── prompts-special.md       # Lean multi-line prompts
+    ├── prompts-special.md       # Lean multi-line (+ search/bulk/JQL hubs)
     └── quick-prompts.md         # Quick conversational prompts
-workbench/                       # Experimental prompts (in testing)
+workbench/                       # Experimental prompts (pointers / in testing)
 guides/                          # Documentation
 docs/                            # Backlog and references
 queries/jql/                     # Reusable JQL templates
@@ -123,8 +123,12 @@ Rules:
 - Body is the immediate fenced `text` or `jql` block after frontmatter
 - Tips, reference tables, and long examples stay plain markdown (no frontmatter)
 - Multi-step flows = hub entry with `hub_steps` + step entries with `listed: false`
+- Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
+- Hub list rows and hub step headers have no mode badges; Commands recipes for update steps deep-link to `prompts/<hub>.html#step-<id>`
 - Placeholders may use `type: select` with `options: ["…"]` (default `type: text`)
-- `workbench/` schema migration is deferred
+- `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
+
+**Catalog hubs:** `triage-unassigned-tickets`, `sla-clone-continuation`, `sla-signal-continuation`, `sla-expiring-absence`, `tickets-reopened`, `tickets-reopened-batch-flow`, `tickets-aws-health`, `utilities-search-assign`, `utilities-bulk-assign`, `utilities-jql-prioritize`.
 
 Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`, `YOUR-USER`.
 
@@ -135,8 +139,9 @@ Prompts use `<UPPERCASE-WITH-HYPHENS>`:
 - `<TICKET-KEY>` - Ticket ID (e.g., SUP-123)
 - `<YOUR-USER>` - Jira username
 - `<PATTERN>` - Search pattern
-- `<HOURS-AWAY>` - Hours in away period
-- `<LOOKBACK>` - Selectable time window phrase (e.g. Unassigned Tickets review)
+- `<HOURS-AWAY>` - Hours in away period (often a select)
+- `<LOOKBACK>` - Selectable time window (natural language or JQL relative, per hub)
+- `<TARGET-STATUS>` - Selectable transition status for Apply steps
 
 ## Prompt Conventions
 

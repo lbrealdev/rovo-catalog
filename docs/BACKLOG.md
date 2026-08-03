@@ -78,7 +78,7 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 - [x] Situation shortcuts (Monday triage, SLA at risk, Reopened, Proofreading)
 - [x] Recently used / favorites (`localStorage`) — Prompts catalog only
 - [x] JQL snippets section with copy (Queries page)
-- [x] Link related prompts via hubs (`hub_steps`) — Unassigned Tickets triage hub; more pairs later (e.g. find similar → draft resolution)
+- [x] Link related prompts via hubs (`hub_steps`) — Unassigned Tickets + Issue #24 rollout (SLA clone/signals, reopened, AWS Health, utilities)
 - [x] Readability-focused styling only (avoid over-design) — sparse, high-quality impression (browse hub + pager + HonorBox theme — PR #18)
 
 ---
@@ -86,7 +86,8 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 ## Phase 5 — Optional later
 
 - [ ] Docs/changelog section (Marmite or simple pages) if a writing surface is needed beside the catalog
-- [ ] Promote stable workbench prompts into catalog categories (apply prompt schema on promotion)
+- [x] Promote AWS Health workbench finder into `tickets-aws-health` hub (Issue #24); other workbench prompts still deferred
+- [ ] Promote remaining stable workbench prompts into catalog categories (apply prompt schema on promotion)
 - [ ] Track Rovo product changes that require prompt updates
 - [ ] Jira API / API token for fetching tickets — only behind a private/proxy design (never bake secrets into public Pages JS)
 

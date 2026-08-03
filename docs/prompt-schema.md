@@ -69,9 +69,15 @@ Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `pla
 
 ### Hubs (multi-step flows)
 
-Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). Unknown `hub_steps` ids, and a hub listing its own id, fail the build.
+Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). The builder **unions** step placeholders onto one shared hub form (first definition wins) — put each token on the step that introduces it; do not duplicate the same name across steps. Hub list rows and hub detail headers omit mode badges; Commands recipes for `mode: update` steps deep-link to `prompts/<hub>.html#step-<id>`. Unknown `hub_steps` ids, a hub listing its own id, and a step owned by two hubs fail the build.
 
-Example: [`prompts/triage/daily-triage.md`](../prompts/triage/daily-triage.md) — **Unassigned Tickets**.
+Examples:
+
+- [`prompts/triage/daily-triage.md`](../prompts/triage/daily-triage.md) — **Unassigned Tickets**
+- [`prompts/sla/sla-workflow.md`](../prompts/sla/sla-workflow.md) — **SLA Clone Continuation**
+- [`prompts/tickets/reopened-tickets.md`](../prompts/tickets/reopened-tickets.md) — **Reopened Tickets** / batch
+- [`prompts/tickets/ticket-analysis.md`](../prompts/tickets/ticket-analysis.md) — **AWS Health Notifications**
+- [`prompts/utilities/prompts-special.md`](../prompts/utilities/prompts-special.md) — search/assign, bulk, JQL prioritize hubs
 
 ---
 

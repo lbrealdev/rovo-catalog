@@ -27,7 +27,7 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 - [Confirm Before Action](prompts/communication/confirm-before-action.md)
 
 ### Experimental Prompts
-- [AWS Health Notifications](workbench/aws-health-notifications.md) — two-step finder; stable close-out is in Ticket Analysis
+- [AWS Health Notifications](prompts/tickets/ticket-analysis.md) — stable Review → Apply hub (`tickets-aws-health`); workbench file is a pointer
 - [Confluence Documentation](workbench/confluence-explain.md) — explain/Q&A variants; stable summarization is in Guides
 - [Find Similar Resolved Tickets](workbench/find-similar-resolved.md)
 - [Recently Updated Tickets](workbench/recently-updated-tickets.md)

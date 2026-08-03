@@ -19,6 +19,7 @@ Foundation work so the catalog has clean, consistent prompts.
 - [x] Normalize SLA field naming in workbench to `Time to resolution` (not `SLA remaining` / `Time to SLA`)
 - [x] Decide AWS Health overlap: one canonical prompt (`workbench/aws-health-notifications.md` vs `prompts/tickets/ticket-analysis.md`)
 - [x] Decide Confluence prompts: keep in workbench, promote to `prompts/` / `guides/`, or both with clear roles
+- [x] Catalog content cleanup: remove duplicate/filler Prompts entries; demote one-shot update recipes to Commands-only (`listed: false`)
 
 ---
 
@@ -105,6 +106,6 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 
 ## Working notes
 
-- Content cleanup (Phase 0) unblocks a trustworthy catalog.
+- Content cleanup (Phase 0) unblocks a trustworthy catalog: Prompts = hubs + situational recipes; Commands = `/update-work-items` one-shots + hub apply steps; Queries = `lang: jql`.
 - Schema (Phase 1) unblocks the app without rewriting prompts later.
 - Ship MVP (Phases 2–3) with HonorBox-style static pages; polish after daily use.

@@ -1,8 +1,10 @@
 # Special Prompts
 
-Lean multi-line prompts that combine multiple Rovo actions efficiently.
+Multi-step hubs (review → confirm → update) plus one-shot `/update-work-items` recipes.
 
-**Use when:** You need to perform several actions on a ticket at once.
+**Use when:** You need to perform several actions on tickets efficiently.
+
+One-shot recipes (`Assign + Comment`, `Status Change + Comment`, `Status + Resolution + Close`) use `listed: false` so they appear on **Commands**, not the Prompts catalog.
 
 ---
 id: utilities-assign-comment
@@ -18,6 +20,7 @@ placeholders:
     required: true
     description: Jira username
 mode: update
+listed: false
 ---
 
 ```text
@@ -37,6 +40,7 @@ placeholders:
     required: true
     description: Ticket ID (e.g. SUP-123)
 mode: update
+listed: false
 ---
 
 ```text
@@ -119,6 +123,7 @@ placeholders:
     required: true
     description: Ticket ID (e.g. SUP-123)
 mode: update
+listed: false
 ---
 
 ```text

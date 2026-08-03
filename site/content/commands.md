@@ -31,6 +31,6 @@ Creates **new** issues in a project (including clones used for SLA continuation)
 
 ## Workflow reminder
 
-1. **Review** — copy a read-only step from Prompts (hubs list tickets or draft comments).
-2. **Confirm** — check the table or draft yourself.
-3. **Change** — paste the hub’s update/create step, which starts with `/update-work-items` or `/create-work-items`.
+- **Review** — copy a read-only step from Prompts (hubs list tickets or draft comments).
+- **Confirm** — check the table or draft yourself.
+- **Change** — paste the hub’s update/create step, which starts with `/update-work-items` or `/create-work-items`.

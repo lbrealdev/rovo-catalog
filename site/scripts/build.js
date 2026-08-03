@@ -126,16 +126,14 @@ function buildHubMaps(entries) {
   return { byId, stepToHub };
 }
 
-function entryHref(e, stepToHub) {
-  const hubId = stepToHub && stepToHub.get(e.id);
-  if (hubId) return rootPath(`prompts/${hubId}.html#step-${e.id}`);
+function entryHref(e) {
   return rootPath(`prompts/${e.id}.html`);
 }
 
 function entryRow(e, opts) {
   const staticTags = opts && opts.staticTags;
   const showFavorites = opts && opts.showFavorites;
-  const href = (opts && opts.href) || entryHref(e, opts && opts.stepToHub);
+  const href = (opts && opts.href) || entryHref(e);
   const catLabel = CATEGORY_LABELS[e.category] || e.category || '';
   const catSpan = catLabel
     ? `<span class="prompt-cat">${escapeHtml(catLabel)}</span>`
@@ -227,6 +225,10 @@ function simpleMarkdown(md) {
 
   function inlineFormat(text) {
     return escapeHtml(text)
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener">$1</a>'
+      )
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   }

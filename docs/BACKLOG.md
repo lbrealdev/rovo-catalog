@@ -78,7 +78,7 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 - [x] Situation shortcuts (Monday triage, SLA at risk, Reopened, Proofreading)
 - [x] Recently used / favorites (`localStorage`) — Prompts catalog only
 - [x] JQL snippets section with copy (Queries page)
-- [ ] Link related prompts (e.g. find similar → draft resolution)
+- [x] Link related prompts via hubs (`hub_steps`) — Unassigned Tickets triage hub; more pairs later (e.g. find similar → draft resolution)
 - [x] Readability-focused styling only (avoid over-design) — sparse, high-quality impression (browse hub + pager + HonorBox theme — PR #18)
 
 ---

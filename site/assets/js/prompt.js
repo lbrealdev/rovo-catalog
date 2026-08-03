@@ -123,43 +123,21 @@
     });
   }
 
-  function init() {
-    const form = document.getElementById("placeholder-form");
-    const rawEl = document.getElementById("prompt-body-raw");
-    const preview = document.getElementById("prompt-preview");
-    const copyBtn = document.getElementById("copy-btn");
-    const copyStatus = document.getElementById("copy-status");
-    if (!rawEl || !preview) return;
+  function fieldControls(form) {
+    if (!form) return [];
+    return Array.prototype.slice.call(
+      form.querySelectorAll("input[data-placeholder], select[data-placeholder]")
+    );
+  }
 
-    // Queries are out of scope for recent/favorites (Prompts catalog only).
-    const isQuery = document.body.classList.contains("kind-query");
-    if (!isQuery) {
-      initRecent();
-      initFavorites();
-    }
+  function initStepForm(form) {
+    const rawEl = form
+      .closest(".prompt-step, .prompt-detail")
+      .querySelector(".prompt-body-raw");
+    if (!rawEl) return null;
 
     const template = rawEl.textContent;
-    const inputs = form
-      ? Array.prototype.slice.call(
-          form.querySelectorAll("input[data-placeholder]")
-        )
-      : [];
-
-    function applyProfile(profile) {
-      if (!window.RovoProfile) return;
-      const p = profile || window.RovoProfile.read();
-      inputs.forEach(function (input) {
-        const name = input.getAttribute("data-placeholder");
-        if (
-          input.hasAttribute("data-profile-field") &&
-          p[name] &&
-          !input.dataset.touched
-        ) {
-          input.value = p[name];
-        }
-      });
-      render();
-    }
+    const inputs = fieldControls(form);
 
     function values() {
       const map = {};
@@ -179,28 +157,59 @@
       rawEl.textContent = out;
     }
 
+    function applyProfile(profile) {
+      if (!window.RovoProfile) return;
+      const p = profile || window.RovoProfile.read();
+      inputs.forEach(function (input) {
+        const name = input.getAttribute("data-placeholder");
+        if (
+          input.hasAttribute("data-profile-field") &&
+          p[name] &&
+          !input.dataset.touched
+        ) {
+          input.value = p[name];
+        }
+      });
+      render();
+    }
+
     inputs.forEach(function (input) {
-      input.addEventListener("input", function () {
+      const evt = input.tagName === "SELECT" ? "change" : "input";
+      input.addEventListener(evt, function () {
         input.dataset.touched = "1";
         render();
       });
+      if (input.tagName === "SELECT") {
+        // Also listen to input for consistency across browsers
+        input.addEventListener("input", function () {
+          input.dataset.touched = "1";
+          render();
+        });
+      }
     });
 
-    document.addEventListener("rovo-profile-updated", function (ev) {
-      inputs.forEach(function (input) {
-        if (input.hasAttribute("data-profile-field")) {
-          delete input.dataset.touched;
-        }
-      });
-      applyProfile(ev.detail);
-    });
+    return {
+      render: render,
+      applyProfile: applyProfile,
+      inputs: inputs,
+    };
+  }
 
-    if (copyBtn) {
-      copyBtn.addEventListener("click", async function () {
+  function initCopyButtons() {
+    const buttons = Array.prototype.slice.call(
+      document.querySelectorAll(".copy-btn[data-copy-target]")
+    );
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", async function () {
+        const targetId = btn.getAttribute("data-copy-target") || "";
+        const statusId = btn.getAttribute("data-copy-status") || "";
+        const rawEl = document.getElementById(targetId);
+        const statusEl = statusId ? document.getElementById(statusId) : null;
+        if (!rawEl) return;
         const text = rawEl.textContent;
         try {
           await navigator.clipboard.writeText(text);
-          if (copyStatus) copyStatus.textContent = "Copied";
+          if (statusEl) statusEl.textContent = "Copied";
         } catch {
           const range = document.createRange();
           range.selectNodeContents(rawEl);
@@ -209,18 +218,47 @@
           sel.addRange(range);
           try {
             document.execCommand("copy");
-            if (copyStatus) copyStatus.textContent = "Copied";
+            if (statusEl) statusEl.textContent = "Copied";
           } catch {
-            if (copyStatus) copyStatus.textContent = "Copy failed — select manually";
+            if (statusEl) statusEl.textContent = "Copy failed — select manually";
           }
         }
         setTimeout(function () {
-          if (copyStatus) copyStatus.textContent = "";
+          if (statusEl) statusEl.textContent = "";
         }, 1600);
       });
+    });
+  }
+
+  function init() {
+    // Queries are out of scope for recent/favorites (Prompts catalog only).
+    const isQuery = document.body.classList.contains("kind-query");
+    if (!isQuery) {
+      initRecent();
+      initFavorites();
     }
 
-    applyProfile();
+    const forms = Array.prototype.slice.call(
+      document.querySelectorAll("form[data-step-form]")
+    );
+    const controllers = forms.map(initStepForm).filter(Boolean);
+
+    document.addEventListener("rovo-profile-updated", function (ev) {
+      controllers.forEach(function (c) {
+        c.inputs.forEach(function (input) {
+          if (input.hasAttribute("data-profile-field")) {
+            delete input.dataset.touched;
+          }
+        });
+        c.applyProfile(ev.detail);
+      });
+    });
+
+    controllers.forEach(function (c) {
+      c.applyProfile();
+    });
+
+    initCopyButtons();
   }
 
   document.addEventListener("DOMContentLoaded", init);

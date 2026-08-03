@@ -7,14 +7,56 @@ const REQUIRED = ['id', 'title', 'category', 'tags', 'use_when', 'placeholders',
 const ENTRY_RE = /^---\n([\s\S]*?)\n---\n\s*```(text|jql)\n([\s\S]*?)\n```/gm;
 
 /**
+ * Quote-aware split for inline YAML lists: [a, "b, c", 'd'].
+ */
+function parseInlineList(inner) {
+  const s = String(inner).trim();
+  if (!s) return [];
+  const items = [];
+  let cur = '';
+  let inQuote = null;
+  for (let i = 0; i < s.length; i += 1) {
+    const ch = s[i];
+    if (inQuote) {
+      if (ch === inQuote) inQuote = null;
+      else cur += ch;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      inQuote = ch;
+      continue;
+    }
+    if (ch === ',') {
+      items.push(parseScalar(cur.trim()));
+      cur = '';
+      continue;
+    }
+    cur += ch;
+  }
+  items.push(parseScalar(cur.trim()));
+  return items;
+}
+
+function parseValue(raw) {
+  const s = String(raw).trim();
+  if (s === '[]') return [];
+  const inlineList = s.match(/^\[(.*)\]$/);
+  if (inlineList) return parseInlineList(inlineList[1]);
+  return parseScalar(s);
+}
+
+/**
  * Constrained YAML subset for prompt frontmatter:
  * - key: scalar
  * - key: [a, b]
+ * - key: ["a b", "c"]
  * - key: []
  * - key:
  *     - name: X
  *       required: true
  *       description: ...
+ *       type: select
+ *       options: ["a", "b"]
  */
 function parseFrontmatter(yamlText) {
   const lines = yamlText.replace(/\r\n/g, '\n').split('\n');
@@ -52,13 +94,32 @@ function parseFrontmatter(yamlText) {
           throw new Error(`Expected list item under ${key}, got: ${next}`);
         }
         const obj = {};
-        obj[itemStart[1]] = parseScalar(itemStart[2]);
+        obj[itemStart[1]] = parseValue(itemStart[2]);
         i += 1;
         while (i < lines.length) {
-          const prop = lines[i].match(/^\s{2,}([A-Za-z0-9_]+):\s*(.*)$/);
+          const propLine = lines[i];
+          if (propLine.match(/^\s*-\s+/)) break;
+          const prop = propLine.match(/^\s{2,}([A-Za-z0-9_]+):\s*(.*)$/);
           if (!prop) break;
-          if (lines[i].match(/^\s*-\s+/)) break;
-          obj[prop[1]] = parseScalar(prop[2]);
+          const propKey = prop[1];
+          const propRest = prop[2];
+          if (propRest === '' || propRest === null) {
+            // Nested scalar list under object property (e.g. options:)
+            const nested = [];
+            i += 1;
+            while (i < lines.length) {
+              const nestedLine = lines[i];
+              const nestedItem = nestedLine.match(/^\s{2,}-\s+(.*)$/);
+              if (!nestedItem) break;
+              // Stop if this looks like a new object list item with a key: `- name:`
+              if (/^\s*-\s+[A-Za-z0-9_]+:\s*/.test(nestedLine)) break;
+              nested.push(parseScalar(nestedItem[1]));
+              i += 1;
+            }
+            obj[propKey] = nested;
+            continue;
+          }
+          obj[propKey] = parseValue(propRest);
           i += 1;
         }
         items.push(obj);
@@ -67,23 +128,7 @@ function parseFrontmatter(yamlText) {
       continue;
     }
 
-    if (rest === '[]') {
-      meta[key] = [];
-      i += 1;
-      continue;
-    }
-
-    const inlineList = rest.match(/^\[(.*)\]$/);
-    if (inlineList) {
-      const inner = inlineList[1].trim();
-      meta[key] = inner
-        ? inner.split(',').map((s) => parseScalar(s.trim()))
-        : [];
-      i += 1;
-      continue;
-    }
-
-    meta[key] = parseScalar(rest);
+    meta[key] = parseValue(rest);
     i += 1;
   }
 
@@ -102,6 +147,33 @@ function parseScalar(raw) {
     return s.slice(1, -1);
   }
   return s;
+}
+
+function normalizePlaceholder(p, filePath, entryId) {
+  if (!p || typeof p !== 'object' || !p.name) {
+    throw new Error(`${filePath}: placeholder missing name (${entryId})`);
+  }
+  const type = p.type || 'text';
+  if (type !== 'text' && type !== 'select') {
+    throw new Error(
+      `${filePath}: placeholder ${p.name} type must be text|select (${entryId})`
+    );
+  }
+  const out = {
+    name: p.name,
+    required: !!p.required,
+    description: p.description || p.name,
+    type,
+  };
+  if (type === 'select') {
+    if (!Array.isArray(p.options) || !p.options.length) {
+      throw new Error(
+        `${filePath}: select placeholder ${p.name} requires non-empty options (${entryId})`
+      );
+    }
+    out.options = p.options.map((o) => String(o));
+  }
+  return out;
 }
 
 function validateEntry(meta, body, lang, filePath) {
@@ -125,14 +197,31 @@ function validateEntry(meta, body, lang, filePath) {
   if (!body.trim()) {
     throw new Error(`${filePath}: empty body (${meta.id})`);
   }
+
+  const placeholders = meta.placeholders.map((p) =>
+    normalizePlaceholder(p, filePath, meta.id)
+  );
+
+  let hubSteps = null;
+  if (meta.hub_steps !== undefined) {
+    if (!Array.isArray(meta.hub_steps) || !meta.hub_steps.length) {
+      throw new Error(`${filePath}: hub_steps must be a non-empty array (${meta.id})`);
+    }
+    hubSteps = meta.hub_steps.map((s) => String(s));
+  }
+
+  const listed = meta.listed === undefined ? true : !!meta.listed;
+
   return {
     id: meta.id,
     title: meta.title,
     category: meta.category,
     tags: meta.tags,
     use_when: meta.use_when,
-    placeholders: meta.placeholders,
+    placeholders,
     mode: meta.mode,
+    listed,
+    hub_steps: hubSteps,
     lang,
     body: body.replace(/\s+$/, ''),
     source: path.relative(process.cwd(), filePath).replace(/\\/g, '/'),
@@ -166,6 +255,28 @@ function walkMarkdownFiles(dir) {
   return out.sort();
 }
 
+function validateHubSteps(entries) {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  const owned = new Map();
+
+  for (const entry of entries) {
+    if (!entry.hub_steps) continue;
+    for (const stepId of entry.hub_steps) {
+      if (!byId.has(stepId)) {
+        throw new Error(
+          `${entry.source}: hub_steps references unknown id "${stepId}" (${entry.id})`
+        );
+      }
+      if (owned.has(stepId)) {
+        throw new Error(
+          `Step "${stepId}" belongs to both "${owned.get(stepId)}" and "${entry.id}"`
+        );
+      }
+      owned.set(stepId, entry.id);
+    }
+  }
+}
+
 function loadAllPrompts(promptsDir) {
   const files = walkMarkdownFiles(promptsDir);
   const entries = [];
@@ -182,6 +293,8 @@ function loadAllPrompts(promptsDir) {
       entries.push(entry);
     }
   }
+
+  validateHubSteps(entries);
 
   const order = ['triage', 'tickets', 'sla', 'communication', 'utilities'];
   entries.sort((a, b) => {

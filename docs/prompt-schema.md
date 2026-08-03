@@ -45,11 +45,31 @@ Keep a short human intro at the top of each file. Multiple entries may live in o
 | `category` | yes | Folder name: `triage`, `tickets`, `sla`, `communication`, `utilities` |
 | `tags` | yes | List of lowercase tags for later filters |
 | `use_when` | yes | Short situation blurb |
-| `placeholders` | yes | List of `{ name, required, description }` (use `[]` if none) |
+| `placeholders` | yes | List of placeholder objects (use `[]` if none) |
 | `mode` | yes | `read-only` or `update` (prompts that use `/update-work-items` or `/create-work-items`) |
+| `listed` | no | Default `true`. `false` hides the entry from the Prompts index (step entries under a hub) |
+| `hub_steps` | no | Ordered list of entry ids rendered as stacked steps on one hub page |
 | body | yes | Fenced block immediately after frontmatter |
 
+### Placeholders
+
+Each placeholder is `{ name, required, description, type?, options? }`:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | yes | Token name matching `<NAME>` in the body |
+| `required` | yes | Whether the field is required in the catalog form |
+| `description` | yes | Short help text under the label |
+| `type` | no | `text` (default) or `select` |
+| `options` | for `select` | Non-empty list of option strings (inline `["a", "b"]` or a YAML block list) |
+
 Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `placeholders[].name`.
+
+### Hubs (multi-step flows)
+
+Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). Unknown `hub_steps` ids fail the build.
+
+Example: [`prompts/triage/daily-triage.md`](../prompts/triage/daily-triage.md) — **Unassigned Tickets**.
 
 ---
 
@@ -63,7 +83,7 @@ Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `pla
 - Reference tables (e.g. SLA function tables, Rovo command lists)
 - Long example drafts that illustrate a template (e.g. confirm-before-action examples)
 
-Multi-step flows (review → apply) are **two separate entries**, not a linked workflow engine.
+Multi-step flows (review → apply) use a **hub entry** (`hub_steps`) plus unlisted step entries — not unrelated list rows.
 
 ---
 

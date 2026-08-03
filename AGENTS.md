@@ -122,7 +122,8 @@ Rules:
 - `mode`: `read-only` or `update` (for `/update-work-items` / `/create-work-items`)
 - Body is the immediate fenced `text` or `jql` block after frontmatter
 - Tips, reference tables, and long examples stay plain markdown (no frontmatter)
-- Multi-step flows = separate entries (review template + apply template)
+- Multi-step flows = hub entry with `hub_steps` + step entries with `listed: false`
+- Placeholders may use `type: select` with `options: ["…"]` (default `type: text`)
 - `workbench/` schema migration is deferred
 
 Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`, `YOUR-USER`.
@@ -135,6 +136,7 @@ Prompts use `<UPPERCASE-WITH-HYPHENS>`:
 - `<YOUR-USER>` - Jira username
 - `<PATTERN>` - Search pattern
 - `<HOURS-AWAY>` - Hours in away period
+- `<LOOKBACK>` - Selectable time window phrase (e.g. Unassigned Tickets review)
 
 ## Prompt Conventions
 

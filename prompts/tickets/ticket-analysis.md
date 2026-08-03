@@ -4,52 +4,75 @@ Prompts for analyzing tickets and determining if action is required or if they c
 
 **Use when:** You need to quickly assess tickets and identify closure candidates.
 
-**Role:** Stable catalog close-out for informational AWS Health tickets. For the experimental two-step finder (review table first, then resolve), see [AWS Health Notification Ticket Finder](../../workbench/aws-health-notifications.md).
+**Role:** Stable catalog hub for informational AWS Health tickets (review → apply). The workbench note points here after promotion.
+
+---
+id: tickets-aws-health
+title: AWS Health Notifications
+category: tickets
+tags: [aws, health, notification, close]
+use_when: Find informational AWS Health tickets assigned to you, then resolve after confirm
+placeholders: []
+mode: read-only
+hub_steps: [tickets-filter-informational-aws, tickets-close-aws-health]
+---
+
+```text
+Use the steps below: review AWS Health notification tickets assigned to you, then resolve the informational ones after you confirm.
+```
+
+---
+id: tickets-filter-informational-aws
+title: Review AWS Health Notification Tickets
+category: tickets
+tags: [aws, notification, filter]
+use_when: Find and classify AWS Health notification tickets assigned to you — drafts only
+placeholders:
+  - name: PROJECT
+    required: true
+    description: Jira project key (e.g. SUP)
+mode: read-only
+listed: false
+---
+
+```text
+In <PROJECT>, find tickets that are assigned to me and open, contain "aws_health" in the description, and look like informational-only AWS notifications requiring no action.
+
+Use JQL:
+project = <PROJECT> AND assignee = currentUser() AND statusCategory != Done AND description ~ "aws_health" ORDER BY created DESC
+
+Display results in a table with these columns:
+Key | Summary | Status | Time to resolution | Created
+
+For each ticket:
+- Classify: Informational-only or Requires follow-up
+- For informational tickets: draft a Reply to customer comment explaining why no action is required
+
+Limit to 20 most recent. Do NOT update any tickets until I confirm.
+```
 
 ---
 id: tickets-close-aws-health
 title: Close AWS Health Notification Tickets
 category: tickets
 tags: [aws, health, close, update]
-use_when: Close informational AWS Health tickets assigned to you
-placeholders: []
-mode: update
----
-
-```text
-/update-work-items
-For tickets assigned to me with "aws_health" in the description:
-- If informational-only (AWS notification requiring no action):
-  - Resolve with status "Resolved"
-  - Add comment: "AWS Health notification received. No action required. Closing."
-```
-
----
-id: tickets-filter-informational-aws
-title: Filter Informational Tickets (AWS Example)
-category: tickets
-tags: [aws, notification, filter]
-use_when: Find and classify AWS notification-style tickets; draft closes, confirm before changes
+use_when: After confirming the review list — resolve informational AWS Health tickets
 placeholders:
-  - name: PROJECT
+  - name: TARGET-STATUS
     required: true
-    description: Jira project key (e.g. SUP)
+    type: select
+    description: Status to transition informational tickets into
+    options: ["Resolved", "Closed"]
 mode: update
+listed: false
 ---
 
 ```text
 /update-work-items
-In <PROJECT>, find AWS notification-type tickets (Health, Budgets, CloudWatch alarms):
-
-Use JQL:
-project = <PROJECT> AND (summary ~ "AWS" OR description ~ "AWS") AND (summary ~ "notification" OR description ~ "notification" OR description ~ "AWS Health" OR description ~ "CloudWatch Alarm" OR description ~ "AWS Budgets") ORDER BY created DESC
-
-For each ticket:
-- Show: Key, Summary, Status, Assignee, Created
-- Classify: Informational-only or Requires follow-up
-- For informational tickets: draft closing comment and suggest status/resolution
-
-Limit to 20 most recent. Read-only unless I confirm changes.
+For the informational-only tickets listed above that I confirmed:
+- Add each ticket's drafted Reply to customer comment (or "AWS Health notification received. No action required. Closing." if no draft)
+- Change status to "<TARGET-STATUS>"
+Skip every ticket classified as Requires follow-up. If more than 20 tickets were confirmed, stop and ask me to narrow the scope.
 ```
 
 ---

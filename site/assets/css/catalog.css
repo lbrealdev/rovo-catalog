@@ -691,7 +691,7 @@ code {
   border-left: 3px solid var(--update);
 }
 
-.prompt-step.mode-readonly .prompt-body {
+.prompt-step.mode-read-only .prompt-body {
   border-left: 3px solid var(--readonly);
 }
 
@@ -748,7 +748,7 @@ code {
   border-left: 3px solid var(--update);
 }
 
-.page-prompt.mode-readonly .prompt-body {
+.page-prompt.mode-read-only .prompt-body {
   border-left: 3px solid var(--readonly);
 }
 

@@ -8,6 +8,7 @@ const ENTRY_RE = /^---\n([\s\S]*?)\n---\n\s*```(text|jql)\n([\s\S]*?)\n```/gm;
 
 /**
  * Quote-aware split for inline YAML lists: [a, "b, c", 'd'].
+ * Escape sequences inside quotes are not supported (see docs/prompt-schema.md).
  */
 function parseInlineList(inner) {
   const s = String(inner).trim();
@@ -104,7 +105,18 @@ function parseFrontmatter(yamlText) {
           const propKey = prop[1];
           const propRest = prop[2];
           if (propRest === '' || propRest === null) {
-            // Nested scalar list under object property (e.g. options:)
+            // Nested scalar list only when the next non-empty line is a list item
+            let peek = i + 1;
+            while (peek < lines.length && !lines[peek].trim()) peek += 1;
+            const peekLine = peek < lines.length ? lines[peek] : '';
+            const looksLikeNestedList =
+              /^\s{2,}-\s+(.*)$/.test(peekLine) &&
+              !/^\s*-\s+[A-Za-z0-9_]+:\s*/.test(peekLine);
+            if (!looksLikeNestedList) {
+              obj[propKey] = '';
+              i += 1;
+              continue;
+            }
             const nested = [];
             i += 1;
             while (i < lines.length) {
@@ -185,6 +197,11 @@ function validateEntry(meta, body, lang, filePath) {
   if (!meta.id || typeof meta.id !== 'string') {
     throw new Error(`${filePath}: invalid id`);
   }
+  if (!/^[a-z0-9-]+$/.test(meta.id)) {
+    throw new Error(
+      `${filePath}: id must match /^[a-z0-9-]+$/ (got "${meta.id}")`
+    );
+  }
   if (!Array.isArray(meta.tags)) {
     throw new Error(`${filePath}: tags must be an array (${meta.id})`);
   }
@@ -262,6 +279,11 @@ function validateHubSteps(entries) {
   for (const entry of entries) {
     if (!entry.hub_steps) continue;
     for (const stepId of entry.hub_steps) {
+      if (stepId === entry.id) {
+        throw new Error(
+          `${entry.source}: hub_steps cannot reference the hub's own id "${stepId}"`
+        );
+      }
       if (!byId.has(stepId)) {
         throw new Error(
           `${entry.source}: hub_steps references unknown id "${stepId}" (${entry.id})`

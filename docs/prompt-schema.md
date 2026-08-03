@@ -40,7 +40,7 @@ Keep a short human intro at the top of each file. Multiple entries may live in o
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `id` | yes | Stable slug: `category-short-name` (e.g. `triage-assign-unassigned-review`) |
+| `id` | yes | Stable slug: `category-short-name` (e.g. `triage-assign-unassigned-review`). Must match `/^[a-z0-9-]+$/` |
 | `title` | yes | Catalog display title |
 | `category` | yes | Folder name: `triage`, `tickets`, `sla`, `communication`, `utilities` |
 | `tags` | yes | List of lowercase tags for later filters |
@@ -65,9 +65,11 @@ Each placeholder is `{ name, required, description, type?, options? }`:
 
 Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `placeholders[].name`.
 
+**Inline list quoting:** the frontmatter parser supports a quote-aware subset for `[a, "b, c", 'd']`. It does **not** handle escape sequences inside quotes (e.g. `"say \"hi\""` or `'it\'s'`). Prefer options that avoid the quote delimiter, or use a YAML block list (`options:` / `- item`) when an option must contain quotes.
+
 ### Hubs (multi-step flows)
 
-Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). Unknown `hub_steps` ids fail the build.
+Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). Unknown `hub_steps` ids, and a hub listing its own id, fail the build.
 
 Example: [`prompts/triage/daily-triage.md`](../prompts/triage/daily-triage.md) — **Unassigned Tickets**.
 

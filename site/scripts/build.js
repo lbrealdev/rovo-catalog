@@ -126,16 +126,14 @@ function buildHubMaps(entries) {
   return { byId, stepToHub };
 }
 
-function entryHref(e, stepToHub) {
-  const hubId = stepToHub && stepToHub.get(e.id);
-  if (hubId) return rootPath(`prompts/${hubId}.html#step-${e.id}`);
+function entryHref(e) {
   return rootPath(`prompts/${e.id}.html`);
 }
 
 function entryRow(e, opts) {
   const staticTags = opts && opts.staticTags;
   const showFavorites = opts && opts.showFavorites;
-  const href = (opts && opts.href) || entryHref(e, opts && opts.stepToHub);
+  const href = (opts && opts.href) || entryHref(e);
   const catLabel = CATEGORY_LABELS[e.category] || e.category || '';
   const catSpan = catLabel
     ? `<span class="prompt-cat">${escapeHtml(catLabel)}</span>`
@@ -227,6 +225,10 @@ function simpleMarkdown(md) {
 
   function inlineFormat(text) {
     return escapeHtml(text)
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener">$1</a>'
+      )
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   }
@@ -308,22 +310,17 @@ function buildListPage({
   fs.writeFileSync(path.join(DIST, outFile), html);
 }
 
-function buildCommandsPage(updateEntries, stepToHub) {
+function buildCommandsPage() {
   const docPath = path.join(CONTENT, 'commands.md');
   const docHtml = simpleMarkdown(fs.readFileSync(docPath, 'utf8'));
-  const recipeRows =
-    updateEntries
-      .map((e) => entryRow(e, { staticTags: true, stepToHub }))
-      .join('\n') || '<li class="muted">No update recipes found.</li>';
 
   const body = render(readTemplate('commands.html'), {
     COMMANDS_DOC: docHtml,
-    RECIPE_ROWS: recipeRows,
   });
 
   const html = layoutShell({
     TITLE: 'Commands · Rovo Agent Toolkit',
-    DESCRIPTION: 'Rovo slash commands and copyable update recipes.',
+    DESCRIPTION: 'Rovo slash commands that change Jira work items.',
     BODY: body,
     ASSET_PAGE_JS: '',
     BODY_CLASS: 'page-commands',
@@ -540,11 +537,9 @@ function main() {
     throw new Error('No catalog entries found under prompts/');
   }
 
-  const { stepToHub } = buildHubMaps(entries);
   const prompts = entries.filter((e) => e.lang !== 'jql');
   const listedPrompts = prompts.filter((e) => e.listed !== false);
   const queries = entries.filter((e) => e.lang === 'jql');
-  const updateRecipes = prompts.filter((e) => e.mode === 'update');
 
   rmrf(DIST);
   fs.mkdirSync(DIST, { recursive: true });
@@ -574,13 +569,13 @@ function main() {
     listHeading: 'All queries',
   });
 
-  buildCommandsPage(updateRecipes, stepToHub);
+  buildCommandsPage();
   buildPromptPages(entries);
   writeCatalogJson(entries);
 
   console.log(
     `Built toolkit → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
-      `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries, ${updateRecipes.length} command recipes`
+      `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries`
   );
 }
 

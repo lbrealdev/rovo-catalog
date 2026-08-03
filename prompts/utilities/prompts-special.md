@@ -1,53 +1,10 @@
 # Special Prompts
 
-Multi-step hubs (review → confirm → update) plus one-shot `/update-work-items` recipes.
+Multi-step hubs (review → confirm → update) for efficient ticket actions.
 
 **Use when:** You need to perform several actions on tickets efficiently.
 
-One-shot recipes (`Assign + Comment`, `Status Change + Comment`, `Status + Resolution + Close`) use `listed: false` so they appear on **Commands**, not the Prompts catalog.
-
----
-id: utilities-assign-comment
-title: Assign + Comment
-category: utilities
-tags: [assign, comment, update]
-use_when: Assign a ticket to yourself and add a customer reply
-placeholders:
-  - name: TICKET-KEY
-    required: true
-    description: Ticket ID (e.g. SUP-123)
-  - name: YOUR-USER
-    required: true
-    description: Jira username
-mode: update
-listed: false
----
-
-```text
-/update-work-items
-Assign <TICKET-KEY> to me (<YOUR-USER>).
-Add a customer-visible comment: "Ticket under review. We'll update you shortly."
-```
-
----
-id: utilities-status-comment
-title: Status Change + Comment
-category: utilities
-tags: [status, comment, update]
-use_when: Move a ticket to In Progress and update the customer
-placeholders:
-  - name: TICKET-KEY
-    required: true
-    description: Ticket ID (e.g. SUP-123)
-mode: update
-listed: false
----
-
-```text
-/update-work-items
-Transition <TICKET-KEY> to "In Progress".
-Add a customer-visible comment: "We're looking into this now."
-```
+Slash-command explainers live on the **Commands** page (`site/content/commands.md`).
 
 ---
 id: utilities-search-assign
@@ -113,27 +70,6 @@ If more than 20 tickets match, stop and ask me to narrow the scope.
 ```
 
 ---
-id: utilities-status-resolution-close
-title: Status + Resolution + Close
-category: utilities
-tags: [close, resolution, update]
-use_when: Move a ticket to Done with resolution and closure message
-placeholders:
-  - name: TICKET-KEY
-    required: true
-    description: Ticket ID (e.g. SUP-123)
-mode: update
-listed: false
----
-
-```text
-/update-work-items
-Transition <TICKET-KEY> to "Done".
-Set resolution to "Resolved".
-Add a customer-visible comment: "This issue has been resolved. Closing ticket."
-```
-
----
 id: utilities-bulk-assign
 title: Bulk Action
 category: utilities
@@ -155,21 +91,15 @@ category: utilities
 tags: [bulk, assign, comment]
 use_when: Show the tickets that will receive the bulk assign + reply
 placeholders:
-  - name: TICKET-1
+  - name: TICKET-KEYS
     required: true
-    description: First ticket ID
-  - name: TICKET-2
-    required: true
-    description: Second ticket ID
-  - name: TICKET-3
-    required: true
-    description: Third ticket ID
+    description: Comma-separated Jira keys (e.g. SUP-101, SUP-102). Use Profile PROJECT as the key prefix.
 mode: read-only
 listed: false
 ---
 
 ```text
-Show confirmation details for tickets <TICKET-1>, <TICKET-2>, <TICKET-3>:
+Show confirmation details for tickets <TICKET-KEYS>:
 Key, Summary, Status, Assignee, Time to resolution.
 Do NOT assign or comment yet — wait for my confirmation.
 ```
@@ -190,10 +120,11 @@ listed: false
 
 ```text
 /update-work-items
-For tickets <TICKET-1>, <TICKET-2>, <TICKET-3>:
+For tickets <TICKET-KEYS>:
 1) Assign each to me (<YOUR-USER>).
 2) Add a customer-visible comment: "Ticket under review. We'll update you shortly."
 Only apply to tickets I confirmed from the previous step.
+If more than 20 tickets were confirmed, stop and ask me to narrow the scope.
 ```
 
 ---

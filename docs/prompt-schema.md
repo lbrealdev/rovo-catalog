@@ -3,7 +3,7 @@
 Metadata format for catalog entries in `prompts/`. Markdown remains the source of truth; YAML frontmatter labels each copy-paste template so a future static catalog can load it reliably.
 
 **Product path:** browse → fill placeholders → copy → paste into Rovo  
-**Site:** HonorBox-style zero-dependency builder in [`site/`](../site/) (`npm run build` → `site/dist/`). Toolkit sections: Prompts (`lang: text`), Queries (`lang: jql`), Commands (`site/content/commands.md` + `mode: update` recipes). Plain HTML/CSS + tiny first-party JS. Not Vite. Not Backstage. GitHub Pages deploy is Phase 3.
+**Site:** HonorBox-style zero-dependency builder in [`site/`](../site/) (`npm run build` → `site/dist/`). Toolkit sections: Prompts (`lang: text`), Queries (`lang: jql`), Commands (`site/content/commands.md` slash explainers only). Plain HTML/CSS + tiny first-party JS. Not Vite. Not Backstage. GitHub Pages deploy is Phase 3.
 
 ---
 
@@ -69,7 +69,7 @@ Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `pla
 
 ### Hubs (multi-step flows)
 
-Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). The builder **unions** step placeholders onto one shared hub form (first definition wins) — put each token on the step that introduces it; do not duplicate the same name across steps. Catalog list rows and prompt detail headers show no mode badges; Commands recipes for `mode: update` steps deep-link to `prompts/<hub>.html#step-<id>`. Unknown `hub_steps` ids, a hub listing its own id, and a step owned by two hubs fail the build.
+Use a listed hub entry with `hub_steps` for review → apply (and related) flows. Step entries keep their own bodies and placeholders, set `listed: false`, and render stacked on the hub page (each with its own preview + copy). The builder **unions** step placeholders onto one shared hub form (first definition wins) — put each token on the step that introduces it; do not duplicate the same name across steps. Catalog list rows and prompt detail headers show no mode badges; hub update steps are reached via the hub page (`#step-<id>`), not a Commands recipe list. Unknown `hub_steps` ids, a hub listing its own id, and a step owned by two hubs fail the build.
 
 Examples:
 
@@ -103,7 +103,8 @@ The future static site will store a mini profile in `localStorage` (persists unt
 |------|----------------|-------|
 | `PROJECT` | yes | Default project key |
 | `YOUR-USER` | yes | Jira username / display handle |
-| `TICKET-KEY` | no | Per use |
+| `TICKET-KEY` | no | Per use (single ticket) |
+| `TICKET-KEYS` | no | Per use (comma-separated batch list) |
 | Other ticket/date/pattern fields | no | Per use |
 
 ---

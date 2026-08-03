@@ -140,24 +140,15 @@ category: tickets
 tags: [reopened, batch, pattern]
 use_when: Classify several reopened tickets — pattern match vs manual review (read-only)
 placeholders:
-  - name: N
+  - name: TICKET-KEYS
     required: true
-    description: Number of tickets in the batch
-  - name: TICKET-1
-    required: true
-    description: First ticket ID
-  - name: TICKET-2
-    required: true
-    description: Second ticket ID
-  - name: TICKET-3
-    required: true
-    description: Third ticket ID
+    description: Comma-separated Jira keys (e.g. SUP-101, SUP-102). Use Profile PROJECT as the key prefix.
 mode: read-only
 listed: false
 ---
 
 ```text
-I have a batch of <N> reopened tickets, starting with <TICKET-1>, <TICKET-2>, <TICKET-3>.
+I have a batch of reopened tickets: <TICKET-KEYS>.
 
 For each ticket:
 1) Detect if it matches a recurring duplicate pattern (same as Step 2 logic).

@@ -24,8 +24,23 @@ Jira SLA fields support specific functions for JQL queries. Note: SLA fields can
 - `breached()` returns a boolean, not a duration
 
 ---
+id: sla-signal-continuation
+title: Signal Work Continuation
+category: sla
+tags: [continuation, comment, draft, sla]
+use_when: Work continues in another ticket due to SLA expiry — draft then post the comment
+placeholders: []
+mode: read-only
+hub_steps: [sla-signal-work-continuation, sla-signal-work-continuation-apply]
+---
+
+```text
+Use the steps below: draft the continuation comment for review, then post it after you confirm.
+```
+
+---
 id: sla-signal-work-continuation
-title: Signal Work Continuation (Ticket X → Ticket Y)
+title: Draft Work Continuation Comment
 category: sla
 tags: [continuation, comment, draft]
 use_when: Work continues in another ticket due to SLA expiry — draft comment only
@@ -40,6 +55,7 @@ placeholders:
     required: true
     description: Continuation ticket key
 mode: read-only
+listed: false
 ---
 
 ```text
@@ -61,8 +77,40 @@ Do NOT post the comment until I confirm.
 ```
 
 ---
+id: sla-signal-work-continuation-apply
+title: Post Work Continuation Comment
+category: sla
+tags: [continuation, comment, update]
+use_when: After confirming the draft — post the continuation comment on the original ticket
+placeholders: []
+mode: update
+listed: false
+---
+
+```text
+/update-work-items
+On <TICKET-X>, add the drafted continuation comment from the previous step as an informational comment (use a Jira wiki-style link to <TICKET-Y>: [link text|https://url]).
+Do not change status or resolution unless I explicitly ask. If the draft is missing, stop and ask me.
+```
+
+---
+id: sla-expiring-absence
+title: SLA Expiring During Absence
+category: sla
+tags: [sla, absence, remaining]
+use_when: Find tickets whose Time to resolution expires while the team is away, draft plans, then apply after confirm
+placeholders: []
+mode: read-only
+hub_steps: [sla-expiring-during-absence, sla-expiring-during-absence-apply]
+---
+
+```text
+Use the steps below: find tickets whose Time to resolution expires during absence and draft plans, then apply confirmed updates.
+```
+
+---
 id: sla-expiring-during-absence
-title: SLA Expiring During Team Absence
+title: Review SLA Expiring During Absence
 category: sla
 tags: [sla, absence, remaining]
 use_when: Find tickets whose Time to resolution expires while the team is away — drafts only
@@ -75,8 +123,11 @@ placeholders:
     description: Away period dates (e.g. December 23, 2024 – January 2, 2025)
   - name: HOURS-AWAY
     required: true
+    type: select
     description: Total hours in the away period
+    options: ["24", "48", "72", "96", "168"]
 mode: read-only
+listed: false
 ---
 
 ```text
@@ -85,7 +136,7 @@ You are helping me manage Jira Service Management tickets in the <PROJECT> proje
 Context: The team is away during the following period(s):
 <INSERT-AWAY-DATES> (e.g., December 23, 2024 – January 2, 2025)
 
-Step 1: Calculate the total hours in the away period. Then use Jira JQL to find open tickets whose SLA will expire within that window.
+Step 1: The away period is about <HOURS-AWAY> hours. Use Jira JQL to find open tickets whose SLA will expire within that window.
 
 Use JQL like:
 project = <PROJECT>
@@ -102,6 +153,30 @@ Step 3: For each ticket, draft a closure plan:
 - Provide the draft comment text for my review
 
 Do NOT update any tickets. This is read-only with draft comments unless I confirm.
+```
+
+---
+id: sla-expiring-during-absence-apply
+title: Apply Absence SLA Plans
+category: sla
+tags: [sla, absence, update]
+use_when: After confirming the draft plans — comment and resolve only the tickets you approved
+placeholders:
+  - name: TARGET-STATUS
+    required: true
+    type: select
+    description: Status to transition approved tickets into
+    options: ["Resolved", "Closed"]
+mode: update
+listed: false
+---
+
+```text
+/update-work-items
+From the absence review table above, only for tickets I explicitly confirmed:
+1) Add each ticket's drafted informational comment.
+2) Transition each confirmed ticket to "<TARGET-STATUS>" with an appropriate resolution.
+Skip every ticket I did not confirm. If more than 20 tickets were confirmed, stop and ask me to narrow the scope.
 ```
 
 ---

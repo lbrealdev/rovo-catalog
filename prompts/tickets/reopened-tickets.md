@@ -8,7 +8,22 @@ Quick reference for comparing reopened tickets against their previous closure an
 
 1. Ask Rovo: *"What changed since closure?"* (compare same ticket)
 2. Ask Rovo: *"Detect pattern and auto-close"* (pattern matching)
-3. Review draft response before applying any changes
+3. Review draft response, then run the Apply step on the hub
+
+---
+id: tickets-reopened
+title: Reopened Tickets
+category: tickets
+tags: [reopened, compare, pattern, closure]
+use_when: Compare a reopened ticket to its last closure, detect patterns, then apply a closure
+placeholders: []
+mode: read-only
+hub_steps: [tickets-reopened-compare-closure, tickets-reopened-detect-pattern, tickets-reopened-apply]
+---
+
+```text
+Use the steps below: compare the reopen to the last closure, detect a recurring pattern and draft a reply, then apply updates after you confirm.
+```
 
 ---
 id: tickets-reopened-compare-closure
@@ -24,6 +39,7 @@ placeholders:
     required: true
     description: Ticket ID (e.g. SUP-123)
 mode: read-only
+listed: false
 ---
 
 ```text
@@ -51,11 +67,9 @@ title: Detect Recurring Pattern and Draft Close
 category: tickets
 tags: [reopened, pattern, duplicate]
 use_when: Check if a reopened ticket matches a recurring duplicate pattern teammates already resolved
-placeholders:
-  - name: TICKET-KEY
-    required: true
-    description: Ticket ID (e.g. SUP-123)
+placeholders: []
 mode: read-only
+listed: false
 ---
 
 ```text
@@ -80,6 +94,46 @@ Output format:
 ```
 
 ---
+id: tickets-reopened-apply
+title: Apply Reopened Closure
+category: tickets
+tags: [reopened, close, update]
+use_when: After confirming the draft — reply, set resolution, and close the reopened ticket
+placeholders:
+  - name: TARGET-STATUS
+    required: true
+    type: select
+    description: Status to transition into
+    options: ["Resolved", "Closed", "Done"]
+mode: update
+listed: false
+---
+
+```text
+/update-work-items
+For <TICKET-KEY>, after I confirmed the draft closure reply from the previous step:
+1) Add the drafted text as a customer-visible comment (Reply to customer).
+2) Set resolution to "Resolved" (skip this if "<TARGET-STATUS>" already implies resolution in the project workflow).
+3) Transition the ticket to "<TARGET-STATUS>".
+Do not change other tickets. If the draft is missing or unclear, stop and ask me.
+```
+
+---
+id: tickets-reopened-batch-flow
+title: Reopened Tickets (Batch)
+category: tickets
+tags: [reopened, batch, pattern]
+use_when: Classify several reopened tickets, then apply confirmed closures
+placeholders: []
+mode: read-only
+hub_steps: [tickets-reopened-batch, tickets-reopened-batch-apply]
+---
+
+```text
+Use the steps below: classify a batch of reopened tickets, then apply confirmed closures only.
+```
+
+---
 id: tickets-reopened-batch
 title: Batch Mode (Multiple Reopened Tickets)
 category: tickets
@@ -99,10 +153,11 @@ placeholders:
     required: true
     description: Third ticket ID
 mode: read-only
+listed: false
 ---
 
 ```text
-I have <N> reopened tickets: <TICKET-1>, <TICKET-2>, <TICKET-3>.
+I have a batch of <N> reopened tickets, starting with <TICKET-1>, <TICKET-2>, <TICKET-3>.
 
 For each ticket:
 1) Detect if it matches a recurring duplicate pattern (same as Step 2 logic).
@@ -116,6 +171,31 @@ Return:
 - Pattern matches table: Key | Summary | Teammate Reply | Draft Closure
 - No pattern table: Key | Summary | Closure Summary | Next Action
 - Do not transition or comment yet.
+```
+
+---
+id: tickets-reopened-batch-apply
+title: Apply Batch Closures
+category: tickets
+tags: [reopened, batch, update]
+use_when: After confirming the batch tables — close only the pattern-match tickets you approved
+placeholders:
+  - name: TARGET-STATUS
+    required: true
+    type: select
+    description: Status to transition approved tickets into
+    options: ["Resolved", "Closed", "Done"]
+mode: update
+listed: false
+---
+
+```text
+/update-work-items
+From the batch review tables above, only for tickets I explicitly confirmed as pattern matches:
+1) Add each ticket's drafted closure as a customer-visible comment.
+2) Set resolution to "Resolved" (skip this if "<TARGET-STATUS>" already implies resolution in the project workflow).
+3) Transition each confirmed ticket to "<TARGET-STATUS>".
+Skip every ticket in the "No pattern" table. If more than 20 tickets were confirmed, stop and ask me to narrow the scope.
 ```
 
 ---
@@ -158,10 +238,6 @@ AND statusCategory = Done
 AND updated >= -7d
 AND resolution CHANGED
 ```
-
-## Taking Action
-
-Once you've reviewed the comparison and drafts, use `/update-work-items` workflow to comment/transition/resolve—but **keep this as a second step** to avoid applying the wrong closure pattern.
 
 ## Tips
 

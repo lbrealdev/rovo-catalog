@@ -125,7 +125,7 @@ Rules:
 - Multi-step flows = hub entry with `hub_steps` + step entries with `listed: false`
 - Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
 - Catalog list rows and prompt detail headers show no mode badges; hub update steps live on the hub page (`#step-<id>`), not on Commands
-- Placeholders may use `type: select` with `options: ["…"]` (default `type: text`)
+- Placeholders may use `type: select` with `options: ["…"]`, or `type: tags` for chip lists (default `type: text`)
 - `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
 
 **Catalog hubs:** `triage-unassigned-tickets`, `sla-clone-continuation`, `sla-signal-continuation`, `sla-expiring-absence`, `tickets-reopened`, `tickets-reopened-batch-flow`, `tickets-aws-health`, `utilities-search-assign`, `utilities-bulk-assign`, `utilities-jql-prioritize`.
@@ -137,7 +137,7 @@ Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`,
 Prompts use `<UPPERCASE-WITH-HYPHENS>`:
 - `<PROJECT>` - Jira project key (e.g., SUP, IT)
 - `<TICKET-KEY>` - Ticket ID (e.g., SUP-123)
-- `<TICKET-KEYS>` - Comma-separated Jira keys for batch hubs (e.g., SUP-101, SUP-102)
+- `<TICKET-KEYS>` - Batch hub ticket list (`type: tags`; e.g., SUP-101, SUP-102)
 - `<YOUR-USER>` - Jira username
 - `<PATTERN>` - Search pattern
 - `<HOURS-AWAY>` - Hours in away period (often a select)

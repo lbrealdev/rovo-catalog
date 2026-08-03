@@ -93,7 +93,8 @@ use_when: Show the tickets that will receive the bulk assign + reply
 placeholders:
   - name: TICKET-KEYS
     required: true
-    description: Comma-separated Jira keys (e.g. SUP-101, SUP-102). Use Profile PROJECT as the key prefix.
+    type: tags
+    description: Add keys with Enter or comma (e.g. 101 or SUP-101). Bare numbers use Profile PROJECT.
 mode: read-only
 listed: false
 ---

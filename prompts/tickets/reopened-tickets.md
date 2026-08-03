@@ -142,7 +142,8 @@ use_when: Classify several reopened tickets — pattern match vs manual review (
 placeholders:
   - name: TICKET-KEYS
     required: true
-    description: Comma-separated Jira keys (e.g. SUP-101, SUP-102). Use Profile PROJECT as the key prefix.
+    type: tags
+    description: Add keys with Enter or comma (e.g. 101 or SUP-101). Bare numbers use Profile PROJECT.
 mode: read-only
 listed: false
 ---

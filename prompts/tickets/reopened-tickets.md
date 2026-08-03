@@ -113,7 +113,7 @@ listed: false
 /update-work-items
 For <TICKET-KEY>, after I confirmed the draft closure reply from the previous step:
 1) Add the drafted text as a customer-visible comment (Reply to customer).
-2) Set resolution to "Resolved".
+2) Set resolution to "Resolved" (skip this if "<TARGET-STATUS>" already implies resolution in the project workflow).
 3) Transition the ticket to "<TARGET-STATUS>".
 Do not change other tickets. If the draft is missing or unclear, stop and ask me.
 ```
@@ -157,7 +157,7 @@ listed: false
 ---
 
 ```text
-I have <N> reopened tickets: <TICKET-1>, <TICKET-2>, <TICKET-3>.
+I have a batch of <N> reopened tickets, starting with <TICKET-1>, <TICKET-2>, <TICKET-3>.
 
 For each ticket:
 1) Detect if it matches a recurring duplicate pattern (same as Step 2 logic).
@@ -193,7 +193,7 @@ listed: false
 /update-work-items
 From the batch review tables above, only for tickets I explicitly confirmed as pattern matches:
 1) Add each ticket's drafted closure as a customer-visible comment.
-2) Set resolution to "Resolved".
+2) Set resolution to "Resolved" (skip this if "<TARGET-STATUS>" already implies resolution in the project workflow).
 3) Transition each confirmed ticket to "<TARGET-STATUS>".
 Skip every ticket in the "No pattern" table. If more than 20 tickets were confirmed, stop and ask me to narrow the scope.
 ```

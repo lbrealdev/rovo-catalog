@@ -71,7 +71,8 @@ listed: false
 /update-work-items
 For the informational-only tickets listed above that I confirmed:
 - Add each ticket's drafted Reply to customer comment (or "AWS Health notification received. No action required. Closing." if no draft)
-- Change status to "<TARGET-STATUS>"
+- Set resolution to "Resolved" (skip this if "<TARGET-STATUS>" already implies resolution in the project workflow)
+- Transition each ticket to "<TARGET-STATUS>"
 Skip every ticket classified as Requires follow-up. If more than 20 tickets were confirmed, stop and ask me to narrow the scope.
 ```
 

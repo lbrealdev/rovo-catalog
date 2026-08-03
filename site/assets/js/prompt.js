@@ -123,84 +123,139 @@
     });
   }
 
-  function init() {
-    const form = document.getElementById("placeholder-form");
-    const rawEl = document.getElementById("prompt-body-raw");
-    const preview = document.getElementById("prompt-preview");
-    const copyBtn = document.getElementById("copy-btn");
-    const copyStatus = document.getElementById("copy-status");
-    if (!rawEl || !preview) return;
+  function fieldControls(form) {
+    if (!form) return [];
+    return Array.prototype.slice.call(
+      form.querySelectorAll("input[data-placeholder], select[data-placeholder]")
+    );
+  }
 
-    // Queries are out of scope for recent/favorites (Prompts catalog only).
-    const isQuery = document.body.classList.contains("kind-query");
-    if (!isQuery) {
-      initRecent();
-      initFavorites();
-    }
+  function substitute(template, map) {
+    let out = template;
+    Object.keys(map).forEach(function (name) {
+      const token = "<" + name + ">";
+      out = out.split(token).join(map[name] || token);
+    });
+    return out;
+  }
+
+  function bindFormInputs(inputs, onChange) {
+    inputs.forEach(function (input) {
+      const evt = input.tagName === "SELECT" ? "change" : "input";
+      input.addEventListener(evt, function () {
+        input.dataset.touched = "1";
+        onChange();
+      });
+      if (input.tagName === "SELECT") {
+        input.addEventListener("input", function () {
+          input.dataset.touched = "1";
+          onChange();
+        });
+      }
+    });
+  }
+
+  function applyProfileToInputs(inputs, profile) {
+    if (!window.RovoProfile) return;
+    const p = profile || window.RovoProfile.read();
+    inputs.forEach(function (input) {
+      const name = input.getAttribute("data-placeholder");
+      if (
+        input.hasAttribute("data-profile-field") &&
+        p[name] &&
+        !input.dataset.touched
+      ) {
+        input.value = p[name];
+      }
+    });
+  }
+
+  function valuesFrom(inputs) {
+    const map = {};
+    inputs.forEach(function (input) {
+      map[input.getAttribute("data-placeholder")] = input.value || "";
+    });
+    return map;
+  }
+
+  /** Single-prompt page: one form drives one preview. */
+  function initStepForm(form) {
+    const scope = form.closest(".prompt-step, .prompt-detail");
+    if (!scope) return null;
+    const rawEl = scope.querySelector(".prompt-body-raw");
+    if (!rawEl) return null;
 
     const template = rawEl.textContent;
-    const inputs = form
-      ? Array.prototype.slice.call(
-          form.querySelectorAll("input[data-placeholder]")
-        )
-      : [];
+    const inputs = fieldControls(form);
+
+    function render() {
+      rawEl.textContent = substitute(template, valuesFrom(inputs));
+    }
 
     function applyProfile(profile) {
-      if (!window.RovoProfile) return;
-      const p = profile || window.RovoProfile.read();
-      inputs.forEach(function (input) {
-        const name = input.getAttribute("data-placeholder");
-        if (
-          input.hasAttribute("data-profile-field") &&
-          p[name] &&
-          !input.dataset.touched
-        ) {
-          input.value = p[name];
-        }
-      });
+      applyProfileToInputs(inputs, profile);
       render();
     }
 
-    function values() {
-      const map = {};
-      inputs.forEach(function (input) {
-        map[input.getAttribute("data-placeholder")] = input.value || "";
-      });
-      return map;
-    }
+    bindFormInputs(inputs, render);
+
+    return {
+      render: render,
+      applyProfile: applyProfile,
+      inputs: inputs,
+    };
+  }
+
+  /** Hub workflow: one shared form drives every step preview. */
+  function initHubForm(form) {
+    const article = form.closest(".prompt-detail");
+    if (!article) return null;
+    const rawEls = Array.prototype.slice.call(
+      article.querySelectorAll(".prompt-body-raw")
+    );
+    if (!rawEls.length) return null;
+
+    const templates = rawEls.map(function (el) {
+      return el.textContent;
+    });
+    const inputs = fieldControls(form);
 
     function render() {
-      let out = template;
-      const map = values();
-      Object.keys(map).forEach(function (name) {
-        const token = "<" + name + ">";
-        out = out.split(token).join(map[name] || token);
+      const map = valuesFrom(inputs);
+      rawEls.forEach(function (el, i) {
+        el.textContent = substitute(templates[i], map);
       });
-      rawEl.textContent = out;
     }
 
-    inputs.forEach(function (input) {
-      input.addEventListener("input", function () {
-        input.dataset.touched = "1";
-        render();
-      });
-    });
+    function applyProfile(profile) {
+      applyProfileToInputs(inputs, profile);
+      render();
+    }
 
-    document.addEventListener("rovo-profile-updated", function (ev) {
-      inputs.forEach(function (input) {
-        if (input.hasAttribute("data-profile-field")) {
-          delete input.dataset.touched;
-        }
-      });
-      applyProfile(ev.detail);
-    });
+    bindFormInputs(inputs, render);
 
-    if (copyBtn) {
-      copyBtn.addEventListener("click", async function () {
+    return {
+      render: render,
+      applyProfile: applyProfile,
+      inputs: inputs,
+    };
+  }
+
+  function initCopyButtons() {
+    const buttons = Array.prototype.slice.call(
+      document.querySelectorAll(".copy-btn[data-copy-target]")
+    );
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", async function () {
+        const targetId = btn.getAttribute("data-copy-target") || "";
+        const statusId = btn.getAttribute("data-copy-status") || "";
+        const rawEl = document.getElementById(targetId);
+        const statusEl = statusId ? document.getElementById(statusId) : null;
+        if (!rawEl) return;
         const text = rawEl.textContent;
         try {
           await navigator.clipboard.writeText(text);
-          if (copyStatus) copyStatus.textContent = "Copied";
+          if (statusEl) statusEl.textContent = "Copied";
         } catch {
           const range = document.createRange();
           range.selectNodeContents(rawEl);
@@ -209,18 +264,56 @@
           sel.addRange(range);
           try {
             document.execCommand("copy");
-            if (copyStatus) copyStatus.textContent = "Copied";
+            if (statusEl) statusEl.textContent = "Copied";
           } catch {
-            if (copyStatus) copyStatus.textContent = "Copy failed — select manually";
+            if (statusEl) statusEl.textContent = "Copy failed — select manually";
           }
         }
         setTimeout(function () {
-          if (copyStatus) copyStatus.textContent = "";
+          if (statusEl) statusEl.textContent = "";
         }, 1600);
       });
+    });
+  }
+
+  function init() {
+    // Queries are out of scope for recent/favorites (Prompts catalog only).
+    const isQuery = document.body.classList.contains("kind-query");
+    if (!isQuery) {
+      initRecent();
+      initFavorites();
     }
 
-    applyProfile();
+    const controllers = [];
+    const hubForm = document.querySelector("form[data-hub-form]");
+    if (hubForm) {
+      const hub = initHubForm(hubForm);
+      if (hub) controllers.push(hub);
+    } else {
+      Array.prototype.slice
+        .call(document.querySelectorAll("form[data-step-form]"))
+        .forEach(function (form) {
+          const c = initStepForm(form);
+          if (c) controllers.push(c);
+        });
+    }
+
+    document.addEventListener("rovo-profile-updated", function (ev) {
+      controllers.forEach(function (c) {
+        c.inputs.forEach(function (input) {
+          if (input.hasAttribute("data-profile-field")) {
+            delete input.dataset.touched;
+          }
+        });
+        c.applyProfile(ev.detail);
+      });
+    });
+
+    controllers.forEach(function (c) {
+      c.applyProfile();
+    });
+
+    initCopyButtons();
   }
 
   document.addEventListener("DOMContentLoaded", init);

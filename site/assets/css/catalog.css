@@ -309,7 +309,8 @@ code {
 }
 
 .search-field input[type="search"],
-.field input[type="text"] {
+.field input[type="text"],
+.field select {
   width: 100%;
   font: inherit;
   padding: 0.55rem 0.7rem;
@@ -319,8 +320,19 @@ code {
   color: var(--ink);
 }
 
+.field select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 1.1rem) 55%, calc(100% - 0.75rem) 55%;
+  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+}
+
 .search-field input[type="search"]:focus,
 .field input[type="text"]:focus,
+.field select:focus,
 .nav-btn:focus-visible,
 .btn:focus-visible,
 .tag:focus-visible,
@@ -631,10 +643,56 @@ code {
 }
 
 .placeholders h2,
-.preview-block h2 {
+.placeholders h3,
+.preview-block h2,
+.preview-block h3 {
   font-family: var(--font-display);
   font-size: 1.15rem;
   margin: 0 0 0.75rem;
+}
+
+.hub-placeholders {
+  margin-top: 1.75rem;
+}
+
+.hub-steps {
+  margin-top: 2rem;
+}
+
+.prompt-step {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.prompt-step:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.step-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  display: block;
+}
+
+.step-header .prompt-when {
+  margin: 0 0 0.25rem;
+}
+
+.prompt-step .preview-block {
+  margin-top: 0.85rem;
+}
+
+.prompt-step.mode-update .prompt-body {
+  border-left: 3px solid var(--update);
+}
+
+.prompt-step.mode-read-only .prompt-body {
+  border-left: 3px solid var(--readonly);
 }
 
 .placeholder-form {
@@ -666,7 +724,8 @@ code {
   margin-bottom: 0.65rem;
 }
 
-.preview-toolbar h2 {
+.preview-toolbar h2,
+.preview-toolbar h3 {
   margin: 0;
   margin-right: auto;
 }
@@ -689,7 +748,7 @@ code {
   border-left: 3px solid var(--update);
 }
 
-.page-prompt.mode-readonly .prompt-body {
+.page-prompt.mode-read-only .prompt-body {
   border-left: 3px solid var(--readonly);
 }
 

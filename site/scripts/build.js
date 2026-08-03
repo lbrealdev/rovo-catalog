@@ -120,9 +120,28 @@ function layoutShell(vars) {
   });
 }
 
+function buildHubMaps(entries) {
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  const stepToHub = new Map();
+  for (const e of entries) {
+    if (!e.hub_steps) continue;
+    for (const stepId of e.hub_steps) {
+      stepToHub.set(stepId, e.id);
+    }
+  }
+  return { byId, stepToHub };
+}
+
+function entryHref(e, stepToHub) {
+  const hubId = stepToHub && stepToHub.get(e.id);
+  if (hubId) return rootPath(`prompts/${hubId}.html#step-${e.id}`);
+  return rootPath(`prompts/${e.id}.html`);
+}
+
 function entryRow(e, opts) {
   const staticTags = opts && opts.staticTags;
   const showFavorites = opts && opts.showFavorites;
+  const href = (opts && opts.href) || entryHref(e, opts && opts.stepToHub);
   const favBtn = showFavorites
     ? `<button type="button" class="favorite-toggle" data-favorite-id="${escapeHtml(e.id)}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>`
     : '';
@@ -131,9 +150,9 @@ function entryRow(e, opts) {
     `${e.title} ${e.use_when} ${e.tags.join(' ')}`
   ).toLowerCase()}">
         <div class="prompt-row-main">
-          <a class="prompt-link" href="${rootPath(`prompts/${e.id}.html`)}">
+          <a class="prompt-link" href="${href}">
             <span class="prompt-title">${escapeHtml(e.title)}</span>
-            ${modeBadge(e.mode)}
+            ${e.hub_steps && e.hub_steps.length ? '' : modeBadge(e.mode)}
           </a>
           <p class="prompt-when">${escapeHtml(e.use_when)}</p>
           ${tagList(e.tags, { static: staticTags })}
@@ -279,11 +298,13 @@ function buildListPage({
   fs.writeFileSync(path.join(DIST, outFile), html);
 }
 
-function buildCommandsPage(updateEntries) {
+function buildCommandsPage(updateEntries, stepToHub) {
   const docPath = path.join(CONTENT, 'commands.md');
   const docHtml = simpleMarkdown(fs.readFileSync(docPath, 'utf8'));
-  const recipeRows = updateEntries.map((e) => entryRow(e, { staticTags: true })).join('\n') ||
-    '<li class="muted">No update recipes found.</li>';
+  const recipeRows =
+    updateEntries
+      .map((e) => entryRow(e, { staticTags: true, stepToHub }))
+      .join('\n') || '<li class="muted">No update recipes found.</li>';
 
   const body = render(readTemplate('commands.html'), {
     COMMANDS_DOC: docHtml,
@@ -302,30 +323,154 @@ function buildCommandsPage(updateEntries) {
   fs.writeFileSync(path.join(DIST, 'commands.html'), html);
 }
 
+function placeholderFieldsHtml(placeholders) {
+  if (!placeholders || !placeholders.length) {
+    return '<p class="muted">No placeholders — copy as-is.</p>';
+  }
+  return placeholders
+    .map((p) => {
+      const name = p.name;
+      const required = p.required ? 'required' : '';
+      const desc = p.description || name;
+      const profileOwned =
+        name === 'PROJECT' || name === 'YOUR-USER'
+          ? ' data-profile-field="true"'
+          : '';
+      let control;
+      if (p.type === 'select') {
+        const options = (p.options || [])
+          .map(
+            (o, idx) =>
+              `<option value="${escapeHtml(o)}"${idx === 0 ? ' selected' : ''}>${escapeHtml(o)}</option>`
+          )
+          .join('');
+        control = `<select name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}"${profileOwned} ${required}>${options}</select>`;
+      } else {
+        control = `<input type="text" name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}"${profileOwned} ${required} autocomplete="off" />`;
+      }
+      return `
+        <label class="field">
+          <span class="field-label">${escapeHtml(name)}${p.required ? ' *' : ''}</span>
+          <span class="field-desc">${escapeHtml(desc)}</span>
+          ${control}
+        </label>`;
+    })
+    .join('\n');
+}
+
+/** Union placeholders across hub steps by name (first occurrence wins). */
+function unionPlaceholders(steps) {
+  const seen = new Map();
+  for (const step of steps) {
+    for (const p of step.placeholders || []) {
+      if (!seen.has(p.name)) seen.set(p.name, p);
+    }
+  }
+  return [...seen.values()];
+}
+
+function renderSharedPlaceholders(placeholders) {
+  return `
+  <section class="placeholders hub-placeholders" aria-label="Placeholders">
+    <h2>Placeholders</h2>
+    <form id="placeholder-form" class="placeholder-form" data-hub-form="true">
+      ${placeholderFieldsHtml(placeholders)}
+    </form>
+  </section>`;
+}
+
+function renderStepSection(step) {
+  const stepId = step.id;
+  const previewId = `prompt-preview-${stepId}`;
+  const rawId = `prompt-body-raw-${stepId}`;
+  const copyBtnId = `copy-btn-${stepId}`;
+  const copyStatusId = `copy-status-${stepId}`;
+  return `
+  <section class="prompt-step mode-${escapeHtml(step.mode)}" id="step-${escapeHtml(stepId)}" data-step-id="${escapeHtml(stepId)}">
+    <header class="step-header">
+      <h2>${escapeHtml(step.title)}</h2>
+      <p class="prompt-when">${escapeHtml(step.use_when)}</p>
+    </header>
+    <section class="preview-block" aria-label="Prompt preview for ${escapeHtml(step.title)}">
+      <div class="preview-toolbar">
+        <h3>Preview</h3>
+        <button type="button" class="btn copy-btn" id="${escapeHtml(copyBtnId)}" data-copy-target="${escapeHtml(rawId)}" data-copy-status="${escapeHtml(copyStatusId)}">Copy</button>
+        <span class="copy-status" id="${escapeHtml(copyStatusId)}" aria-live="polite"></span>
+      </div>
+      <pre class="prompt-body" id="${escapeHtml(previewId)}" data-lang="${escapeHtml(step.lang)}"><code class="prompt-body-raw" id="${escapeHtml(rawId)}">${escapeHtml(step.body)}</code></pre>
+    </section>
+  </section>`;
+}
+
+function renderSingleDetailBody(e) {
+  return `
+  <section class="placeholders" aria-label="Placeholders">
+    <h2>Placeholders</h2>
+    <form id="placeholder-form" class="placeholder-form" data-step-form="true">
+      ${placeholderFieldsHtml(e.placeholders)}
+    </form>
+  </section>
+
+  <section class="preview-block" aria-label="Prompt preview">
+    <div class="preview-toolbar">
+      <h2>Preview</h2>
+      <button type="button" class="btn copy-btn" id="copy-btn" data-copy-target="prompt-body-raw" data-copy-status="copy-status">Copy</button>
+      <span class="copy-status" id="copy-status" aria-live="polite"></span>
+    </div>
+    <pre class="prompt-body" id="prompt-preview" data-lang="${escapeHtml(e.lang)}"><code class="prompt-body-raw" id="prompt-body-raw">${escapeHtml(e.body)}</code></pre>
+  </section>`;
+}
+
+function writeHubStepRedirect(outDir, stepId, hubId) {
+  const target = rootPath(`prompts/${hubId}.html#step-${stepId}`);
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <base href="${BASE}" />
+  <meta http-equiv="refresh" content="0;url=${target}" />
+  <link rel="canonical" href="${target}" />
+  <title>Redirecting…</title>
+  <script>location.replace(${JSON.stringify(target)});</script>
+</head>
+<body>
+  <p><a href="${escapeHtml(target)}">Continue to prompt</a></p>
+</body>
+</html>
+`;
+  fs.writeFileSync(path.join(outDir, `${stepId}.html`), html);
+}
+
 function buildPromptPages(entries) {
   const promptTpl = readTemplate('prompt.html');
   const outDir = path.join(DIST, 'prompts');
   fs.mkdirSync(outDir, { recursive: true });
+  const { byId, stepToHub } = buildHubMaps(entries);
 
   for (const e of entries) {
     const isQuery = e.lang === 'jql';
-    const fields = (e.placeholders || [])
-      .map((p) => {
-        const name = p.name;
-        const required = p.required ? 'required' : '';
-        const desc = p.description || name;
-        const profileOwned =
-          name === 'PROJECT' || name === 'YOUR-USER'
-            ? ' data-profile-field="true"'
-            : '';
-        return `
-        <label class="field">
-          <span class="field-label">${escapeHtml(name)}${p.required ? ' *' : ''}</span>
-          <span class="field-desc">${escapeHtml(desc)}</span>
-          <input type="text" name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}"${profileOwned} ${required} autocomplete="off" />
-        </label>`;
-      })
-      .join('\n');
+
+    // Hub-owned steps: redirect to hub anchor (avoid a second UI).
+    if (!isQuery && stepToHub.has(e.id)) {
+      writeHubStepRedirect(outDir, e.id, stepToHub.get(e.id));
+      continue;
+    }
+
+    const isHub = !!(e.hub_steps && e.hub_steps.length);
+    let detailBody;
+    let sourceNote = e.source;
+
+    if (isHub) {
+      const steps = e.hub_steps.map((id) => byId.get(id)).filter(Boolean);
+      const shared = unionPlaceholders(steps);
+      detailBody =
+        renderSharedPlaceholders(shared) +
+        `<div class="hub-steps" aria-label="Copy flow">${steps.map(renderStepSection).join('\n')}</div>`;
+      const sources = [...new Set(steps.map((s) => s.source).concat(e.source))];
+      sourceNote = sources.join(', ');
+    } else {
+      detailBody = renderSingleDetailBody(e);
+    }
 
     const favoriteToggle = isQuery
       ? ''
@@ -335,27 +480,24 @@ function buildPromptPages(entries) {
       ID: escapeHtml(e.id),
       TITLE: escapeHtml(e.title),
       USE_WHEN: escapeHtml(e.use_when),
-      MODE_BADGE: modeBadge(e.mode),
+      MODE_BADGE: isHub ? '' : modeBadge(e.mode),
       CATEGORY: escapeHtml(CATEGORY_LABELS[e.category] || e.category),
       CATEGORY_KEY: escapeHtml(e.category),
       FAVORITE_TOGGLE: favoriteToggle,
       TAGS: tagList(e.tags, { static: true }),
-      FIELDS:
-        fields ||
-        '<p class="muted">No placeholders — copy as-is.</p>',
-      BODY_RAW: escapeHtml(e.body),
-      LANG: escapeHtml(e.lang),
+      DETAIL_BODY: detailBody,
       HOME_HREF: rootPath(isQuery ? 'queries.html' : 'index.html'),
       HOME_LABEL: isQuery ? 'Queries' : 'Prompts',
-      SOURCE: escapeHtml(e.source),
+      SOURCE: escapeHtml(sourceNote),
     });
 
+    const modeClass = isHub ? 'page-prompt-hub' : `mode-${e.mode}`;
     const html = layoutShell({
       TITLE: `${e.title} · Rovo Agent Toolkit`,
       DESCRIPTION: e.use_when,
       BODY: body,
       ASSET_PAGE_JS: rootPath('assets/js/prompt.js'),
-      BODY_CLASS: `page-prompt mode-${e.mode}${isQuery ? ' kind-query' : ''}`,
+      BODY_CLASS: `page-prompt ${modeClass}${isQuery ? ' kind-query' : ''}`,
       ...layoutNav(isQuery ? 'queries' : 'prompts'),
     });
 
@@ -371,6 +513,8 @@ function writeCatalogJson(entries) {
     tags: e.tags,
     use_when: e.use_when,
     mode: e.mode,
+    listed: e.listed !== false,
+    hub_steps: e.hub_steps || null,
     placeholders: e.placeholders,
     lang: e.lang,
     kind: e.lang === 'jql' ? 'query' : 'prompt',
@@ -387,7 +531,9 @@ function main() {
     throw new Error('No catalog entries found under prompts/');
   }
 
+  const { stepToHub } = buildHubMaps(entries);
   const prompts = entries.filter((e) => e.lang !== 'jql');
+  const listedPrompts = prompts.filter((e) => e.listed !== false);
   const queries = entries.filter((e) => e.lang === 'jql');
   const updateRecipes = prompts.filter((e) => e.mode === 'update');
 
@@ -396,7 +542,7 @@ function main() {
   copyDir(ASSETS, path.join(DIST, 'assets'));
 
   buildListPage({
-    entries: prompts,
+    entries: listedPrompts,
     templateName: 'index.html',
     title: 'Rovo Agent Toolkit',
     description: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
@@ -417,13 +563,13 @@ function main() {
     outFile: 'queries.html',
   });
 
-  buildCommandsPage(updateRecipes);
+  buildCommandsPage(updateRecipes, stepToHub);
   buildPromptPages(entries);
   writeCatalogJson(entries);
 
   console.log(
     `Built toolkit → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
-      `${prompts.length} prompts, ${queries.length} queries, ${updateRecipes.length} command recipes`
+      `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries, ${updateRecipes.length} command recipes`
   );
 }
 

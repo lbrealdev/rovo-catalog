@@ -5,82 +5,60 @@ Reusable prompts for daily Jira Service Management triage operations.
 **Use when:** Starting your shift, reviewing your queue, or triaging noisy alerts.
 
 ---
-id: triage-list-unassigned-today
-title: List Today's Unassigned Tickets
+id: triage-unassigned-tickets
+title: Unassigned Tickets
 category: triage
-tags: [unassigned, morning, sla]
-use_when: Start of shift — see new unassigned tickets
-placeholders:
-  - name: PROJECT
-    required: true
-    description: Jira project key (e.g. SUP)
+tags: [unassigned, assign, morning, weekend, monday, sla]
+use_when: Review unassigned tickets by lookback, then assign and update
+placeholders: []
 mode: read-only
+hub_steps: [triage-assign-unassigned-review, triage-assign-unassigned-apply]
 ---
 
 ```text
-List today's new unassigned <PROJECT> tickets in a table (Key, Summary, Status, Reporter, Created, Time to resolution).
+Use the steps below: review unassigned tickets by lookback window, then apply assignment updates.
 ```
 
 ---
 id: triage-assign-unassigned-review
-title: Assign Unassigned Tickets (Review)
+title: Review Unassigned Tickets
 category: triage
 tags: [unassigned, assign, sla]
-use_when: After seeing the list — review unassigned tickets from the last 24 hours before acting
+use_when: Review unassigned tickets for a lookback window before acting
 placeholders:
   - name: PROJECT
     required: true
     description: Jira project key (e.g. SUP)
+  - name: LOOKBACK
+    required: true
+    type: select
+    description: Time window for the review
+    options: ["today", "the last 24 hours", "the last 48 hours", "the last 72 hours", "Friday 18:00 until now"]
 mode: read-only
+listed: false
 ---
 
 ```text
-Show me all unassigned <PROJECT> tickets from the last 24 hours in a table (Key, Summary, Status, Reporter, Created, Time to resolution).
+Show me all unassigned <PROJECT> tickets from <LOOKBACK> in a table (Key, Summary, Status, Reporter, Created, Time to resolution).
 ```
 
 ---
 id: triage-assign-unassigned-apply
-title: Assign Unassigned Tickets (Apply)
+title: Assign Unassigned Tickets
 category: triage
 tags: [unassigned, assign, update]
 use_when: After confirming the review list — assign, transition, and reply
-placeholders: []
-mode: update
----
-
-```text
-/update-work-items
-Assign all listed tickets to me, change status from "Waiting for Support" to "In Progress", and add "Ticket under review. We'll update you shortly." as a customer reply.
-```
-
----
-id: triage-weekend-unassigned-review
-title: Weekend Unassigned Tickets (Review)
-category: triage
-tags: [unassigned, weekend, monday, sla]
-use_when: Monday morning — catch tickets from Friday 18:00 until now
 placeholders:
-  - name: PROJECT
+  - name: TARGET-STATUS
     required: true
-    description: Jira project key (e.g. SUP)
-mode: read-only
----
-
-```text
-Show me all unassigned <PROJECT> tickets from Friday 18:00 until now in a table (Key, Summary, Status, Reporter, Created, Time to resolution).
-```
-
----
-id: triage-weekend-unassigned-apply
-title: Weekend Unassigned Tickets (Apply)
-category: triage
-tags: [unassigned, weekend, monday, update]
-use_when: After confirming the weekend review list — assign, transition, and reply
-placeholders: []
+    type: select
+    description: Status to transition tickets into
+    options: ["In Progress", "Waiting for customer"]
 mode: update
+listed: false
 ---
 
 ```text
 /update-work-items
-Assign all listed tickets to me, change status from "Waiting for Support" to "In Progress", and add "Ticket under review. We'll update you shortly." as a customer reply.
+Assign all listed tickets to me, change status from "Waiting for Support" to "<TARGET-STATUS>", and add "Ticket under review. We'll update you shortly." as a customer reply.
 ```

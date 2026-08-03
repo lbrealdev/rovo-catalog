@@ -8,21 +8,7 @@
     {{TAGS}}
   </header>
 
-  <section class="placeholders" aria-label="Placeholders">
-    <h2>Placeholders</h2>
-    <form id="placeholder-form" class="placeholder-form">
-      {{FIELDS}}
-    </form>
-  </section>
-
-  <section class="preview-block" aria-label="Prompt preview">
-    <div class="preview-toolbar">
-      <h2>Preview</h2>
-      <button type="button" class="btn" id="copy-btn">Copy</button>
-      <span class="copy-status" id="copy-status" aria-live="polite"></span>
-    </div>
-    <pre class="prompt-body" id="prompt-preview" data-lang="{{LANG}}"><code id="prompt-body-raw">{{BODY_RAW}}</code></pre>
-  </section>
+  {{DETAIL_BODY}}
 
   <p class="source-note">Source: <code>{{SOURCE}}</code></p>
 </article>

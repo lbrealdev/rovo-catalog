@@ -9,32 +9,14 @@ id: triage-unassigned-tickets
 title: Unassigned Tickets
 category: triage
 tags: [unassigned, assign, morning, weekend, monday, sla]
-use_when: Start of shift through assign — list today, review by lookback, then update
+use_when: Review unassigned tickets by lookback, then assign and update
 placeholders: []
 mode: read-only
-hub_steps: [triage-list-unassigned-today, triage-assign-unassigned-review, triage-assign-unassigned-apply]
+hub_steps: [triage-assign-unassigned-review, triage-assign-unassigned-apply]
 ---
 
 ```text
-Use the steps below: list today's unassigned tickets, review by lookback window, then apply assignment updates.
-```
-
----
-id: triage-list-unassigned-today
-title: List Today's Unassigned Tickets
-category: triage
-tags: [unassigned, morning, sla]
-use_when: Start of shift — see new unassigned tickets
-placeholders:
-  - name: PROJECT
-    required: true
-    description: Jira project key (e.g. SUP)
-mode: read-only
-listed: false
----
-
-```text
-List today's new unassigned <PROJECT> tickets in a table (Key, Summary, Status, Reporter, Created, Time to resolution).
+Use the steps below: review unassigned tickets by lookback window, then apply assignment updates.
 ```
 
 ---
@@ -51,7 +33,7 @@ placeholders:
     required: true
     type: select
     description: Time window for the review
-    options: ["the last 24 hours", "the last 48 hours", "the last 72 hours", "Friday 18:00 until now"]
+    options: ["today", "the last 24 hours", "the last 48 hours", "the last 72 hours", "Friday 18:00 until now"]
 mode: read-only
 listed: false
 ---
@@ -66,12 +48,17 @@ title: Assign Unassigned Tickets
 category: triage
 tags: [unassigned, assign, update]
 use_when: After confirming the review list — assign, transition, and reply
-placeholders: []
+placeholders:
+  - name: TARGET-STATUS
+    required: true
+    type: select
+    description: Status to transition tickets into
+    options: ["In Progress", "Waiting for customer"]
 mode: update
 listed: false
 ---
 
 ```text
 /update-work-items
-Assign all listed tickets to me, change status from "Waiting for Support" to "In Progress", and add "Ticket under review. We'll update you shortly." as a customer reply.
+Assign all listed tickets to me, change status from "Waiting for Support" to "<TARGET-STATUS>", and add "Ticket under review. We'll update you shortly." as a customer reply.
 ```

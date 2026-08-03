@@ -13,11 +13,11 @@ Each catalog entry is a YAML frontmatter block immediately followed by one fence
 
 ```markdown
 ---
-id: triage-list-unassigned-today
-title: List Today's Unassigned Tickets
+id: triage-assign-unassigned-review
+title: Review Unassigned Tickets
 category: triage
-tags: [unassigned, morning, sla]
-use_when: Start of shift — see new unassigned tickets
+tags: [unassigned, assign, sla]
+use_when: Review unassigned tickets for a lookback window before acting
 placeholders:
   - name: PROJECT
     required: true
@@ -26,7 +26,7 @@ mode: read-only
 ---
 
 ```text
-List today's new unassigned <PROJECT> tickets in a table (...)
+Show me all unassigned <PROJECT> tickets from <LOOKBACK> in a table (...)
 ```
 ```
 
@@ -40,7 +40,7 @@ Keep a short human intro at the top of each file. Multiple entries may live in o
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `id` | yes | Stable slug: `category-short-name` (e.g. `triage-list-unassigned-today`) |
+| `id` | yes | Stable slug: `category-short-name` (e.g. `triage-assign-unassigned-review`) |
 | `title` | yes | Catalog display title |
 | `category` | yes | Folder name: `triage`, `tickets`, `sla`, `communication`, `utilities` |
 | `tags` | yes | List of lowercase tags for later filters |

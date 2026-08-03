@@ -142,6 +142,10 @@ function entryRow(e, opts) {
   const staticTags = opts && opts.staticTags;
   const showFavorites = opts && opts.showFavorites;
   const href = (opts && opts.href) || entryHref(e, opts && opts.stepToHub);
+  const catLabel = CATEGORY_LABELS[e.category] || e.category || '';
+  const catSpan = catLabel
+    ? `<span class="prompt-cat">${escapeHtml(catLabel)}</span>`
+    : '';
   const favBtn = showFavorites
     ? `<button type="button" class="favorite-toggle" data-favorite-id="${escapeHtml(e.id)}" aria-label="Toggle favorite" aria-pressed="false" title="Favorite">☆</button>`
     : '';
@@ -152,6 +156,7 @@ function entryRow(e, opts) {
         <div class="prompt-row-main">
           <a class="prompt-link" href="${href}">
             <span class="prompt-title">${escapeHtml(e.title)}</span>
+            ${catSpan}
             ${e.hub_steps && e.hub_steps.length ? '' : modeBadge(e.mode)}
           </a>
           <p class="prompt-when">${escapeHtml(e.use_when)}</p>
@@ -161,21 +166,31 @@ function entryRow(e, opts) {
       </li>`;
 }
 
-function buildSections(entries, opts) {
+function orderedByCategory(entries) {
   const groups = groupByCategory(entries);
-  const sections = [];
+  const order = Object.keys(CATEGORY_LABELS);
+  const ordered = [];
+  for (const category of order) {
+    if (groups.has(category)) ordered.push(...groups.get(category));
+  }
   for (const [category, items] of groups) {
-    const label = CATEGORY_LABELS[category] || category;
-    const rows = items.map((e) => entryRow(e, opts)).join('\n');
-    sections.push(`
-      <section class="category" id="cat-${escapeHtml(category)}" data-category="${escapeHtml(category)}">
-        <h2>${escapeHtml(label)}</h2>
+    if (!CATEGORY_LABELS[category]) ordered.push(...items);
+  }
+  return ordered;
+}
+
+function buildSections(entries, opts) {
+  const heading = (opts && opts.listHeading) || 'Catalog';
+  const rows = orderedByCategory(entries)
+    .map((e) => entryRow(e, opts))
+    .join('\n');
+  return `
+      <section class="category" id="catalog-list">
+        <h2>${escapeHtml(heading)}</h2>
         <ul class="prompt-list">
           ${rows}
         </ul>
-      </section>`);
-  }
-  return sections.join('\n');
+      </section>`;
 }
 
 function categoryHubHtml(entries) {
@@ -275,11 +290,13 @@ function buildListPage({
   outFile,
   withHub,
   showFavorites,
+  listHeading,
 }) {
   const body = render(readTemplate(templateName), {
     SECTIONS: buildSections(entries, {
       staticTags: false,
       showFavorites: !!showFavorites,
+      listHeading: listHeading || 'Catalog',
     }),
     CATEGORY_HUB: withHub ? categoryHubHtml(entries) : '',
     TAG_FILTERS: tagFiltersHtml(entries),
@@ -551,6 +568,7 @@ function main() {
     outFile: 'index.html',
     withHub: true,
     showFavorites: true,
+    listHeading: 'Catalog',
   });
 
   buildListPage({
@@ -561,6 +579,7 @@ function main() {
     activeNav: 'queries',
     bodyClass: 'page-queries',
     outFile: 'queries.html',
+    listHeading: 'All queries',
   });
 
   buildCommandsPage(updateRecipes, stepToHub);

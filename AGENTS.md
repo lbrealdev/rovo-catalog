@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Repository for Rovo (Atlassian AI assistant) prompts and JQL queries for Jira Service Management.
+Conventions for Rovo (Atlassian AI assistant) prompts and JQL used with Jira Service Management in this repo.
 
 ## Critical JQL Syntax Rules
 
@@ -73,7 +73,7 @@ site/                            # Static catalog (HonorBox-style builder)
 
 ## Static site — Rovo Agent Toolkit (`site/`)
 
-Zero-dependency Node build reads `prompts/**/*.md` frontmatter and emits HTML under `site/dist/` (gitignored).
+Zero-dependency Node build: reads `prompts/**/*.md` frontmatter and writes HTML to `site/dist/` (gitignored).
 
 ```bash
 npm run build              # local base path /

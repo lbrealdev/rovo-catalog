@@ -1,8 +1,8 @@
 # Backlog — Rovo Prompt Catalog
 
-Single source of truth for planned work. Prefer updating this file over duplicating tasks as GitHub Issues (open an issue only when a chunk needs a focused PR or discussion).
+Planned work lives here. Prefer updating this file over opening GitHub Issues for every task; open an issue when a chunk needs its own PR or discussion.
 
-**Product goal:** turn this daily-use markdown prompt repo into a small static app on GitHub Pages:
+**Product goal:** a small static app on GitHub Pages for this prompt repo:
 
 `browse by situation → fill placeholders → one-click copy → paste into Rovo`
 
@@ -10,7 +10,7 @@ Single source of truth for planned work. Prefer updating this file over duplicat
 
 ## Phase 0 — Stabilize content
 
-Foundation work so the catalog has clean, consistent prompts.
+Get prompts clean and consistent before building on them.
 
 - [x] Restore weekend triage wording from PR #12 (`Friday 18:00 until now`) in `prompts/triage/daily-triage.md`
 - [x] Add `Time to resolution` columns where intended in daily triage (assign + weekend list steps)
@@ -26,7 +26,7 @@ Foundation work so the catalog has clean, consistent prompts.
 
 ## Phase 1 — Prompt schema
 
-Define metadata so the app can load prompts reliably.
+Metadata so the app can load prompts reliably.
 
 - [x] Define frontmatter schema per prompt (`id`, `title`, `category`, `tags`, `use_when`, `placeholders`, `mode`, body) — see [prompt-schema.md](prompt-schema.md)
 - [x] Apply schema to stable `prompts/` (workbench deferred until promotion)
@@ -107,6 +107,6 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 
 ## Working notes
 
-- Content cleanup (Phase 0) unblocks a trustworthy catalog: Prompts = hubs + situational recipes; Commands = slash-command docs (`/update-work-items`, `/create-work-items`); Queries = `lang: jql`.
-- Schema (Phase 1) unblocks the app without rewriting prompts later.
+- Content cleanup (Phase 0) keeps the catalog trustworthy: Prompts = hubs + situational recipes; Commands = slash-command docs (`/update-work-items`, `/create-work-items`); Queries = `lang: jql`.
+- Schema (Phase 1) lets the app load prompts without rewriting them later.
 - Ship MVP (Phases 2–3) with HonorBox-style static pages; polish after daily use.

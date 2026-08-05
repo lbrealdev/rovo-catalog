@@ -1,14 +1,21 @@
 # rovo-catalog
 
-Personal documentation for Rovo Agent prompts, tips, and daily operations.
+Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small static app to browse, fill, and copy them.
 
-Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Commands, Queries, Profile, and light/dark theme.
+**Rovo Agent Toolkit** is a zero-dependency static site (HonorBox-style: plain HTML/CSS + tiny first-party JS). Markdown under `prompts/` stays the source of truth; `npm run build` turns frontmatter into pages under `site/dist/`.
+
+**How it works:** browse by situation → fill placeholders → one-click copy → paste into Rovo.
 
 **Live site:** [https://lbrealdev.github.io/rovo-catalog/](https://lbrealdev.github.io/rovo-catalog/) (deploys from `main` via GitHub Actions).
 
 ---
 
 ## Table of Contents
+
+### Toolkit
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Repository Structure](#repository-structure)
 
 ### Guides
 - [Document Summaries](guides/document-summaries.md) — stable summarization (experimental Confluence explain/Q&A lives in workbench)
@@ -36,14 +43,99 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 ### JQL Queries
 - [My Tickets JQL](queries/jql/my-tickets.md)
 
-### Toolkit site
-- [Live catalog](https://lbrealdev.github.io/rovo-catalog/) — or build locally with `npm run build` (see [Getting Started](#getting-started))
-
 ### References
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
 - [Prompt Schema](docs/prompt-schema.md) — catalog frontmatter format
 - [Rovo Resources](docs/rovo-resources.md)
 - [AGENTS.md](AGENTS.md) — agent and contributor conventions
+
+---
+
+## Features
+
+- **Situation-first catalog** — Prompts grouped by triage, tickets, SLA, communication, and utilities; hubs stack review → apply steps on one page
+- **Placeholder forms** — fill `<PROJECT>`, `<YOUR-USER>`, selects, and tag chips; Profile prefills the ones you reuse
+- **One-click copy** — preview the rendered prompt, copy, paste into Rovo Chat
+- **Queries page** — reusable JQL (`lang: jql`) next to the text prompts
+- **Commands page** — slash-command explainers only (`/update-work-items`, `/create-work-items`); no recipe dump
+- **Light / dark theme** — `localStorage`, no FOUC; moon/sun toggle in the header
+- **Offline-friendly build** — no CDN, no Vite, no backend; Node ≥ 24, zero npm dependencies
+
+> [!NOTE]
+> Catalog build currently reports **22 listed prompts** (44 total with hub steps) and **6 queries**. Counts come from `npm run build`.
+
+---
+
+## Getting Started
+
+### Live site
+
+Open [https://lbrealdev.github.io/rovo-catalog/](https://lbrealdev.github.io/rovo-catalog/).
+
+1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
+2. Use **Theme** (moon/sun) for light/dark — choice persists
+3. Browse **Prompts** by category or situation shortcuts; page with ← / → when the pager is visible
+4. Open an item, fill placeholders, **Copy** → paste into Rovo
+
+**Commands** is slash-command docs. **Queries** is JQL with copy.
+
+### Build locally
+
+```bash
+npm run build
+python3 -m http.server 8765 --directory site/dist
+# open http://127.0.0.1:8765/
+```
+
+GitHub Pages base-path preview:
+
+```bash
+npm run build:pages
+# serves under /rovo-catalog/
+```
+
+> [!TIP]
+> Reading the generated HTML works with JavaScript off. Copy, Profile, Theme, favorites, and recently used need JS.
+
+### Markdown without the site
+
+1. Open a prompt under `prompts/<category>/`
+2. Replace `<PROJECT>`, `<TICKET-KEY>`, `<YOUR-USER>` (and any other tokens)
+3. Paste into Rovo Chat
+4. Review output before any `/update-work-items` step
+
+---
+
+## Prompt categories
+
+| Category | Path | What it’s for |
+|----------|------|----------------|
+| Triage | [`prompts/triage/`](prompts/triage/) | Daily triage, unassigned hub |
+| Tickets | [`prompts/tickets/`](prompts/tickets/) | Analyze & close, reopened, AWS Health hub |
+| SLA | [`prompts/sla/`](prompts/sla/) | SLA signals, absence, clone continuation |
+| Communication | [`prompts/communication/`](prompts/communication/) | Proofreading, confirm-before-action, weekly status |
+| Utilities | [`prompts/utilities/`](prompts/utilities/) | Quick queue rituals, search/bulk/JQL hubs |
+
+Stable entries use YAML frontmatter (`id`, `title`, `category`, `tags`, `use_when`, `placeholders`, `mode`) plus one fenced `text` or `jql` body. Spec: [docs/prompt-schema.md](docs/prompt-schema.md).
+
+### JQL queries
+
+Reusable templates live in [`queries/jql/`](queries/jql/). Same schema as prompts; they show on the **Queries** page, not Prompts.
+
+> [!IMPORTANT]
+> `"Time to resolution"` cannot use date comparisons. Use SLA functions such as `remaining("Time to resolution")`. Full rules: [AGENTS.md](AGENTS.md).
+
+### Experimental workbench
+
+[`workbench/`](workbench/) holds prompts still in testing. Schema migration is deferred; promote into `prompts/` when a flow is stable. AWS Health is already promoted (`tickets-aws-health` in ticket analysis).
+
+### Guides & references
+
+- [Document Summaries](guides/document-summaries.md)
+- [Backlog](docs/BACKLOG.md)
+- [Prompt Schema](docs/prompt-schema.md)
+- [Rovo Resources](docs/rovo-resources.md)
+- [AGENTS.md](AGENTS.md)
 
 ---
 
@@ -54,7 +146,7 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
 ├── package.json                 # npm run build (zero dependencies)
 ├── AGENTS.md                    # Conventions for prompts and JQL
 ├── docs/
-│   ├── BACKLOG.md               # Product roadmap (prompt catalog app)
+│   ├── BACKLOG.md               # Product roadmap
 │   ├── prompt-schema.md         # Catalog frontmatter schema
 │   └── rovo-resources.md        # Official Rovo links
 ├── site/                        # Rovo Agent Toolkit (static builder)
@@ -72,38 +164,4 @@ Includes a **Rovo Agent Toolkit** static site (HonorBox-style): Prompts, Command
         └── my-tickets.md
 ```
 
-**Note:** `workbench/` contains prompts being actively developed and tested. Once stable, they may be promoted to `prompts/`.
-
----
-
-## Getting Started
-
-### Toolkit site
-
-Use the [live site](https://lbrealdev.github.io/rovo-catalog/), or build locally:
-
-```bash
-npm run build
-python3 -m http.server 8765 --directory site/dist
-# open http://127.0.0.1:8765/
-```
-
-For a GitHub Pages base-path preview: `npm run build:pages` (serves under `/rovo-catalog/`).
-
-1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
-2. Use **Theme** (moon/sun icon) for light/dark — choice persists, with a circular wipe on supported browsers
-3. Browse **Prompts** by category hub, or page through 10 at a time (← / → keys when the pager is visible); **Commands** (slash-command docs); **Queries** (JQL)
-4. Open an item, fill placeholders, **Copy** → paste into Rovo
-
-### Markdown prompts (without the site)
-
-1. Copy prompts from the relevant category under `prompts/`
-2. Replace `<PROJECT>`, `<TICKET-KEY>`, `<YOUR-USER>` placeholders
-3. Paste into Rovo Chat
-4. Review output before applying any changes
-
----
-
-## Contributing
-
-This is a personal knowledge base. Feel free to adapt prompts for your own use.
+`workbench/` is for prompts under active development. Promote to `prompts/` once stable.

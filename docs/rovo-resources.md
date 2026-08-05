@@ -1,8 +1,8 @@
-# Rovo Atlassian - Resources
+# Rovo Atlassian — Resources
 
-This document contains important links and official Rovo Atlassian resources.
+Official Atlassian Rovo docs and status links.
 
-## 📚 Documentation
+## Documentation
 
 - [Chat Actions](https://support.atlassian.com/rovo/docs/chat-actions/)
 - [What are Skills?](https://support.atlassian.com/rovo/docs/what-are-skills/)
@@ -11,18 +11,16 @@ This document contains important links and official Rovo Atlassian resources.
 - [The Rovo Button](https://support.atlassian.com/rovo/docs/the-rovo-button/)
 - [Rovo Data Privacy and Usage Guidelines](https://support.atlassian.com/rovo/docs/rovo-data-privacy-and-usage-guidelines/)
 
-## 🌐 Main Page
+## Main page
 
 - [Rovo Support Site](https://support.atlassian.com/rovo)
 
-## 🚨 Status & Support
+## Status & support
 
 - [Rovo Status Page](https://rovo.status.atlassian.com/)
 
 ---
 
-## 🔧 Additional Resources
+## Additional resources
 
 - [Using Ops Guide](https://support.atlassian.com/rovo/docs/using-ops-guide/)
-
----

@@ -62,7 +62,7 @@ Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small sta
 - **Offline-friendly build** — no CDN, no Vite, no backend; Node ≥ 24, zero npm dependencies
 
 > [!NOTE]
-> Catalog build currently reports **22 listed prompts** (44 total with hub steps) and **6 queries**. Counts come from `npm run build`.
+> For current listed-prompt and query counts, run `npm run build` (the build log prints them).
 
 ---
 

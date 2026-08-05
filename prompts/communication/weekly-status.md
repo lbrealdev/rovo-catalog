@@ -28,9 +28,9 @@ mode: read-only
 Prepare a short talking-points summary for my weekly status call with the client, for project <PROJECT>, covering the period <LOOKBACK>.
 
 Include:
-- Total tickets created in the period (including system-generated) and how many are being addressed
-- Key items handled in the last few days — across dev, uat and prod, prioritizing anything in prod
-- Work currently in progress
+- Total tickets created in the period (including system-generated: automation, integration, or health-style tickets) and how many are being addressed
+- Key items handled in the last few days — across dev, uat and prod, prioritizing anything in prod — in a compact table with columns: Key, Summary, Env (dev/uat/prod when known), Status
+- Work currently in progress (same table shape when helpful)
 
 Keep it concise and useful for a short meeting. If nothing relevant was found, say so explicitly — do not invent or stretch anything. Leave room at the end for the client to share their own needs and priorities.
 ```

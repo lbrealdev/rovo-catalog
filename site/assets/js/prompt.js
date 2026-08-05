@@ -145,24 +145,28 @@
     return (p.PROJECT || "").trim();
   }
 
+  var TICKET_KEY_RE = /^[A-Za-z][A-Za-z0-9_]*-\d+$/;
+
   function normalizeTicketKey(raw) {
     let token = String(raw || "").trim();
-    if (!token) return "";
+    if (!token) return { key: "", reason: "" };
     // Strip a trailing comma left by paste/typing.
     if (token.charAt(token.length - 1) === ",") {
       token = token.slice(0, -1).trim();
     }
-    if (!token) return "";
+    if (!token) return { key: "", reason: "" };
     if (/^\d+$/.test(token)) {
       const project = profileProject();
-      if (project) return project + "-" + token;
+      if (!project) return { key: "", reason: "needs-project" };
+      return { key: project + "-" + token, reason: "" };
     }
-    return token;
+    if (TICKET_KEY_RE.test(token)) return { key: token, reason: "" };
+    return { key: "", reason: "invalid" };
   }
 
   function splitTagTokens(text) {
     return String(text || "")
-      .split(/[,\n]+/)
+      .split(/[\s,]+/)
       .map(function (part) {
         return part.trim();
       })
@@ -173,9 +177,23 @@
     const chipsEl = root.querySelector("[data-tags-chips]");
     const entry = root.querySelector(".tags-entry");
     const hidden = root.querySelector("input[data-placeholder]");
+    const hintEl =
+      (root.parentElement && root.parentElement.querySelector("[data-tags-hint]")) ||
+      root.querySelector("[data-tags-hint]");
     if (!chipsEl || !entry || !hidden) return;
 
     const tags = [];
+
+    function setHint(message) {
+      if (!hintEl) return;
+      if (message) {
+        hintEl.textContent = message;
+        hintEl.hidden = false;
+      } else {
+        hintEl.textContent = "";
+        hintEl.hidden = true;
+      }
+    }
 
     function syncHidden() {
       hidden.value = tags.join(", ");
@@ -215,8 +233,19 @@
 
     function addTokens(parts) {
       let added = false;
+      let needsProject = false;
+      let skippedInvalid = false;
       parts.forEach(function (part) {
-        const key = normalizeTicketKey(part);
+        const result = normalizeTicketKey(part);
+        if (result.reason === "needs-project") {
+          needsProject = true;
+          return;
+        }
+        if (result.reason === "invalid") {
+          skippedInvalid = true;
+          return;
+        }
+        const key = result.key;
         if (!key) return;
         const exists = tags.some(function (t) {
           return t.toLowerCase() === key.toLowerCase();
@@ -228,6 +257,13 @@
       if (added) {
         renderChips();
         syncHidden();
+      }
+      if (needsProject) {
+        setHint("Set Profile PROJECT to expand bare IDs");
+      } else if (skippedInvalid) {
+        setHint("Skipped invalid key(s)");
+      } else if (added) {
+        setHint("");
       }
     }
 

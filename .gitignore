@@ -2,8 +2,8 @@ from-rovo/
 .agents/
 site/dist/
 
-# Hermes local tooling
+# Hermes local tooling (scripts, shots, and cache dir)
+.hermes/
 .hermes-audit.js
 .hermes-shot.js
 .hermes-shots/
-.hermes/

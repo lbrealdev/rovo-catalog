@@ -1,6 +1,6 @@
 # Prompt Schema
 
-Metadata format for catalog entries in `prompts/`. Markdown remains the source of truth; YAML frontmatter labels each copy-paste template so a future static catalog can load it reliably.
+Metadata format for catalog entries in `prompts/`. Markdown is the source of truth; YAML frontmatter labels each copy-paste template so the static catalog can load it.
 
 **Product path:** browse → fill placeholders → copy → paste into Rovo  
 **Site:** HonorBox-style zero-dependency builder in [`site/`](../site/) (`npm run build` → `site/dist/`). Toolkit sections: Prompts (`lang: text`), Queries (`lang: jql`), Commands (`site/content/commands.md` slash explainers only). Plain HTML/CSS + tiny first-party JS. Not Vite. Not Backstage. GitHub Pages deploy is Phase 3.
@@ -97,7 +97,7 @@ Multi-step flows (review → apply) use a **hub entry** (`hub_steps`) plus unlis
 
 ## Mini profile placeholders (Phase 2)
 
-The future static site will store a mini profile in `localStorage` (persists until the user clears site data / cache). Align schema names now:
+The static site stores a mini profile in `localStorage` (persists until the user clears site data / cache). Align schema names with these:
 
 | Name | Profile-owned? | Notes |
 |------|----------------|-------|

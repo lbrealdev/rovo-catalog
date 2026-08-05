@@ -357,7 +357,8 @@ function placeholderFieldsHtml(placeholders) {
   <div class="tags-chips" data-tags-chips></div>
   <input type="text" class="tags-entry" aria-label="${escapeHtml(name)}" autocomplete="off" />
   <input type="hidden" name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}" value="" ${required} />
-</div>`;
+</div>
+<p class="tags-hint" data-tags-hint hidden></p>`;
       } else {
         control = `<input type="text" name="${escapeHtml(name)}" data-placeholder="${escapeHtml(name)}"${profileOwned} ${required} autocomplete="off" />`;
       }

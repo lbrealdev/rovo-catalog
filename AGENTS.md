@@ -125,7 +125,7 @@ Rules:
 - Multi-step flows = hub entry with `hub_steps` + step entries with `listed: false`
 - Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
 - Catalog list rows and prompt detail headers show no mode badges; hub update steps live on the hub page (`#step-<id>`), not on Commands
-- Placeholders may use `type: select` with `options: ["…"]`, or `type: tags` for chip lists (default `type: text`)
+- Placeholders may use `type: select` with `options: ["…"]`, or `type: tags` for Jira key chip lists (default `type: text`); chips normalize bare numeric IDs via Profile `PROJECT`
 - `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
 
 **Catalog hubs:** `triage-unassigned-tickets`, `sla-clone-continuation`, `sla-signal-continuation`, `sla-expiring-absence`, `tickets-reopened`, `tickets-reopened-batch-flow`, `tickets-aws-health`, `utilities-search-assign`, `utilities-bulk-assign`, `utilities-jql-prioritize`.

@@ -6,3 +6,4 @@ site/dist/
 .hermes-audit.js
 .hermes-shot.js
 .hermes-shots/
+.hermes/

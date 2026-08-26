@@ -298,8 +298,62 @@ code {
   max-width: 34rem;
 }
 
+.hero-steps {
+  margin: 1rem 0 0;
+  padding: 0 0 0 1.15rem;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.hero-steps li {
+  margin: 0.2rem 0;
+}
+
 .hero-meta {
   margin: 0.75rem 0 0;
+}
+
+.profile-hint {
+  max-width: calc(var(--max) + 4rem);
+  margin: 0 auto;
+  padding: 0.65rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--readonly-bg) 70%, transparent);
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.profile-hint p {
+  margin: 0;
+}
+
+.field-optional {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+button.linkish {
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+button.linkish:hover {
+  color: var(--focus);
+}
+
+button.linkish:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .toolbar {
@@ -310,6 +364,7 @@ code {
 
 .search-field input[type="search"],
 .field input[type="text"],
+.field input[type="url"],
 .field select {
   width: 100%;
   font: inherit;
@@ -332,6 +387,7 @@ code {
 
 .search-field input[type="search"]:focus,
 .field input[type="text"]:focus,
+.field input[type="url"]:focus,
 .field select:focus,
 .tags-input:focus-within,
 .nav-btn:focus-visible,

@@ -304,8 +304,11 @@ function validateHubSteps(entries) {
   }
 }
 
-function loadAllPrompts(promptsDir) {
-  const files = walkMarkdownFiles(promptsDir);
+function loadAllPrompts(promptsDirOrDirs) {
+  const dirs = Array.isArray(promptsDirOrDirs)
+    ? promptsDirOrDirs
+    : [promptsDirOrDirs];
+  const files = dirs.flatMap((dir) => walkMarkdownFiles(dir));
   const entries = [];
   const seen = new Map();
 
@@ -323,7 +326,14 @@ function loadAllPrompts(promptsDir) {
 
   validateHubSteps(entries);
 
-  const order = ['triage', 'tickets', 'sla', 'communication', 'utilities'];
+  const order = [
+    'triage',
+    'tickets',
+    'sla',
+    'communication',
+    'utilities',
+    'confluence',
+  ];
   entries.sort((a, b) => {
     const ai = order.indexOf(a.category);
     const bi = order.indexOf(b.category);

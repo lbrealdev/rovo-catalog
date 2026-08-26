@@ -42,7 +42,7 @@
     </div>
     <div class="profile-panel" id="profile-panel" hidden>
       <form id="profile-form" class="profile-form">
-        <p class="profile-lead">Saved in this browser until you clear site data.</p>
+        <p class="profile-lead">Saved in this browser only. Prefills placeholders on prompt pages. This is a copy-paste toolkit — nothing is sent to Jira.</p>
         <label class="field">
           <span class="field-label">Project</span>
           <span class="field-desc">Fills &lt;PROJECT&gt; in prompts</span>
@@ -53,6 +53,11 @@
           <span class="field-desc">Fills &lt;YOUR-USER&gt; in prompts</span>
           <input type="text" name="YOUR-USER" id="profile-YOUR-USER" autocomplete="username" placeholder="Jira username" />
         </label>
+        <label class="field">
+          <span class="field-label">Confluence page URL <span class="field-optional">(optional)</span></span>
+          <span class="field-desc">Fills &lt;CONFLUENCE-PAGE-URL&gt; when set</span>
+          <input type="url" name="CONFLUENCE-PAGE-URL" id="profile-CONFLUENCE-PAGE-URL" autocomplete="url" placeholder="https://…/wiki/…" />
+        </label>
         <div class="profile-actions">
           <button type="submit" class="btn">Save profile</button>
           <button type="button" class="btn btn-quiet" id="profile-clear">Clear</button>
@@ -61,11 +66,14 @@
       </form>
     </div>
   </header>
+  <aside id="profile-hint" class="profile-hint" hidden>
+    <p>Set <button type="button" class="linkish" id="profile-hint-open">Profile</button> (project + username) so placeholders fill automatically.</p>
+  </aside>
   <main class="site-main">
     {{BODY}}
   </main>
   <footer class="site-footer">
-    <p>Markdown in <code>prompts/</code> is the source of truth. Built locally — no backend.</p>
+    <p>Copy-paste toolkit for Rovo — not a Jira app. Markdown in <code>prompts/</code> is the source of truth. Built statically; Profile stays in your browser.</p>
   </footer>
   <script src="{{ASSET_THEME_JS}}" defer></script>
   <script src="{{ASSET_PROFILE_JS}}" defer></script>

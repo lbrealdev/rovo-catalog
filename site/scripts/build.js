@@ -11,6 +11,7 @@ const TEMPLATES = path.join(SITE, 'templates');
 const ASSETS = path.join(SITE, 'assets');
 const CONTENT = path.join(SITE, 'content');
 const PROMPTS_DIR = path.join(ROOT, 'prompts');
+const QUERIES_DIR = path.join(ROOT, 'queries', 'jql');
 
 const CATEGORY_LABELS = {
   triage: 'Triage',
@@ -18,7 +19,10 @@ const CATEGORY_LABELS = {
   sla: 'SLA',
   communication: 'Communication',
   utilities: 'Utilities',
+  confluence: 'Confluence',
 };
+
+const PROFILE_OWNED = new Set(['PROJECT', 'YOUR-USER', 'CONFLUENCE-PAGE-URL']);
 
 function normalizeBasePath(raw) {
   let base = (raw || '/').trim() || '/';
@@ -186,7 +190,7 @@ function buildSections(entries, opts) {
 
 function categoryHubHtml(entries) {
   const groups = groupByCategory(entries);
-  const order = ['triage', 'tickets', 'sla', 'communication', 'utilities'];
+  const order = Object.keys(CATEGORY_LABELS);
   const allBtn = `<button type="button" class="cat-hub-btn is-active" data-category="" aria-pressed="true"><span class="cat-hub-label">All</span><span class="cat-hub-count">${entries.length}</span></button>`;
   const buttons = order
     .filter((c) => groups.has(c))
@@ -339,10 +343,9 @@ function placeholderFieldsHtml(placeholders) {
       const name = p.name;
       const required = p.required ? 'required' : '';
       const desc = p.description || name;
-      const profileOwned =
-        name === 'PROJECT' || name === 'YOUR-USER'
-          ? ' data-profile-field="true"'
-          : '';
+      const profileOwned = PROFILE_OWNED.has(name)
+        ? ' data-profile-field="true"'
+        : '';
       let control;
       if (p.type === 'select') {
         const options = (p.options || [])
@@ -538,7 +541,7 @@ function writeCatalogJson(entries) {
 }
 
 function main() {
-  const entries = loadAllPrompts(PROMPTS_DIR);
+  const entries = loadAllPrompts([PROMPTS_DIR, QUERIES_DIR]);
   if (!entries.length) {
     throw new Error('No catalog entries found under prompts/');
   }
@@ -555,7 +558,8 @@ function main() {
     entries: listedPrompts,
     templateName: 'index.html',
     title: 'Rovo Agent Toolkit',
-    description: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
+    description:
+      'Copy-paste Rovo prompts for Jira Service Management and Confluence — browse, fill, copy.',
     activeNav: 'prompts',
     bodyClass: 'page-home page-prompts',
     outFile: 'index.html',

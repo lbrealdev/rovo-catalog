@@ -42,7 +42,7 @@ Keep a short human intro at the top of each file. Multiple entries may live in o
 |-------|----------|-------------|
 | `id` | yes | Stable slug: `category-short-name` (e.g. `triage-assign-unassigned-review`). Must match `/^[a-z0-9-]+$/` |
 | `title` | yes | Catalog display title |
-| `category` | yes | Folder name: `triage`, `tickets`, `sla`, `communication`, `utilities` |
+| `category` | yes | Folder name: `triage`, `tickets`, `sla`, `communication`, `utilities`, `confluence` |
 | `tags` | yes | List of lowercase tags for later filters |
 | `use_when` | yes | Short situation blurb |
 | `placeholders` | yes | List of placeholder objects (use `[]` if none) |
@@ -103,6 +103,7 @@ The static site stores a mini profile in `localStorage` (persists until the user
 |------|----------------|-------|
 | `PROJECT` | yes | Default project key |
 | `YOUR-USER` | yes | Jira username / display handle |
+| `CONFLUENCE-PAGE-URL` | optional | Default Confluence page URL for Confluence prompts |
 | `TICKET-KEY` | no | Per use (single ticket) |
 | `TICKET-KEYS` | no | Per use (`type: tags` chip list → comma-separated keys) |
 | Other ticket/date/pattern fields | no | Per use |
@@ -111,8 +112,8 @@ The static site stores a mini profile in `localStorage` (persists until the user
 
 ## Inclusion scope
 
-- **Phase 1:** stable `prompts/` only
-- **Deferred:** `workbench/` (apply the same schema when promoting experimental prompts)
+- Stable `prompts/` plus schema-ready `queries/jql/` (builder loads both)
+- `workbench/` holds pointers / experiments; promote into `prompts/` when a flow is stable
 
 ---
 

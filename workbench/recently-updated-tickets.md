@@ -1,36 +1,16 @@
 # Recently Updated Tickets
 
-Find open tickets assigned to you that have been updated by clients or teammates.
+> **Deprecated — pointer only.** Do not use this workbench note as the source of truth.
+> The stable catalog entry is **Recently Updated Tickets** (`tickets-recently-updated`).
 
-**Use when:** You want to keep an eye on your assigned tickets where someone (client or teammate) recently added a comment or changed the status.
+**Promoted:** this experimental finder now lives in the catalog.
 
-**Workflow:** Read-only review of tickets and their recent updates.
+Use the catalog instead:
 
----
+- Source: [`prompts/tickets/recently-updated.md`](../prompts/tickets/recently-updated.md) (`tickets-recently-updated`)
+- Built page (after `npm run build`): `site/dist/prompts/tickets-recently-updated.html`
+- Related JQL (Queries): `tickets-jql-recently-updated`
 
-## Main Prompt
+**Workflow (unchanged intent):** read-only table of your open tickets, then call out ones updated in a lookback window.
 
-```
-Show all my open <PROJECT> tickets in a table (Key, Summary, Status, Time to resolution, Updated).
-
-Then identify tickets where someone (client or teammate) recently added a comment or changed the status (in the last few hours).
-For each updated ticket:
-- Show what happened (comment added / status changed)
-- Brief description of the update
-```
-
----
-
-## JQL Template
-
-```jql
-project = <PROJECT> AND assignee = currentUser() AND statusCategory != Done AND updated >= -8h ORDER BY updated DESC
-```
-
----
-
-## Tips
-
-- Adjust the time window by changing `-8h` to `-4h` (4 hours), `-12h` (12 hours), or `-1d` (1 day)
-- If you want to focus only on tickets with new comments (not status changes), add `AND commentUpdated >= -8h` to the JQL
-- Rovo will review each ticket's recent activity log to determine what was updated and by whom
+This workbench file is kept as a pointer only so old links do not go dead. Do not edit prompts here — edit the stable entry.

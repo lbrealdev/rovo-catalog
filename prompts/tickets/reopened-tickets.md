@@ -200,6 +200,12 @@ placeholders:
   - name: PROJECT
     required: true
     description: Jira project key (e.g. SUP)
+  - name: KEYWORD-1
+    required: true
+    description: First search keyword
+  - name: KEYWORD-2
+    required: true
+    description: Second search keyword
 mode: read-only
 ---
 
@@ -207,7 +213,8 @@ mode: read-only
 project = <PROJECT>
 AND statusCategory = Done
 AND resolved >= -30d
-AND text ~ "\"<keyword1>\"" AND text ~ "\"<keyword2>\""
+AND (summary ~ "<KEYWORD-1>" OR description ~ "<KEYWORD-1>")
+AND (summary ~ "<KEYWORD-2>" OR description ~ "<KEYWORD-2>")
 ORDER BY resolved DESC
 ```
 

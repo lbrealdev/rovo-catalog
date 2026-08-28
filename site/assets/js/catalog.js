@@ -8,12 +8,15 @@
     sla: "SLA",
     communication: "Communication",
     utilities: "Utilities",
+    confluence: "Confluence",
   };
 
   const SHORTCUTS = [
     { label: "Monday Triage", category: "triage", tag: "morning" },
     { label: "SLA at Risk", category: "", tag: "sla" },
     { label: "Reopened", category: "tickets", tag: "reopened" },
+    { label: "Recently Updated", category: "tickets", tag: "updated" },
+    { label: "Confluence", category: "confluence", tag: "" },
     { label: "Proofreading", category: "communication", tag: "proofread" },
   ];
 

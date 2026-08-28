@@ -11,6 +11,7 @@ const TEMPLATES = path.join(SITE, 'templates');
 const ASSETS = path.join(SITE, 'assets');
 const CONTENT = path.join(SITE, 'content');
 const PROMPTS_DIR = path.join(ROOT, 'prompts');
+const QUERIES_DIR = path.join(ROOT, 'queries', 'jql');
 
 const CATEGORY_LABELS = {
   triage: 'Triage',
@@ -18,7 +19,10 @@ const CATEGORY_LABELS = {
   sla: 'SLA',
   communication: 'Communication',
   utilities: 'Utilities',
+  confluence: 'Confluence',
 };
+
+const PROFILE_OWNED = new Set(['PROJECT', 'YOUR-USER', 'CONFLUENCE-PAGE-URL']);
 
 function normalizeBasePath(raw) {
   let base = (raw || '/').trim() || '/';
@@ -186,7 +190,7 @@ function buildSections(entries, opts) {
 
 function categoryHubHtml(entries) {
   const groups = groupByCategory(entries);
-  const order = ['triage', 'tickets', 'sla', 'communication', 'utilities'];
+  const order = Object.keys(CATEGORY_LABELS);
   const allBtn = `<button type="button" class="cat-hub-btn is-active" data-category="" aria-pressed="true"><span class="cat-hub-label">All</span><span class="cat-hub-count">${entries.length}</span></button>`;
   const buttons = order
     .filter((c) => groups.has(c))
@@ -319,7 +323,7 @@ function buildCommandsPage() {
   });
 
   const html = layoutShell({
-    TITLE: 'Commands · Rovo Agent Toolkit',
+    TITLE: 'Commands · Rovo Catalog',
     DESCRIPTION: 'Rovo slash commands that change Jira work items.',
     BODY: body,
     ASSET_PAGE_JS: '',
@@ -339,10 +343,9 @@ function placeholderFieldsHtml(placeholders) {
       const name = p.name;
       const required = p.required ? 'required' : '';
       const desc = p.description || name;
-      const profileOwned =
-        name === 'PROJECT' || name === 'YOUR-USER'
-          ? ' data-profile-field="true"'
-          : '';
+      const profileOwned = PROFILE_OWNED.has(name)
+        ? ' data-profile-field="true"'
+        : '';
       let control;
       if (p.type === 'select') {
         const options = (p.options || [])
@@ -505,7 +508,7 @@ function buildPromptPages(entries) {
 
     const modeClass = isHub ? 'page-prompt-hub' : `mode-${e.mode}`;
     const html = layoutShell({
-      TITLE: `${e.title} · Rovo Agent Toolkit`,
+      TITLE: `${e.title} · Rovo Catalog`,
       DESCRIPTION: e.use_when,
       BODY: body,
       ASSET_PAGE_JS: rootPath('assets/js/prompt.js'),
@@ -538,7 +541,7 @@ function writeCatalogJson(entries) {
 }
 
 function main() {
-  const entries = loadAllPrompts(PROMPTS_DIR);
+  const entries = loadAllPrompts([PROMPTS_DIR, QUERIES_DIR]);
   if (!entries.length) {
     throw new Error('No catalog entries found under prompts/');
   }
@@ -554,8 +557,9 @@ function main() {
   buildListPage({
     entries: listedPrompts,
     templateName: 'index.html',
-    title: 'Rovo Agent Toolkit',
-    description: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
+    title: 'Rovo Catalog',
+    description:
+      'Copy-paste Rovo prompts for Jira Service Management and Confluence — browse, fill, copy.',
     activeNav: 'prompts',
     bodyClass: 'page-home page-prompts',
     outFile: 'index.html',
@@ -567,7 +571,7 @@ function main() {
   buildListPage({
     entries: queries,
     templateName: 'queries.html',
-    title: 'Queries · Rovo Agent Toolkit',
+    title: 'Queries · Rovo Catalog',
     description: 'Jira JQL snippets for Rovo and Jira search.',
     activeNav: 'queries',
     bodyClass: 'page-queries',

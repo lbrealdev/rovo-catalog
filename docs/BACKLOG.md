@@ -58,7 +58,7 @@ Small catalog UI — HonorBox-style: zero-dependency Node build, plain HTML/CSS,
 - [x] Add GitHub Actions workflow to build + deploy Pages
 - [x] Configure base path for the repository name (`SITE_BASE_PATH=/rovo-catalog/` via `npm run build:pages`)
 - [x] Add live site URL to `README.md`
-- [ ] Verify usability on desktop (and mobile if used daily) — after first green deploy + Pages source = GitHub Actions
+- [x] Verify usability on desktop (and mobile if used daily) — after first green deploy + Pages source = GitHub Actions
 
 ---
 
@@ -71,7 +71,7 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 - [x] JQL entries (`lang: jql`) on Queries, excluded from Prompts
 - [x] Commands page: slash-command explainers only (`site/content/commands.md`; no recipe index)
 - [ ] Profile notes + export (Markdown/HTML) — TBD
-- [ ] Confluence / Guides section — later
+- [x] Confluence category in catalog (`prompts/confluence/`) — Guides summarization remains separate
 
 ---
 
@@ -89,7 +89,7 @@ Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
 
 - [ ] Docs/changelog section (Marmite or simple pages) if a writing surface is needed beside the catalog
 - [x] Promote AWS Health workbench finder into `tickets-aws-health` hub (Issue #24); other workbench prompts still deferred
-- [ ] Promote remaining stable workbench prompts into catalog categories (apply prompt schema on promotion)
+- [x] Promote remaining stable workbench prompts into catalog categories (apply prompt schema on promotion)
 - [ ] Track Rovo product changes that require prompt updates
 - [ ] Jira API / API token for fetching tickets — only behind a private/proxy design (never bake secrets into public Pages JS)
 

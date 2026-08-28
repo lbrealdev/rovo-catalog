@@ -54,26 +54,30 @@ prompts/
 │   └── daily-triage.md          # Daily triage (+ Unassigned Tickets hub)
 ├── tickets/
 │   ├── ticket-analysis.md       # Analyze & close (+ AWS Health hub)
-│   └── reopened-tickets.md      # Reopened single + batch hubs
+│   ├── reopened-tickets.md      # Reopened single + batch hubs
+│   ├── recently-updated.md      # Recently updated tickets
+│   └── find-similar-resolved.md # Similar resolved hub
 ├── sla/
 │   ├── sla-management.md        # SLA signals / absence hubs
 │   └── sla-workflow.md          # SLA clone continuation hub
 ├── communication/
 │   ├── proofreading.md          # Message proofreading
 │   └── confirm-before-action.md # Get approval before actions
-└── utilities/
-    ├── prompts-special.md       # Lean multi-line (+ search/bulk/JQL hubs)
-    └── quick-prompts.md         # Queue rituals (list / prioritize / summarize)
+├── utilities/
+│   ├── prompts-special.md       # Lean multi-line (+ search/bulk/JQL hubs)
+│   └── quick-prompts.md         # Queue rituals (list / prioritize / summarize)
+└── confluence/
+    └── explain.md               # Confluence explain / procedure / checklist / compare
 workbench/                       # Experimental prompts (pointers / in testing)
 guides/                          # Documentation
 docs/                            # Backlog and references
-queries/jql/                     # Reusable JQL templates
+queries/jql/                     # Reusable JQL templates (also loaded by the builder)
 site/                            # Static catalog (HonorBox-style builder)
 ```
 
-## Static site — Rovo Agent Toolkit (`site/`)
+## Static site — Rovo Catalog (`site/`)
 
-Zero-dependency Node build: reads `prompts/**/*.md` frontmatter and writes HTML to `site/dist/` (gitignored).
+Zero-dependency Node build: reads `prompts/**/*.md` and `queries/jql/*.md` frontmatter and writes HTML to `site/dist/` (gitignored).
 
 ```bash
 npm run build              # local base path /
@@ -87,7 +91,7 @@ python3 -m http.server --directory site/dist
 - **Queries** (`queries.html`) — `lang: jql` entries
 - **Commands** (`commands.html`) — slash-command explainers from `site/content/commands.md` only (no recipe list)
 
-**Chrome:** Profile and Theme are header buttons (not pages). Theme uses `data-theme` + `localStorage` key `rovo-catalog-theme` (inline head boot avoids FOUC). Profile stores `PROJECT` and `YOUR-USER`.
+**Chrome:** Profile and Theme are header buttons (not pages). Theme uses `data-theme` + `localStorage` key `rovo-catalog-theme` (inline head boot avoids FOUC). Profile stores `PROJECT`, `YOUR-USER`, and optional `CONFLUENCE-PAGE-URL`.
 
 Source layout: `site/scripts/`, `site/templates/`, `site/content/`, `site/assets/` (CSS/JS/fonts). No CDN assets.
 
@@ -126,11 +130,11 @@ Rules:
 - Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
 - Catalog list rows and prompt detail headers show no mode badges; hub update steps live on the hub page (`#step-<id>`), not on Commands
 - Placeholders may use `type: select` with `options: ["…"]`, or `type: tags` for chip lists (default `type: text`)
-- `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
+- `workbench/` holds pointers / experiments; promote into `prompts/` when stable (AWS Health, recently updated, similar resolved, Confluence daily flows are promoted)
 
-**Catalog hubs:** `triage-unassigned-tickets`, `sla-clone-continuation`, `sla-signal-continuation`, `sla-expiring-absence`, `tickets-reopened`, `tickets-reopened-batch-flow`, `tickets-aws-health`, `utilities-search-assign`, `utilities-bulk-assign`, `utilities-jql-prioritize`.
+**Catalog hubs:** `triage-unassigned-tickets`, `sla-clone-continuation`, `sla-signal-continuation`, `sla-expiring-absence`, `tickets-reopened`, `tickets-reopened-batch-flow`, `tickets-aws-health`, `tickets-find-similar-resolved`, `utilities-search-assign`, `utilities-bulk-assign`, `utilities-jql-prioritize`.
 
-Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`, `YOUR-USER`.
+Profile-owned placeholders (`localStorage`): `PROJECT`, `YOUR-USER`, optional `CONFLUENCE-PAGE-URL`.
 
 ## Placeholder Format
 
@@ -139,6 +143,7 @@ Prompts use `<UPPERCASE-WITH-HYPHENS>`:
 - `<TICKET-KEY>` - Ticket ID (e.g., SUP-123)
 - `<TICKET-KEYS>` - Batch hub ticket list (`type: tags`; e.g., SUP-101, SUP-102)
 - `<YOUR-USER>` - Jira username
+- `<CONFLUENCE-PAGE-URL>` - Confluence page URL (optional in Profile)
 - `<PATTERN>` - Search pattern
 - `<HOURS-AWAY>` - Hours in away period (often a select)
 - `<LOOKBACK>` - Selectable time window (natural language or JQL relative, per hub)

@@ -27,7 +27,16 @@ jobs:
           node-version: '24'
 
       - name: Build site
-        run: npm run build:pages
+        run: |
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          if [ "${REPO}" = "${OWNER}.github.io" ]; then
+            export SITE_BASE_PATH="/"
+          else
+            export SITE_BASE_PATH="/${REPO}/"
+          fi
+          echo "SITE_BASE_PATH=${SITE_BASE_PATH}"
+          node site/scripts/build.js
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

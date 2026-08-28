@@ -1,4 +1,4 @@
-# Rovo Agent Toolkit
+# Rovo Catalog
 
 Copy-paste prompts and JQL for daily **Jira Service Management** and **Confluence** work with Atlassian Rovo.
 

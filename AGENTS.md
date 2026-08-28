@@ -75,7 +75,7 @@ queries/jql/                     # Reusable JQL templates (also loaded by the bu
 site/                            # Static catalog (HonorBox-style builder)
 ```
 
-## Static site — Rovo Agent Toolkit (`site/`)
+## Static site — Rovo Catalog (`site/`)
 
 Zero-dependency Node build: reads `prompts/**/*.md` and `queries/jql/*.md` frontmatter and writes HTML to `site/dist/` (gitignored).
 

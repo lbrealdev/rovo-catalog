@@ -2,7 +2,7 @@
 
 Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small static app to browse, fill, and copy them.
 
-**Rovo Agent Toolkit** is a zero-dependency static site (HonorBox-style: plain HTML/CSS + tiny first-party JS). Markdown under `prompts/` stays the source of truth; `npm run build` turns frontmatter into pages under `site/dist/`.
+**Rovo Catalog** is a zero-dependency static site (HonorBox-style: plain HTML/CSS + tiny first-party JS). Markdown under `prompts/` stays the source of truth; `npm run build` turns frontmatter into pages under `site/dist/`.
 
 **How it works:** browse by situation → fill placeholders → one-click copy → paste into Rovo.
 
@@ -12,7 +12,7 @@ Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small sta
 
 ## Table of Contents
 
-### Toolkit
+### Catalog
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Repository Structure](#repository-structure)
@@ -149,7 +149,7 @@ Reusable templates live in [`queries/jql/`](queries/jql/). Same schema as prompt
 │   ├── BACKLOG.md               # Product roadmap
 │   ├── prompt-schema.md         # Catalog frontmatter schema
 │   └── rovo-resources.md        # Official Rovo links
-├── site/                        # Rovo Agent Toolkit (static builder)
+├── site/                        # Rovo Catalog (static builder)
 │   ├── scripts/                 # parse-prompts.js, build.js
 │   ├── templates/
 │   ├── content/                 # Commands explainers (commands.md)

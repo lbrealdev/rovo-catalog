@@ -62,9 +62,9 @@ Small catalog UI — HonorBox-style: zero-dependency Node build, plain HTML/CSS,
 
 ---
 
-## Phase 2.5 — Toolkit IA (post-MVP)
+## Phase 2.5 — Catalog IA (post-MVP)
 
-Shared Rovo Agent toolkit chrome on top of the Phase 2 static site.
+Shared Rovo Catalog chrome on top of the Phase 2 static site.
 
 - [x] Nav: Prompts · Commands · Queries (pages) + Profile · Theme (buttons)
 - [x] Light/dark theme (`localStorage`, no FOUC)

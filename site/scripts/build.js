@@ -337,7 +337,7 @@ function buildCommandsPage() {
   });
 
   const html = layoutShell({
-    TITLE: 'Commands · Rovo Agent Toolkit',
+    TITLE: 'Commands · Rovo Catalog',
     DESCRIPTION: 'Rovo slash commands that change Jira work items.',
     BODY: body,
     ASSET_PAGE_JS: '',
@@ -524,7 +524,7 @@ function buildPromptPages(entries) {
 
     const modeClass = isHub ? 'page-prompt-hub' : `mode-${e.mode}`;
     const html = layoutShell({
-      TITLE: `${e.title} · Rovo Agent Toolkit`,
+      TITLE: `${e.title} · Rovo Catalog`,
       DESCRIPTION: e.use_when,
       BODY: body,
       ASSET_PAGE_JS: rootPath('assets/js/prompt.js'),
@@ -574,7 +574,7 @@ function main() {
   buildListPage({
     entries: listedPrompts,
     templateName: 'index.html',
-    title: 'Rovo Agent Toolkit',
+    title: 'Rovo Catalog',
     description: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
     activeNav: 'prompts',
     bodyClass: 'page-home page-prompts',
@@ -587,7 +587,7 @@ function main() {
   buildListPage({
     entries: queries,
     templateName: 'queries.html',
-    title: 'Queries · Rovo Agent Toolkit',
+    title: 'Queries · Rovo Catalog',
     description: 'Jira JQL snippets for Rovo and Jira search.',
     activeNav: 'queries',
     bodyClass: 'page-queries',
@@ -600,7 +600,7 @@ function main() {
   writeCatalogJson(entries);
 
   console.log(
-    `Built toolkit → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
+    `Built catalog → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
       `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries`
   );
 }

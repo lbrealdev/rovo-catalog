@@ -2,7 +2,7 @@
 
 > Status: **done** (implemented on `cursor/rovo-toolkit-ia-de27`)
 
-Small UX fix on the Rovo Agent Toolkit header profile form.
+Small UX fix on the Rovo Catalog header profile form.
 
 ## Problem
 

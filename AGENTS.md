@@ -1,77 +1,48 @@
 # AGENTS.md
 
-Conventions for Rovo (Atlassian AI assistant) prompts and JQL used with Jira Service Management in this repo.
+Agent guide for **Rovo Catalog** (`rovo-catalog`) — copy-paste Rovo prompts and JQL for Jira Service Management, plus a zero-dependency static catalog app. Conventional Commits and the contribution rules below are **mandatory** for every change, human or agent.
 
-## Critical JQL Syntax Rules
-
-**The "Time to resolution" field cannot use date comparisons.**
-```jql
--- WRONG (will not work):
-"Time to resolution" >= "2026-04-03"
--- CORRECT - use SLA functions:
-remaining("Time to resolution") < 72
-```
-
-**Available SLA functions for Time to resolution:**
-- `remaining("Time to resolution")` - hours until SLA expires
-- `elapsed("Time to resolution")` - hours since SLA started
-- `breached("Time to resolution")` - true/false, has SLA been breached
-- `withinCalendarHours("Time to resolution", "09:00", "17:00")` - within business hours
-
-**Searching comments:**
-```jql
--- Use "comment ~" not "text ~":
-comment ~ "<PATTERN>"
-```
-
----
-
-## JQL/SLA Field Naming Conventions
-
-When referencing SLA fields in prompts or JQL queries, always use the actual Jira field name:
-
-- **Use:** `"Time to resolution"` (the actual SLA field name)
-- **Do NOT use:** `<SLA>`, `SLA field`, or generic placeholders
-
-Example in prompts:
-```text
-Show my open <PROJECT> tickets in a table (Key, Summary, Status, Time to resolution)
-```
-
-Example in JQL:
-```jql
-project = <PROJECT>
-AND remaining("Time to resolution") < 72
-```
-
----
-
-## Repository Structure
+## Repo overview
 
 ```
-prompts/
-├── triage/
-│   └── daily-triage.md          # Daily triage (+ Unassigned Tickets hub)
-├── tickets/
-│   ├── ticket-analysis.md       # Analyze & close (+ AWS Health hub)
-│   └── reopened-tickets.md      # Reopened single + batch hubs
-├── sla/
-│   ├── sla-management.md        # SLA signals / absence hubs
-│   └── sla-workflow.md          # SLA clone continuation hub
-├── communication/
-│   ├── proofreading.md          # Message proofreading
-│   └── confirm-before-action.md # Get approval before actions
-└── utilities/
-    ├── prompts-special.md       # Lean multi-line (+ search/bulk/JQL hubs)
-    └── quick-prompts.md         # Queue rituals (list / prioritize / summarize)
-workbench/                       # Experimental prompts (pointers / in testing)
-guides/                          # Documentation
-docs/                            # Backlog and references
-queries/jql/                     # Reusable JQL templates
-site/                            # Static catalog (HonorBox-style builder)
+prompts/        # Stable catalog prompts (YAML frontmatter + fenced body)
+queries/jql/    # Reusable JQL templates (same schema as prompts)
+workbench/      # Experimental prompts (promote to prompts/ when stable)
+guides/         # User guides
+docs/           # Backlog, plans, references — incl. the prompt schema spec
+site/           # Static catalog builder (scripts/templates/content/assets)
 ```
 
-## Static site — Rovo Agent Toolkit (`site/`)
+Product docs: [README.md](README.md). Canonical prompt-schema spec: [docs/prompt-schema.md](docs/prompt-schema.md). Jira/SLA/JQL domain reference belongs in `docs/` and `guides/`, not in this file.
+
+## Contribution rules
+
+### Conventional Commits (hard rule)
+
+Every commit message uses `type(scope): subject`:
+
+- Types: `feat`, `fix`, `docs`, `refactor`, `chore`, `perf`, `test`, `style`, `ci`
+- Scope optional but recommended (e.g. `feat(communication):`, `fix(ui):`, `ci(pages):`)
+- Subject: imperative, lowercase, no trailing period
+
+### Branch naming
+
+- Agent branches: `cursor/<slug>-<4hex>` (e.g. `cursor/agentsmd-revamp-9f2e`)
+- Human branches: `type/<slug>` (e.g. `docs/readme-humanize`, `feat/weekly-status`)
+
+### Pull requests
+
+- Title follows the same Conventional Commits format as commits
+- Body: short what/why summary; link the issue (`Closes #N`) when one exists
+- Single-purpose PRs: prompts, site, and docs changes ship separately
+
+## Build and quality checks
+
+- `npm run build` must pass before opening a PR (Node ≥ 24, zero npm dependencies)
+- The build parses frontmatter in `prompts/**/*.md` and `queries/` and fails on invalid ids, unknown `hub_steps`, or placeholders duplicated across hub steps — fix build errors, never bypass them
+- `site/dist/` is generated and gitignored; never commit it
+
+## Static site — Rovo Catalog (`site/`)
 
 Zero-dependency Node build: reads `prompts/**/*.md` frontmatter and writes HTML to `site/dist/` (gitignored).
 
@@ -91,9 +62,9 @@ python3 -m http.server --directory site/dist
 
 Source layout: `site/scripts/`, `site/templates/`, `site/content/`, `site/assets/` (CSS/JS/fonts). No CDN assets.
 
-## Prompt Schema (Catalog Entries)
+## Prompt schema (catalog entries)
 
-Stable prompts in `prompts/` use YAML frontmatter so the static catalog can load them. Full spec: [docs/prompt-schema.md](docs/prompt-schema.md).
+Stable prompts in `prompts/` use YAML frontmatter so the static catalog can load them. The full spec lives in [docs/prompt-schema.md](docs/prompt-schema.md) — follow it; the summary below does not replace it.
 
 Each copy-paste template is one entry:
 
@@ -116,7 +87,7 @@ Prompt body with <PROJECT> placeholders...
 ```
 ```
 
-Rules:
+Essential rules:
 
 - `id` = `category-short-slug`; `category` = folder name
 - `mode`: `read-only` or `update` (for `/update-work-items` / `/create-work-items`)
@@ -126,42 +97,9 @@ Rules:
 - Placeholders live on the step that introduces them (unioned onto the hub form); do not duplicate the same token across steps
 - Catalog list rows and prompt detail headers show no mode badges; hub update steps live on the hub page (`#step-<id>`), not on Commands
 - Placeholders may use `type: select` with `options: ["…"]`, or `type: tags` for chip lists (default `type: text`)
+- Placeholder tokens in bodies use `<UPPERCASE-WITH-HYPHENS>` and must match `placeholders[].name`
 - `workbench/` schema migration is deferred (promote individual flows when ready; AWS Health is promoted)
 
 **Catalog hubs:** `triage-unassigned-tickets`, `sla-clone-continuation`, `sla-signal-continuation`, `sla-expiring-absence`, `tickets-reopened`, `tickets-reopened-batch-flow`, `tickets-aws-health`, `utilities-search-assign`, `utilities-bulk-assign`, `utilities-jql-prioritize`.
 
-Profile-owned placeholders for Phase 2 mini profile (`localStorage`): `PROJECT`, `YOUR-USER`.
-
-## Placeholder Format
-
-Prompts use `<UPPERCASE-WITH-HYPHENS>`:
-- `<PROJECT>` - Jira project key (e.g., SUP, IT)
-- `<TICKET-KEY>` - Ticket ID (e.g., SUP-123)
-- `<TICKET-KEYS>` - Batch hub ticket list (`type: tags`; e.g., SUP-101, SUP-102)
-- `<YOUR-USER>` - Jira username
-- `<PATTERN>` - Search pattern
-- `<HOURS-AWAY>` - Hours in away period (often a select)
-- `<LOOKBACK>` - Selectable time window (natural language or JQL relative, per hub)
-- `<TARGET-STATUS>` - Selectable transition status for Apply steps
-
-## Prompt Conventions
-
-- Prompts include read-only steps first, update steps after explicit confirmation
-- Guardrails: "If more than 20 tickets, stop and ask"
-- Use `/update-work-items` prefix for prompts that modify tickets
-
-## Markdown Conventions
-
-### Code Blocks for Prompts
-
-All prompt text must be wrapped in triple backticks for easy copy-paste:
-
-```markdown
-```text
-Your multi-line prompt text here...
-```
-```
-
-Use language specifiers:
-- `text` for plain text prompts
-- `jql` for JQL queries
+Profile-owned placeholders (site mini profile, `localStorage`): `PROJECT`, `YOUR-USER`.

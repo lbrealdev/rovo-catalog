@@ -7,6 +7,6 @@
   },
   "scripts": {
     "build": "node site/scripts/build.js",
-    "build:pages": "SITE_BASE_PATH=/rovo-catalog/ node site/scripts/build.js"
+    "build:pages": "SITE_BASE_PATH=/rovo-catalog/ SITE_ORIGIN=https://lbrealdev.github.io node site/scripts/build.js"
   }
 }

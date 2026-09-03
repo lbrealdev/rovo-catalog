@@ -1,16 +1,36 @@
-<section class="hero">
-  <h1>Rovo Agent Toolkit</h1>
-  <p class="hero-lead">Browse prompts by situation, fill placeholders, copy, paste into Rovo.</p>
-  <p class="hero-meta"><span id="catalog-count">{{COUNT}}</span> prompts</p>
+<section class="hero hero-home">
+  <p class="hero-kicker">Operator kit · Jira Service Management</p>
+  <div class="hero-brand" aria-hidden="true">
+    <span class="hero-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" width="72" height="72" focusable="false">
+        <rect x="2.5" y="2.5" width="27" height="27" rx="4" stroke="currentColor" stroke-width="2"/>
+        <rect x="8" y="8.5" width="11" height="3.25" rx="0.5" fill="currentColor"/>
+        <rect x="8" y="14.25" width="14" height="3.25" rx="0.5" fill="currentColor"/>
+        <rect x="8" y="20" width="16" height="3.25" rx="0.5" fill="currentColor"/>
+        <rect class="mark-accent" x="21.5" y="21.5" width="5.5" height="5.5" rx="1" fill="currentColor"/>
+      </svg>
+    </span>
+  </div>
+  <h1 class="hero-title">
+    <span class="hero-title-line">Rovo</span>
+    <span class="hero-title-line">Catalog</span>
+  </h1>
+  <p class="hero-lead">Browse by situation, fill placeholders, copy, paste into Rovo.</p>
+  <div class="hero-cta">
+    <a class="btn" href="#catalog-search">Browse prompts</a>
+    <a class="btn btn-quiet" href="commands.html">Commands</a>
+  </div>
 </section>
 
+<p class="catalog-meta" aria-live="polite"><span id="catalog-count">{{COUNT}}</span> prompts in the kit</p>
+
 <div id="recent-strip" class="recent-strip" data-recent-count="0" hidden>
-  <h2 class="strip-heading">Recently Used</h2>
+  <h2 class="strip-heading">Recently used</h2>
   <div class="strip-items" id="recent-strip-items"></div>
 </div>
 
 <section id="favorites-strip" class="favorites-strip" hidden>
-  <h2 class="strip-heading">★ Favorites</h2>
+  <h2 class="strip-heading">Favorites</h2>
   <div class="strip-items" id="favorites-strip-items"></div>
 </section>
 

@@ -28,9 +28,19 @@ function normalizeBasePath(raw) {
 }
 
 const BASE = normalizeBasePath(process.env.SITE_BASE_PATH || '/');
+const SITE_ORIGIN = (process.env.SITE_ORIGIN || 'https://lbrealdev.github.io').replace(
+  /\/$/,
+  ''
+);
 
 function rootPath(rel) {
   return rel.replace(/^\//, '');
+}
+
+/** Absolute URL for OG/canonical (Pages origin + base path + relative asset). */
+function absUrl(rel) {
+  const cleaned = String(rel || '').replace(/^\//, '');
+  return `${SITE_ORIGIN}${BASE}${cleaned}`;
 }
 
 function escapeHtml(s) {
@@ -100,12 +110,19 @@ function pageScriptTag(src) {
 function layoutShell(vars) {
   const layout = readTemplate('layout.html');
   const pageJs = vars.ASSET_PAGE_JS || '';
-  const { ASSET_PAGE_JS: _ignored, ...rest } = vars;
+  const { ASSET_PAGE_JS: _ignored, CANONICAL_PATH: canonicalPath, ...rest } = vars;
+  const pagePath = canonicalPath || '';
   return render(layout, {
     BASE: BASE,
     ASSET_CSS: rootPath('assets/css/catalog.css'),
     ASSET_THEME_JS: rootPath('assets/js/theme.js'),
     ASSET_PROFILE_JS: rootPath('assets/js/profile.js'),
+    ASSET_FAVICON_SVG: rootPath('assets/img/favicon.svg'),
+    ASSET_FAVICON_PNG: rootPath('assets/img/favicon-32.png'),
+    ASSET_APPLE_TOUCH: rootPath('assets/img/apple-touch-icon.png'),
+    OG_IMAGE: absUrl('assets/img/og.png'),
+    CANONICAL_URL: absUrl(pagePath),
+    THEME_COLOR: '#e8ecee',
     NAV_PROMPTS: '',
     NAV_COMMANDS: '',
     NAV_QUERIES: '',
@@ -304,6 +321,7 @@ function buildListPage({
     BODY: body,
     ASSET_PAGE_JS: rootPath('assets/js/catalog.js'),
     BODY_CLASS: bodyClass,
+    CANONICAL_PATH: outFile,
     ...layoutNav(activeNav),
   });
 
@@ -319,11 +337,12 @@ function buildCommandsPage() {
   });
 
   const html = layoutShell({
-    TITLE: 'Commands · Rovo Agent Toolkit',
+    TITLE: 'Commands · Rovo Catalog',
     DESCRIPTION: 'Rovo slash commands that change Jira work items.',
     BODY: body,
     ASSET_PAGE_JS: '',
     BODY_CLASS: 'page-commands',
+    CANONICAL_PATH: 'commands.html',
     ...layoutNav('commands'),
   });
 
@@ -505,11 +524,12 @@ function buildPromptPages(entries) {
 
     const modeClass = isHub ? 'page-prompt-hub' : `mode-${e.mode}`;
     const html = layoutShell({
-      TITLE: `${e.title} · Rovo Agent Toolkit`,
+      TITLE: `${e.title} · Rovo Catalog`,
       DESCRIPTION: e.use_when,
       BODY: body,
       ASSET_PAGE_JS: rootPath('assets/js/prompt.js'),
       BODY_CLASS: `page-prompt ${modeClass}${isQuery ? ' kind-query' : ''}`,
+      CANONICAL_PATH: `prompts/${e.id}.html`,
       ...layoutNav(isQuery ? 'queries' : 'prompts'),
     });
 
@@ -554,7 +574,7 @@ function main() {
   buildListPage({
     entries: listedPrompts,
     templateName: 'index.html',
-    title: 'Rovo Agent Toolkit',
+    title: 'Rovo Catalog',
     description: 'Browse Rovo prompts by situation, fill placeholders, copy, paste.',
     activeNav: 'prompts',
     bodyClass: 'page-home page-prompts',
@@ -567,7 +587,7 @@ function main() {
   buildListPage({
     entries: queries,
     templateName: 'queries.html',
-    title: 'Queries · Rovo Agent Toolkit',
+    title: 'Queries · Rovo Catalog',
     description: 'Jira JQL snippets for Rovo and Jira search.',
     activeNav: 'queries',
     bodyClass: 'page-queries',
@@ -580,7 +600,7 @@ function main() {
   writeCatalogJson(entries);
 
   console.log(
-    `Built toolkit → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
+    `Built catalog → ${path.relative(ROOT, DIST)} (base=${BASE}): ` +
       `${listedPrompts.length} listed prompts (${prompts.length} total), ${queries.length} queries`
   );
 }

@@ -398,9 +398,13 @@ code {
 }
 
 .hero-home {
-  padding-bottom: 1.25rem;
+  min-height: min(82vh, 40rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2.75rem 0 3rem;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 1.25rem;
+  margin-bottom: 2rem;
 }
 
 .hero-kicker {
@@ -430,11 +434,11 @@ code {
 .hero-title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.35rem, 7vw, 3.6rem);
-  line-height: 0.95;
-  letter-spacing: -0.045em;
-  margin: 0 0 0.85rem;
-  max-width: 12ch;
+  font-size: clamp(2.6rem, 8vw, 4.25rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  margin: 0 0 0.95rem;
+  max-width: 11ch;
 }
 
 .hero-title-line {
@@ -1219,8 +1223,14 @@ code {
     padding: 1.25rem 1rem 2.75rem;
   }
 
+  .hero-home {
+    min-height: 0;
+    padding: 1.25rem 0 1.75rem;
+    justify-content: flex-start;
+  }
+
   .hero-title {
-    font-size: clamp(2.1rem, 11vw, 2.85rem);
+    font-size: clamp(2.25rem, 12vw, 3.1rem);
     max-width: none;
   }
 

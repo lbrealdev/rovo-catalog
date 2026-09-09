@@ -1,21 +1,62 @@
-# rovo-catalog
+# Rovo Catalog
 
-Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small static app to browse, fill, and copy them.
-
-**Rovo Catalog** is a zero-dependency static site (HonorBox-style: plain HTML/CSS + tiny first-party JS). Markdown under `prompts/` stays the source of truth; `npm run build` turns frontmatter into pages under `site/dist/`.
-
-**How it works:** browse by situation → fill placeholders → one-click copy → paste into Rovo.
+Copy-paste Rovo prompts and JQL for Jira Service Management — browse, fill placeholders, copy, paste into Rovo.
 
 **Live site:** [https://lbrealdev.github.io/rovo-catalog/](https://lbrealdev.github.io/rovo-catalog/) (deploys from `main` via GitHub Actions).
 
+Zero-dependency static site (plain HTML/CSS + tiny first-party JS). Markdown under `prompts/` is the source of truth; `npm run build` writes pages to `site/dist/`.
+
 ---
 
-## Table of Contents
+## Use it
 
-### Catalog
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Repository Structure](#repository-structure)
+1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`.
+2. Browse **Prompts** by category or situation shortcuts; page with ← / → when the pager is visible.
+3. Open an item, fill placeholders, **Copy** → paste into Rovo Chat.
+4. **Queries** is reusable JQL (`lang: jql`) with copy.
+5. **Commands** is slash-command explainers (`/update-work-items`, `/create-work-items`) — not a recipe list.
+
+**Theme** (moon/sun) persists in `localStorage`. Reading the generated HTML works with JavaScript off. Copy, Profile, Theme, favorites, and recently used need JS.
+
+To skip the site: open a file under `prompts/<category>/`, replace `<PROJECT>`, `<TICKET-KEY>`, `<YOUR-USER>` (and any other tokens), paste into Rovo Chat, and review output before any `/update-work-items` step.
+
+---
+
+## Fork and host on GitHub Pages
+
+1. Fork this repo. Keep the name `rovo-catalog`, or note that the deploy workflow derives the site base path from the repository name.
+2. In the fork: **Settings → Pages → Source: GitHub Actions**.
+3. Push to `main` or run the **Deploy GitHub Pages** workflow. No secrets. The workflow sets `SITE_BASE_PATH` from the repo name:
+   - Project site: `https://<user>.github.io/<repo>/` (base `/<repo>/`)
+   - User or org site named `<user>.github.io`: builds at `/`
+
+Local preview of the Pages base path (this repo’s name):
+
+```bash
+npm run build:pages
+python3 -m http.server 8765 --directory site/dist
+# open http://127.0.0.1:8765/rovo-catalog/
+```
+
+`npm run build:pages` hardcodes `/rovo-catalog/` for local preview. CI derives the path from the repository name.
+
+---
+
+## Build locally
+
+Node ≥ 24, zero npm dependencies.
+
+```bash
+npm run build
+python3 -m http.server 8765 --directory site/dist
+# open http://127.0.0.1:8765/
+```
+
+Prompt and query counts are printed by the build; do not treat README numbers as source of truth. `site/dist/` is generated and gitignored.
+
+---
+
+## Catalog reference
 
 ### Guides
 - [Document Summaries](guides/document-summaries.md) — stable summarization (experimental Confluence explain/Q&A lives in workbench)
@@ -43,15 +84,13 @@ Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small sta
 ### JQL Queries
 - [My Tickets JQL](queries/jql/my-tickets.md)
 
-### References
+### Docs
 - [Backlog](docs/BACKLOG.md) — roadmap for the prompt catalog app
 - [Prompt Schema](docs/prompt-schema.md) — catalog frontmatter format
 - [Rovo Resources](docs/rovo-resources.md)
 - [AGENTS.md](AGENTS.md) — agent and contributor conventions
 
----
-
-## Features
+### Features
 
 - **Situation-first catalog** — Prompts grouped by triage, tickets, SLA, communication, and utilities; hubs stack review → apply steps on one page
 - **Placeholder forms** — fill `<PROJECT>`, `<YOUR-USER>`, selects, and tag chips; Profile prefills the ones you reuse
@@ -61,52 +100,7 @@ Copy-paste Rovo prompts and JQL for Jira Service Management — plus a small sta
 - **Light / dark theme** — `localStorage`, no FOUC; moon/sun toggle in the header
 - **Offline-friendly build** — no CDN, no Vite, no backend; Node ≥ 24, zero npm dependencies
 
-> [!NOTE]
-> Catalog build currently reports **22 listed prompts** (44 total with hub steps) and **6 queries**. Counts come from `npm run build`.
-
----
-
-## Getting Started
-
-### Live site
-
-Open [https://lbrealdev.github.io/rovo-catalog/](https://lbrealdev.github.io/rovo-catalog/).
-
-1. Set **Profile** (`PROJECT`, `YOUR-USER`) — stored in `localStorage`
-2. Use **Theme** (moon/sun) for light/dark — choice persists
-3. Browse **Prompts** by category or situation shortcuts; page with ← / → when the pager is visible
-4. Open an item, fill placeholders, **Copy** → paste into Rovo
-
-**Commands** is slash-command docs. **Queries** is JQL with copy.
-
-### Build locally
-
-```bash
-npm run build
-python3 -m http.server 8765 --directory site/dist
-# open http://127.0.0.1:8765/
-```
-
-GitHub Pages base-path preview:
-
-```bash
-npm run build:pages
-# serves under /rovo-catalog/
-```
-
-> [!TIP]
-> Reading the generated HTML works with JavaScript off. Copy, Profile, Theme, favorites, and recently used need JS.
-
-### Markdown without the site
-
-1. Open a prompt under `prompts/<category>/`
-2. Replace `<PROJECT>`, `<TICKET-KEY>`, `<YOUR-USER>` (and any other tokens)
-3. Paste into Rovo Chat
-4. Review output before any `/update-work-items` step
-
----
-
-## Prompt categories
+### Prompt categories
 
 | Category | Path | What it’s for |
 |----------|------|----------------|
@@ -118,28 +112,13 @@ npm run build:pages
 
 Stable entries use YAML frontmatter (`id`, `title`, `category`, `tags`, `use_when`, `placeholders`, `mode`) plus one fenced `text` or `jql` body. Spec: [docs/prompt-schema.md](docs/prompt-schema.md).
 
-### JQL queries
+Reusable JQL templates live in [`queries/jql/`](queries/jql/). Same schema as prompts; they show on the **Queries** page, not Prompts.
 
-Reusable templates live in [`queries/jql/`](queries/jql/). Same schema as prompts; they show on the **Queries** page, not Prompts.
-
-> [!IMPORTANT]
 > `"Time to resolution"` cannot use date comparisons. Use SLA functions such as `remaining("Time to resolution")`. Full rules: [AGENTS.md](AGENTS.md).
-
-### Experimental workbench
 
 [`workbench/`](workbench/) holds prompts still in testing. Schema migration is deferred; promote into `prompts/` when a flow is stable. AWS Health is already promoted (`tickets-aws-health` in ticket analysis).
 
-### Guides & references
-
-- [Document Summaries](guides/document-summaries.md)
-- [Backlog](docs/BACKLOG.md)
-- [Prompt Schema](docs/prompt-schema.md)
-- [Rovo Resources](docs/rovo-resources.md)
-- [AGENTS.md](AGENTS.md)
-
----
-
-## Repository Structure
+### Repository structure
 
 ```
 .
@@ -163,5 +142,3 @@ Reusable templates live in [`queries/jql/`](queries/jql/). Same schema as prompt
     └── jql/
         └── my-tickets.md
 ```
-
-`workbench/` is for prompts under active development. Promote to `prompts/` once stable.

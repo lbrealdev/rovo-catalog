@@ -24,14 +24,6 @@ Reading the generated HTML works with JavaScript off. Copy, Profile, and Theme n
 
 CI sets the base path from the repo name (`/rovo-catalog/` here). A renamed fork still matches. A repo named `<user>.github.io` builds at `/`.
 
-Local preview of the Pages base path:
-
-```bash
-npm run build:pages
-python3 -m http.server 8765 --directory site/dist
-# open http://127.0.0.1:8765/rovo-catalog/
-```
-
 ---
 
 ## Build locally

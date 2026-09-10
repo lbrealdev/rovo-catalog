@@ -63,6 +63,8 @@ Each placeholder is `{ name, required, description, type?, options? }`:
 | `type` | no | `text` (default), `select`, or `tags` (chip list that serializes to a comma-separated string) |
 | `options` | for `select` | Non-empty list of option strings (inline `["a", "b"]` or a YAML block list). Do not set for `tags`. |
 
+`type: tags` expects Jira issue keys (`KEY-123`). The catalog chip editor normalizes bare numeric IDs using Profile `PROJECT` (e.g. `120` → `SUP-120`); invalid tokens are skipped.
+
 Placeholder names in the body use `<UPPERCASE-WITH-HYPHENS>` and must match `placeholders[].name`.
 
 **Inline list quoting:** the frontmatter parser supports a quote-aware subset for `[a, "b, c", 'd']`. It does **not** handle escape sequences inside quotes (e.g. `"say \"hi\""` or `'it\'s'`). Prefer options that avoid the quote delimiter, or use a YAML block list (`options:` / `- item`) when an option must contain quotes.
